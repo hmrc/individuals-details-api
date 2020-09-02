@@ -1,19 +1,47 @@
-import play.core.PlayVersion.current
-import play.sbt.PlayImport._
-import sbt.Keys.libraryDependencies
+import play.core.PlayVersion
+import play.sbt.PlayImport.ws
 import sbt._
 
 object AppDependencies {
 
-  val compile = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-backend-play-27"  % "2.24.0"
+  val hmrc = "uk.gov.hmrc"
+  val akka = "com.typesafe.akka"
+
+  val akkaVersion = "2.5.23"
+  val akkaHttpVersion = "10.0.15"
+
+  val overrides = Seq(
+    akka %% "akka-stream" % akkaVersion,
+    akka %% "akka-protobuf" % akkaVersion,
+    akka %% "akka-slf4j" % akkaVersion,
+    akka %% "akka-actor" % akkaVersion,
+    akka %% "akka-http-core" % akkaHttpVersion
   )
 
-  val test = Seq(
-    "uk.gov.hmrc"             %% "bootstrap-test-play-27"   % "2.24.0" % Test,
-    "org.scalatest"           %% "scalatest"                % "3.1.2"                 % Test,
-    "com.typesafe.play"       %% "play-test"                % current                 % Test,
-    "com.vladsch.flexmark"    %  "flexmark-all"             % "0.35.10"               % "test, it",
-    "org.scalatestplus.play"  %% "scalatestplus-play"       % "4.0.3"                 % "test, it"
+  val compile = Seq(
+    ws,
+    hmrc                %% "bootstrap-play-26" % "1.8.0",
+    hmrc                %% "domain"            % "5.9.0-play-26",
+    hmrc                %% "auth-client"       % "3.0.0-play-26",
+    hmrc                %% "play-hal"          % "1.9.0-play-26",
+    hmrc                %% "play-hmrc-api"     % "4.1.0-play-26",
+    hmrc                %% "mongo-caching"     % "6.13.0-play-26",
+    hmrc                %% "json-encryption"   % "4.8.0-play-26",
+    "com.typesafe.play" %% "play-json-joda"    % "2.6.14"
   )
+
+  def test(scope: String = "test,it") = Seq(
+    "org.scalatestplus.play" %% "scalatestplus-play"       % "3.1.3"             % scope,
+    "org.scalatest"          %% "scalatest"                % "3.0.8"             % scope,
+    "org.scalaj"             %% "scalaj-http"              % "2.4.2"             % scope,
+    "org.mockito"            % "mockito-core"              % "3.2.4"             % scope,
+    "org.pegdown"            % "pegdown"                   % "1.6.0"             % scope,
+    "com.typesafe.play"      %% "play-test"                % PlayVersion.current % scope,
+    "com.github.tomakehurst" % "wiremock-jre8"             % "2.26.0"            % scope,
+    hmrc                     %% "reactivemongo-test"       % "4.16.0-play-26"    % scope,
+    hmrc                     %% "service-integration-test" % "0.9.0-play-26"     % scope
+  )
+
+
+
 }

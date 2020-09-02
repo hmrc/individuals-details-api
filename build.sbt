@@ -1,26 +1,95 @@
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
+import play.core.PlayVersion
+import sbt.Keys.compile
+import sbt.Tests.{Group, SubProcess}
+import uk.gov.hmrc.DefaultBuildSettings.{
+  addTestReportOption,
+  defaultSettings,
+  scalaSettings
+}
+import uk.gov.hmrc.ExternalService
+import uk.gov.hmrc.ServiceManagerPlugin.Keys.itDependenciesList
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
-val appName = "individuals-details-api"
+val appName = "individuals-income-api"
 
-val silencerVersion = "1.7.0"
+lazy val plugins: Seq[Plugins] = Seq.empty
+lazy val externalServices =
+  List(ExternalService("AUTH"),
+       ExternalService("INDIVIDUALS_MATCHING_API"),
+       ExternalService("DES"))
 
-lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
-  .settings(
-    majorVersion                     := 0,
-    scalaVersion                     := "2.12.11",
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
-    // ***************
-    // Use the silencer plugin to suppress warnings
-    scalacOptions += "-P:silencer:pathFilters=routes",
-    libraryDependencies ++= Seq(
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+//def intTestFilter(name: String): Boolean = name startsWith "it"
+//def unitFilter(name: String): Boolean = name startsWith "unit"
+//def componentFilter(name: String): Boolean = name startsWith "component"
+
+lazy val microservice =
+  Project(appName, file("."))
+    .enablePlugins(
+      Seq(play.sbt.PlayScala,
+          SbtAutoBuildPlugin,
+          SbtGitVersioning,
+          SbtDistributablesPlugin,
+          SbtArtifactory) ++ plugins: _*)
+    .settings(scalaSettings: _*)
+    .settings(useSuperShell in ThisBuild := false)
+    .settings(publishingSettings: _*)
+    .settings(defaultSettings(): _*)
+    .settings(scalafmtOnCompile := true)
+    .settings(
+      dependencyOverrides ++= AppDependencies.overrides,
+      libraryDependencies ++= (AppDependencies.compile ++ AppDependencies
+        .test()),
+      //testOptions in Test := Seq(Tests.Filter(unitFilter)),
+      retrieveManaged := true,
+      evictionWarningOptions in update := EvictionWarningOptions.default
+        .withWarnScalaVersionEviction(false)
     )
-    // ***************
-  )
-  .settings(publishingSettings: _*)
-  .configs(IntegrationTest)
-  .settings(integrationTestSettings(): _*)
-  .settings(resolvers += Resolver.jcenterRepo)
+    .settings(unmanagedResourceDirectories in Compile += baseDirectory.value / "resources")
+    .configs(IntegrationTest)
+    .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
+    .settings(itDependenciesList := externalServices)
+    .settings(
+      Keys.fork in IntegrationTest := false,
+      unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(
+        base => Seq(base / "test")).value,
+      //testOptions in IntegrationTest := Seq(Tests.Filter(intTestFilter)),
+      addTestReportOption(IntegrationTest, "int-test-reports"),
+      testGrouping in IntegrationTest := oneForkedJvmPerTest(
+        (definedTests in IntegrationTest).value),
+      parallelExecution in IntegrationTest := false
+    )
+    .configs(ComponentTest)
+    .settings(inConfig(ComponentTest)(Defaults.testSettings): _*)
+    .settings(
+      //testOptions in ComponentTest := Seq(Tests.Filter(componentFilter)),
+      unmanagedSourceDirectories in ComponentTest := (baseDirectory in ComponentTest)(
+        base => Seq(base / "test")).value,
+      //testGrouping in ComponentTest := oneForkedJvmPerTest(
+      //  (definedTests in ComponentTest).value),
+      parallelExecution in ComponentTest := false
+    )
+    .settings(resolvers ++= Seq(
+      Resolver.bintrayRepo("hmrc", "releases"),
+      Resolver.jcenterRepo
+    ))
+    .settings(PlayKeys.playDefaultPort := 9652)
+    .settings(majorVersion := 0)
+
+lazy val ComponentTest = config("component") extend Test
+
+def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
+  tests.map { test =>
+    new Group(
+      test.name,
+      Seq(test),
+      SubProcess(
+        ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
+  }
+
+lazy val compileAll = taskKey[Unit]("Compiles sources in all configurations.")
+
+compileAll := {
+  val a = (compile in Test).value
+  val b = (compile in IntegrationTest).value
+  ()
+}
