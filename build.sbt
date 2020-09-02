@@ -12,6 +12,13 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "individuals-details-api"
 
+//TODO - Implement
+//lazy val playSettings: Seq[Setting[_]] = Seq(
+//  routesImport ++= Seq(
+//    "uk.gov.hmrc.domain._",
+//    "uk.gov.hmrc.individualsdetailsapi.domain._",
+//    "uk.gov.hmrc.individualsdetailsapi.Binders._"))
+
 lazy val plugins: Seq[Plugins] = Seq.empty
 lazy val externalServices =
   List(ExternalService("AUTH"),
@@ -39,6 +46,7 @@ lazy val microservice =
       dependencyOverrides ++= AppDependencies.overrides,
       libraryDependencies ++= (AppDependencies.compile ++ AppDependencies
         .test()),
+      //TODO - Implement
       //testOptions in Test := Seq(Tests.Filter(unitFilter)),
       retrieveManaged := true,
       evictionWarningOptions in update := EvictionWarningOptions.default
@@ -52,6 +60,7 @@ lazy val microservice =
       Keys.fork in IntegrationTest := false,
       unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(
         base => Seq(base / "test")).value,
+      //TODO - Implement
       //testOptions in IntegrationTest := Seq(Tests.Filter(intTestFilter)),
       addTestReportOption(IntegrationTest, "int-test-reports"),
       testGrouping in IntegrationTest := oneForkedJvmPerTest(
@@ -61,9 +70,11 @@ lazy val microservice =
     .configs(ComponentTest)
     .settings(inConfig(ComponentTest)(Defaults.testSettings): _*)
     .settings(
+      //TODO - Implement
       //testOptions in ComponentTest := Seq(Tests.Filter(componentFilter)),
       unmanagedSourceDirectories in ComponentTest := (baseDirectory in ComponentTest)(
         base => Seq(base / "test")).value,
+      //TODO - Implement
       //testGrouping in ComponentTest := oneForkedJvmPerTest(
       //  (definedTests in ComponentTest).value),
       parallelExecution in ComponentTest := false
