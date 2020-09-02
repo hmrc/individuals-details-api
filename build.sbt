@@ -10,7 +10,7 @@ import uk.gov.hmrc.ExternalService
 import uk.gov.hmrc.ServiceManagerPlugin.Keys.itDependenciesList
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
-val appName = "individuals-income-api"
+val appName = "individuals-details-api"
 
 lazy val plugins: Seq[Plugins] = Seq.empty
 lazy val externalServices =
