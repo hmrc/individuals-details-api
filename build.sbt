@@ -12,7 +12,7 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "individuals-details-api"
 
-//TODO - Implement
+//TODO - Implement at a later date
 //lazy val playSettings: Seq[Setting[_]] = Seq(
 //  routesImport ++= Seq(
 //    "uk.gov.hmrc.domain._",
@@ -25,9 +25,9 @@ lazy val externalServices =
        ExternalService("INDIVIDUALS_MATCHING_API"),
        ExternalService("DES"))
 
-//def intTestFilter(name: String): Boolean = name startsWith "it"
-//def unitFilter(name: String): Boolean = name startsWith "unit"
-//def componentFilter(name: String): Boolean = name startsWith "component"
+def intTestFilter(name: String): Boolean = name startsWith "it"
+def unitFilter(name: String): Boolean = name startsWith "unit"
+def componentFilter(name: String): Boolean = name startsWith "component"
 
 lazy val microservice =
   Project(appName, file("."))
@@ -46,8 +46,7 @@ lazy val microservice =
       dependencyOverrides ++= AppDependencies.overrides,
       libraryDependencies ++= (AppDependencies.compile ++ AppDependencies
         .test()),
-      //TODO - Implement
-      //testOptions in Test := Seq(Tests.Filter(unitFilter)),
+      testOptions in Test := Seq(Tests.Filter(unitFilter)),
       retrieveManaged := true,
       evictionWarningOptions in update := EvictionWarningOptions.default
         .withWarnScalaVersionEviction(false)
@@ -60,8 +59,7 @@ lazy val microservice =
       Keys.fork in IntegrationTest := false,
       unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(
         base => Seq(base / "test")).value,
-      //TODO - Implement
-      //testOptions in IntegrationTest := Seq(Tests.Filter(intTestFilter)),
+      testOptions in IntegrationTest := Seq(Tests.Filter(intTestFilter)),
       addTestReportOption(IntegrationTest, "int-test-reports"),
       testGrouping in IntegrationTest := oneForkedJvmPerTest(
         (definedTests in IntegrationTest).value),
@@ -70,13 +68,11 @@ lazy val microservice =
     .configs(ComponentTest)
     .settings(inConfig(ComponentTest)(Defaults.testSettings): _*)
     .settings(
-      //TODO - Implement
-      //testOptions in ComponentTest := Seq(Tests.Filter(componentFilter)),
+      testOptions in ComponentTest := Seq(Tests.Filter(componentFilter)),
       unmanagedSourceDirectories in ComponentTest := (baseDirectory in ComponentTest)(
         base => Seq(base / "test")).value,
-      //TODO - Implement
-      //testGrouping in ComponentTest := oneForkedJvmPerTest(
-      //  (definedTests in ComponentTest).value),
+      testGrouping in ComponentTest := oneForkedJvmPerTest(
+        (definedTests in ComponentTest).value),
       parallelExecution in ComponentTest := false
     )
     .settings(resolvers ++= Seq(

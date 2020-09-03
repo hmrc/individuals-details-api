@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils
+package unit.uk.gov.hmrc.individualsdetailsapi.utils
 
 import java.nio.charset.Charset
 

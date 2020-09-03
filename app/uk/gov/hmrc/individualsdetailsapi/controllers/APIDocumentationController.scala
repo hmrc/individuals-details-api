@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package controllers
+package uk.gov.hmrc.individualsdetailsapi.controllers
 
+import controllers.Assets
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.http.HttpErrorHandler
@@ -28,6 +29,6 @@ class APIDocumentationController @Inject()(cc: ControllerComponents,
                                            errorHandler: HttpErrorHandler,
                                            config: Configuration)
     extends DocumentationController(cc, assets, errorHandler) {
-  //TODO - Not yet implemented
+  //TODO - Implement at a later date
 
 }
