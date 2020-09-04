@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.config
+package controllers
 
+import controllers.Assets
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import play.api.http.HttpErrorHandler
+import play.api.mvc.ControllerComponents
+import uk.gov.hmrc.api.controllers.DocumentationController
 
 @Singleton
-class AppConfig @Inject()(config: Configuration,
-                          servicesConfig: ServicesConfig) {
+class APIDocumentationController @Inject()(cc: ControllerComponents,
+                                           assets: Assets,
+                                           errorHandler: HttpErrorHandler,
+                                           config: Configuration)
+    extends DocumentationController(cc, assets, errorHandler) {
+  //TODO - Implement at a later date
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
-
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String =
-    config.get[String]("microservice.metrics.graphite.host")
 }
