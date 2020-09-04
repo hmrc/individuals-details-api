@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.controllers
+package controllers
 
 import controllers.Assets
 import javax.inject.{Inject, Singleton}
