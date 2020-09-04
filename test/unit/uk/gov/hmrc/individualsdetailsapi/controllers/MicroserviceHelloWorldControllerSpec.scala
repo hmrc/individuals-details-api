@@ -17,7 +17,7 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import akka.stream.Materializer
-import controllers.MicroserviceHelloWorldController
+import uk.gov.hmrc.individualsdetailsapi.controllers.MicroserviceHelloWorldController
 import org.mockito.ArgumentMatchers._
 import org.scalatest.{BeforeAndAfterEach, Matchers}
 import org.scalatestplus.mockito.MockitoSugar
