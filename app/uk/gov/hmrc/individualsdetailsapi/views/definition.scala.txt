@@ -1,0 +1,27 @@
+@import play.api.libs.json.Json
+@(privilegedWhitelistedApplicationIds: Seq[String])
+{
+  "scopes":[
+    {
+      "key":"read:hello-world",
+      "name":"Hello World",
+      "description":"Access Hello world"
+    }
+  ],
+  "api":{
+    "name":"Individuals Details",
+    "description":"Retrieves details for an individual",
+    "context":"individuals/details",
+    "categories": ["PRIVATE_GOVERNMENT"],
+    "versions":[
+      {
+        "version":"P1.0",
+        "status":"PUBLISHED",
+        "access":{
+          "type":"PRIVATE",
+          "whitelistedApplicationIds": @Json.toJson(privilegedWhitelistedApplicationIds)
+        }
+      }
+    ]
+  }
+}
