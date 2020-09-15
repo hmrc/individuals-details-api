@@ -14,21 +14,34 @@
  * limitations under the License.
  */
 
-package controllers
+package uk.gov.hmrc.individualsdetailsapi.controllers
 
 import controllers.Assets
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.http.HttpErrorHandler
-import play.api.mvc.ControllerComponents
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.api.controllers.DocumentationController
-
+import uk.gov.hmrc.individualsdetailsapi.views._
 @Singleton
 class APIDocumentationController @Inject()(cc: ControllerComponents,
                                            assets: Assets,
                                            errorHandler: HttpErrorHandler,
                                            config: Configuration)
     extends DocumentationController(cc, assets, errorHandler) {
-  //TODO - Implement at a later date
+
+  private lazy val privilegedWhitelistedApplicationIds =
+    config
+      .getOptional[Seq[String]](
+        "api.access.version-P1.0.whitelistedApplicationIds")
+      .getOrElse(Seq.empty)
+
+  override def definition(): Action[AnyContent] = Action { _ =>
+    Ok(txt.definition(privilegedWhitelistedApplicationIds))
+      .withHeaders(CONTENT_TYPE -> JSON)
+  }
+
+  def raml(version: String, file: String) =
+    assets.at(s"/public/api/conf/$version", file)
 
 }
