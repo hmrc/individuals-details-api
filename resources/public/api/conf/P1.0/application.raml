@@ -9,10 +9,6 @@ mediaType: [ application/json, application/hal+json ]
 documentation:
  - title: Overview
    content: !include docs/overview.md
- - title: Versioning
-   content: !include https://developer.service.hmrc.gov.uk/api-documentation/assets/common/docs/versioning.md
- - title: Errors
-   content: !include https://developer.service.hmrc.gov.uk/api-documentation/assets/common/docs/errors.md
  - title: Testing
    content: !include docs/testing.md
 
@@ -26,9 +22,10 @@ uses:
   get:
     displayName: Hello World
     description: An endpoint that returns hello world
+    is: [headers.acceptHeader]
     responses:
       200:
         description: Return hello world
         body:
           application/json:
-            example: "Hello World"
+            example: "\"Hello World\""
