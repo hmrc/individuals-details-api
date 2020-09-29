@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsdetailsapi.handlers
 
 import javax.inject.Inject
-import play.api.Configuration
+import play.api.{Configuration, Logger}
 import play.api.http.{HttpConfiguration, HttpErrorHandler, HttpFilters}
 import play.api.mvc.{Handler, RequestHeader}
 import play.api.routing.Router
@@ -37,9 +37,12 @@ class VersioningRequestHandler @Inject()(config: Configuration,
 
   override def routeRequest(request: RequestHeader): Option[Handler] = {
     val requestContext = extractUriContext(request)
+    Logger.warn(s"ACHI2 - $requestContext")
     if (unversionedContexts.contains(requestContext)) {
       super.routeRequest(request)
     } else {
+      val vr = getVersionedRequest(request)
+      Logger.warn(s"ACHI3 - $vr")
       super.routeRequest(getVersionedRequest(request))
     }
 

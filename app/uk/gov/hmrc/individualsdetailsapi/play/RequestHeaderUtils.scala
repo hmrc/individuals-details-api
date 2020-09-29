@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.individualsdetailsapi.play
 
+import play.api.Logger
 import play.api.http.HeaderNames.ACCEPT
 import play.api.mvc.RequestHeader
 
@@ -50,9 +51,12 @@ object RequestHeaderUtils {
       acceptHeaderRegex.findFirstMatchIn(acceptHeaderValue) map (_.group(1))
     } getOrElse "1.0"
 
-  private def versionedUri(urlPath: String, version: String) =
+  private def versionedUri(urlPath: String, version: String) = {
+    Logger.warn(s"ACHI - $version$urlPath")
+
     urlPath match {
       case "/" => s"/v$version"
       case uri => s"/v$version$urlPath"
     }
+  }
 }

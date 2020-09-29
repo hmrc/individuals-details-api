@@ -18,16 +18,47 @@ package uk.gov.hmrc.individualsdetailsapi.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
-import uk.gov.hmrc.individualsdetailsapi.config.AppConfig
+import uk.gov.hmrc.auth.core.AuthConnector
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class MicroserviceHelloWorldController @Inject()(appConfig: AppConfig,
-                                                 cc: ControllerComponents)
-    extends BackendController(cc) {
+abstract class MicroserviceHelloWorldController @Inject()(
+    cc: ControllerComponents
+) extends CommonController(cc)
+    with PrivilegedAuthentication {
 
   def hello(): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok("Hello world"))
   }
+
+  def helloScopes(): Action[AnyContent] = Action.async { implicit request =>
+    //TODO get these endpoint scopes into config
+    val endPointScopes = List("read:hello-scopes-1", "read:hello-scopes-2")
+
+    requiresPrivilegedAuthenticationWithScopes(endPointScopes)
+      .flatMap { scopes =>
+        Future.successful(Ok(scopes.toString()))
+      }
+      .recover(recovery)
+  }
+}
+@Singleton
+class LiveMicroserviceHelloWorldController @Inject()(
+    val authConnector: AuthConnector,
+    cc: ControllerComponents
+) extends MicroserviceHelloWorldController(cc) {
+
+  override val environment = Environment.PRODUCTION
+
+}
+
+@Singleton
+class SandboxMicroserviceHelloWorldController @Inject()(
+    val authConnector: AuthConnector,
+    cc: ControllerComponents
+) extends MicroserviceHelloWorldController(cc) {
+
+  override val environment = Environment.SANDBOX
+
 }
