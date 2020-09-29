@@ -17,7 +17,11 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import akka.stream.Materializer
-import uk.gov.hmrc.individualsdetailsapi.controllers.MicroserviceHelloWorldController
+import uk.gov.hmrc.individualsdetailsapi.controllers.{
+  LiveMicroserviceHelloWorldController,
+  MicroserviceHelloWorldController,
+  SandboxMicroserviceHelloWorldController
+}
 import org.mockito.ArgumentMatchers._
 import org.scalatest.{BeforeAndAfterEach, Matchers}
 import org.scalatestplus.mockito.MockitoSugar
@@ -38,13 +42,27 @@ class MicroserviceHelloWorldControllerSpec
   }
 
   val conf = mock[AppConfig]
-  val mockMicroserviceHelloWorldController =
-    new MicroserviceHelloWorldController(conf, cc)
+  val mockLiveMicroserviceHelloWorldController =
+    new LiveMicroserviceHelloWorldController(conf, cc)
 
-  "hello function" should {
+  val mockSandboxMicroserviceHelloWorldController =
+    new SandboxMicroserviceHelloWorldController(conf, cc)
+
+  "Live hello function" should {
 
     "return hello" in new Fixture {
-      val result = await(mockMicroserviceHelloWorldController.hello()(any()))
+      val result =
+        await(mockLiveMicroserviceHelloWorldController.hello()(any()))
+      status(result) shouldBe OK
+      bodyOf(result) shouldBe "Hello world"
+    }
+  }
+
+  "Sandbox hello function" should {
+
+    "return hello" in new Fixture {
+      val result =
+        await(mockSandboxMicroserviceHelloWorldController.hello()(any()))
       status(result) shouldBe OK
       bodyOf(result) shouldBe "Hello world"
     }
