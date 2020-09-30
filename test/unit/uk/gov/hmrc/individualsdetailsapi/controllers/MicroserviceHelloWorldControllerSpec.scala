@@ -31,9 +31,9 @@ import uk.gov.hmrc.auth.core.{
 }
 import uk.gov.hmrc.http.HeaderCarrier
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
+import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers._
-import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
 
 import scala.concurrent.{ExecutionContext, Future}
 
