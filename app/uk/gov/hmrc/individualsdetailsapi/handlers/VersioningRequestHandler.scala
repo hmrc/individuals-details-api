@@ -37,12 +37,9 @@ class VersioningRequestHandler @Inject()(config: Configuration,
 
   override def routeRequest(request: RequestHeader): Option[Handler] = {
     val requestContext = extractUriContext(request)
-    Logger.warn(s"ACHI2 - $requestContext")
     if (unversionedContexts.contains(requestContext)) {
       super.routeRequest(request)
     } else {
-      val vr = getVersionedRequest(request)
-      Logger.warn(s"ACHI3 - $vr")
       super.routeRequest(getVersionedRequest(request))
     }
 
