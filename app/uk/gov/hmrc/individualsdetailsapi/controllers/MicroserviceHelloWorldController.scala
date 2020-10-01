@@ -35,13 +35,12 @@ abstract class MicroserviceHelloWorldController @Inject()(
   }
 
   def helloScopes(): Action[AnyContent] = Action.async { implicit request =>
-    val endPointScopes = scopeService
-      .getEndPointScopes("/individuals/hello-scopes/")
-      .toList
+    val scopes = scopeService.getEndPointScopes("/individuals/hello-scopes/")
 
-    requiresPrivilegedAuthenticationWithScopes(endPointScopes)
-      .flatMap { scopes =>
-        Future.successful(Ok(scopes.toString()))
+    requiresPrivilegedAuthentication(scopes)
+      .flatMap { authScopes =>
+        // API endpoint body here
+        Future.successful(Ok(authScopes.toString()))
       }
       .recover(recovery)
   }

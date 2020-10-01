@@ -29,22 +29,17 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
 
   val environment: String
 
-  def authPredicate(scopes: List[String]): Predicate = {
+  def authPredicate(scopes: Iterable[String]): Predicate = {
     scopes.map(Enrolment(_): Predicate).reduce(_ and _)
   }
 
-  def requiresPrivilegedAuthentication(scope: String)(body: => Future[Result])(
-      implicit hc: HeaderCarrier): Future[Result] = {
-
-    if (environment == Environment.SANDBOX) body
-    else authorised(Enrolment(scope))(body)
-  }
-
-  def requiresPrivilegedAuthenticationWithScopes(endpointScopes: List[String])(
+  def requiresPrivilegedAuthentication(endpointScopes: Iterable[String])(
       implicit hc: HeaderCarrier): Future[List[String]] = {
 
+    //TODO - Once agreed we will need to extend retrievals to pull back the client ID
+    // to be passed to the HoD via IF
     if (environment == Environment.SANDBOX)
-      Future.successful(endpointScopes)
+      Future.successful(endpointScopes.toList)
     else {
       authorised(authPredicate(endpointScopes))
         .retrieve(Retrievals.allEnrolments) {
