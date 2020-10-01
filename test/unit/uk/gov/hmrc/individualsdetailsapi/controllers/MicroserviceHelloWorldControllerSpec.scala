@@ -17,7 +17,10 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import akka.stream.Materializer
-import uk.gov.hmrc.individualsdetailsapi.controllers.LiveMicroserviceHelloWorldController
+import uk.gov.hmrc.individualsdetailsapi.controllers.{
+  LiveMicroserviceHelloWorldController,
+  SandboxMicroserviceHelloWorldController
+}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.test.FakeRequest
@@ -48,6 +51,9 @@ class MicroserviceHelloWorldControllerSpec extends SpecBase with MockitoSugar {
                 "Activated"),
       Enrolment("read:hello-scopes-2",
                 Seq(EnrolmentIdentifier("FOO2", "BAR2")),
+                "Activated"),
+      Enrolment("read:hello-scopes-3",
+                Seq(EnrolmentIdentifier("FOO3", "BAR3")),
                 "Activated")
     )
   )
@@ -81,7 +87,7 @@ class MicroserviceHelloWorldControllerSpec extends SpecBase with MockitoSugar {
       )
 
     val sandboxMicroserviceHelloWorldController =
-      new LiveMicroserviceHelloWorldController(
+      new SandboxMicroserviceHelloWorldController(
         fakeAuthConnector(myRetrievals),
         cc,
         scopeService
@@ -119,8 +125,8 @@ class MicroserviceHelloWorldControllerSpec extends SpecBase with MockitoSugar {
             await(
               liveMicroserviceHelloWorldController.helloScopes()(fakeRequest))
           status(result) shouldBe OK
-          bodyOf(result) should include(
-            "read:hello-scopes-1, read:hello-scopes-2")
+          bodyOf(result) should be(
+            "List(read:hello-scopes-1, read:hello-scopes-2, read:hello-scopes-3)")
         }
       }
     }
@@ -153,8 +159,8 @@ class MicroserviceHelloWorldControllerSpec extends SpecBase with MockitoSugar {
               sandboxMicroserviceHelloWorldController.helloScopes()(
                 fakeRequest))
           status(result) shouldBe OK
-          bodyOf(result) should include(
-            "read:hello-scopes-1, read:hello-scopes-2")
+          bodyOf(result) should be(
+            "List(read:hello-scopes-1, read:hello-scopes-2)")
         }
       }
     }
