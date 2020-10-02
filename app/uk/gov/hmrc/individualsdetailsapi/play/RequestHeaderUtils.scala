@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.individualsdetailsapi.play
 
-import play.api.Logger
 import play.api.http.HeaderNames.ACCEPT
 import play.api.mvc.RequestHeader
 
