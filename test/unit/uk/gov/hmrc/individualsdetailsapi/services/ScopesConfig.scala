@@ -30,6 +30,7 @@ trait ScopesConfig extends MockitoSugar {
   val mockScope3 = "test3"
   val mockScope4 = "test4"
   val mockScope5 = "test5"
+  val mockScope6 = "test6"
 
   val mockEndpoint1 = "endpoint1"
   val mockEndpoint2 = "endpoint2"
@@ -42,6 +43,7 @@ trait ScopesConfig extends MockitoSugar {
     (s"api-config.scopes.$mockScope3.fields", List("A", "P")),
     (s"api-config.scopes.$mockScope4.fields", List("M", "N")),
     (s"api-config.scopes.$mockScope5.fields", List("O", "P")),
+    (s"api-config.scopes.$mockScope6.fields", List("Q", "R")),
     (s"api-config.endpoints.$mockEndpoint1.endpoint",
      "/a/b/c?matchId=<matchId>{&fromDate,toDate}"),
     (s"api-config.endpoints.$mockEndpoint1.fields.A", "payments"),
@@ -65,6 +67,8 @@ trait ScopesConfig extends MockitoSugar {
      "/a/b/d?matchId=<matchId>{&fromDate,toDate}"),
     (s"api-config.endpoints.$mockEndpoint2.fields.M", "field1"),
     (s"api-config.endpoints.$mockEndpoint2.fields.N", "field2"),
+    (s"api-config.endpoints.$mockEndpoint2.fields.Q", "field2"),
+    (s"api-config.endpoints.$mockEndpoint2.fields.R", "field2"),
     (s"api-config.endpoints.$mockEndpoint3.endpoint",
      "/a/b/e?matchId=<matchId>{&fromDate,toDate}"),
     (s"api-config.endpoints.$mockEndpoint3.fields.O", "field3"),

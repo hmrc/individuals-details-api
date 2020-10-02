@@ -79,6 +79,8 @@ class ScopesService @Inject()(configuration: Configuration) {
       .map(endpoint => endpoint.fields.keys.toList.sorted)
       .getOrElse(List())
 
-    apiConfig.scopes.filter(s => s.fields == keys).map(s => s.name)
+    apiConfig.scopes
+      .filter(s => s.fields.toSet.subsetOf(keys.toSet))
+      .map(s => s.name)
   }
 }
