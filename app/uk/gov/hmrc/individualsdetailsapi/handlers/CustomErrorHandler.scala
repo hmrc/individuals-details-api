@@ -20,10 +20,9 @@ import javax.inject.Inject
 import play.api.Configuration
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
-import uk.gov.hmrc.play.bootstrap.http.{ErrorResponse, JsonErrorHandler}
+import uk.gov.hmrc.play.bootstrap.http.JsonErrorHandler
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class CustomErrorHandler @Inject()(auditConnector: AuditConnector,
                                    httpAuditEvent: HttpAuditEvent,

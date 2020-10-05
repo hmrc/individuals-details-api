@@ -40,6 +40,7 @@ lazy val microservice =
     .settings(scalaSettings: _*)
     .settings(useSuperShell in ThisBuild := false)
     .settings(publishingSettings: _*)
+    .settings(scalaVersion := "2.12.11")
     .settings(defaultSettings(): _*)
     .settings(scalafmtOnCompile := true)
     .settings(
