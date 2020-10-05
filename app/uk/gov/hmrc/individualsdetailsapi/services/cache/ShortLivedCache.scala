@@ -21,14 +21,12 @@ import play.api.Configuration
 import play.api.libs.json.{Format, JsValue}
 import play.modules.reactivemongo.ReactiveMongoComponent
 import uk.gov.hmrc.cache.TimeToLive
-import uk.gov.hmrc.cache.repository.CacheMongoRepository
+import uk.gov.hmrc.cache.repository.{CacheMongoRepository, CacheRepository}
 import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-// $COVERAGE-OFF$
 @Singleton
 class ShortLivedCache @Inject()(
     val cacheConfig: CacheConfiguration,
