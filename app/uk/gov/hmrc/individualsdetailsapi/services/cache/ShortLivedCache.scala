@@ -27,6 +27,7 @@ import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+// $COVERAGE-OFF$
 @Singleton
 class ShortLivedCache @Inject()(
     val cacheConfig: CacheConfiguration,
