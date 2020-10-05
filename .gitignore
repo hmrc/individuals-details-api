@@ -1,5 +1,6 @@
 .*
 
+!.travis.yml
 !.gitignore
 !.scalafmt.conf
 .cache
