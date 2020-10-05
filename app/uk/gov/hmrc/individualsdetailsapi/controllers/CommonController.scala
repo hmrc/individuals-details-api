@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsdetailsapi.controllers
 import javax.inject.Inject
 import play.api.mvc.{ControllerComponents, Result}
 import uk.gov.hmrc.auth.core.AuthorisationException
-import uk.gov.hmrc.http.{HeaderCarrier, TooManyRequestException}
+import uk.gov.hmrc.http.TooManyRequestException
 
 import uk.gov.hmrc.individualsdetailsapi.domains.{
   ErrorInvalidRequest,

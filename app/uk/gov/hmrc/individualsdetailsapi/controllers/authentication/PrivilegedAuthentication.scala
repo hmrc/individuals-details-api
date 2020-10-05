@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.individualsdetailsapi.controllers
 
-import play.api.mvc.Result
 import uk.gov.hmrc.auth.core.{AuthorisedFunctions, Enrolment}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsdetailsapi.handlers
 
 import javax.inject.Inject
-import play.api.{Configuration, Logger}
+import play.api.Configuration
 import play.api.http.{HttpConfiguration, HttpErrorHandler, HttpFilters}
 import play.api.mvc.{Handler, RequestHeader}
 import play.api.routing.Router

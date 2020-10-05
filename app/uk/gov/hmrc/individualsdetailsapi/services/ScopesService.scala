@@ -80,7 +80,12 @@ class ScopesService @Inject()(configuration: Configuration) {
       .getOrElse(List())
 
     apiConfig.scopes
-      .filter(s => s.fields.toSet.subsetOf(keys.toSet))
-      .map(s => s.name)
+      .filter(
+        s => s.fields.toSet.intersect(keys.toSet).nonEmpty
+      )
+      .map(
+        s => s.name
+      )
+      .sorted
   }
 }
