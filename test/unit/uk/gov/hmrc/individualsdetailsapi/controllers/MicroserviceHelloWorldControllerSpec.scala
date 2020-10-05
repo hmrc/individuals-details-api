@@ -26,6 +26,7 @@ import org.mockito.ArgumentMatchers._
 import org.scalatest.{BeforeAndAfterEach, Matchers}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
+import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsdetailsapi.config.AppConfig
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
@@ -52,7 +53,7 @@ class MicroserviceHelloWorldControllerSpec
 
     "return hello" in new Fixture {
       val result =
-        await(mockLiveMicroserviceHelloWorldController.hello()(any()))
+        await(mockLiveMicroserviceHelloWorldController.hello()(FakeRequest()))
       status(result) shouldBe OK
       bodyOf(result) shouldBe "Hello world"
     }
@@ -62,7 +63,7 @@ class MicroserviceHelloWorldControllerSpec
 
     "return hello" in new Fixture {
       val result =
-        await(mockSandboxMicroserviceHelloWorldController.hello()(any()))
+        await(mockLiveMicroserviceHelloWorldController.hello()(FakeRequest()))
       status(result) shouldBe OK
       bodyOf(result) shouldBe "Hello world"
     }
