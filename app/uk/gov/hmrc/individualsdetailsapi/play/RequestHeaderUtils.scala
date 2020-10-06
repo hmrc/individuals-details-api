@@ -50,9 +50,10 @@ object RequestHeaderUtils {
       acceptHeaderRegex.findFirstMatchIn(acceptHeaderValue) map (_.group(1))
     } getOrElse "1.0"
 
-  private def versionedUri(urlPath: String, version: String) =
+  private def versionedUri(urlPath: String, version: String) = {
     urlPath match {
       case "/" => s"/v$version"
       case uri => s"/v$version$urlPath"
     }
+  }
 }

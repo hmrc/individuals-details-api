@@ -17,56 +17,156 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import akka.stream.Materializer
+
 import uk.gov.hmrc.individualsdetailsapi.controllers.{
   LiveMicroserviceHelloWorldController,
-  MicroserviceHelloWorldController,
   SandboxMicroserviceHelloWorldController
 }
-import org.mockito.ArgumentMatchers._
-import org.scalatest.{BeforeAndAfterEach, Matchers}
+
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsdetailsapi.config.AppConfig
-import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
+import uk.gov.hmrc.auth.core.authorise.Predicate
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
 
-class MicroserviceHelloWorldControllerSpec
-    extends SpecBase
-    with MockitoSugar
-    with Matchers
-    with BeforeAndAfterEach {
+import uk.gov.hmrc.auth.core.{
+  AuthConnector,
+  Enrolment,
+  EnrolmentIdentifier,
+  Enrolments
+}
+
+import uk.gov.hmrc.http.HeaderCarrier
+import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
+import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
+import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers._
+
+import scala.concurrent.{ExecutionContext, Future}
+
+class MicroserviceHelloWorldControllerSpec extends SpecBase with MockitoSugar {
+
   implicit lazy val materializer: Materializer = fakeApplication.materializer
 
+  private val enrolments = Enrolments(
+    Set(
+      Enrolment("read:hello-scopes-1",
+                Seq(EnrolmentIdentifier("FOO", "BAR")),
+                "Activated"),
+      Enrolment("read:hello-scopes-2",
+                Seq(EnrolmentIdentifier("FOO2", "BAR2")),
+                "Activated"),
+      Enrolment("read:hello-scopes-3",
+                Seq(EnrolmentIdentifier("FOO3", "BAR3")),
+                "Activated")
+    )
+  )
+
+  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]) =
+    new AuthConnector {
+
+      def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(
+          implicit hc: HeaderCarrier,
+          ec: ExecutionContext): Future[A] = {
+        stubbedRetrievalResult.map(_.asInstanceOf[A])
+      }
+    }
+
+  private def myRetrievals = Future.successful(
+    enrolments
+  )
+
   trait Fixture {
-    implicit val hc = HeaderCarrier()
+
+    val scopeService = mock[ScopesService]
+
+    val scopes: Iterable[String] =
+      Iterable("read:hello-scopes-1", "read:hello-scopes-2")
+
+    val liveMicroserviceHelloWorldController =
+      new LiveMicroserviceHelloWorldController(
+        fakeAuthConnector(myRetrievals),
+        cc,
+        scopeService
+      )
+
+    val sandboxMicroserviceHelloWorldController =
+      new SandboxMicroserviceHelloWorldController(
+        fakeAuthConnector(myRetrievals),
+        cc,
+        scopeService
+      )
+
+    when(scopeService.getEndPointScopes(any())).thenReturn(scopes)
   }
 
-  val conf = mock[AppConfig]
-  val mockLiveMicroserviceHelloWorldController =
-    new LiveMicroserviceHelloWorldController(conf, cc)
+  "hello world controller" when {
 
-  val mockSandboxMicroserviceHelloWorldController =
-    new SandboxMicroserviceHelloWorldController(conf, cc)
+    "the live controller" should {
 
-  "Live hello function" should {
+      "hello  function" should {
 
-    "return hello" in new Fixture {
-      val result =
-        await(mockLiveMicroserviceHelloWorldController.hello()(FakeRequest()))
-      status(result) shouldBe OK
-      bodyOf(result) shouldBe "Hello world"
+        "return hello world" in new Fixture {
+
+          val fakeRequest =
+            FakeRequest("GET", s"/hello-world/")
+
+          val result =
+            await(liveMicroserviceHelloWorldController.hello()(fakeRequest))
+          status(result) shouldBe OK
+          bodyOf(result) shouldBe "Hello world"
+        }
+      }
+
+      "hello Scopes" should {
+
+        "return scope list" in new Fixture {
+
+          val fakeRequest =
+            FakeRequest("GET", s"/hello-scopes/")
+
+          val result =
+            await(
+              liveMicroserviceHelloWorldController.helloScopes()(fakeRequest))
+          status(result) shouldBe OK
+          bodyOf(result) should be(
+            "List(read:hello-scopes-1, read:hello-scopes-2, read:hello-scopes-3)")
+        }
+      }
+    }
+
+    "the sandbox controller" should {
+
+      "hello  function" should {
+
+        "return hello world" in new Fixture {
+
+          val fakeRequest =
+            FakeRequest("GET", s"/hello-world/")
+
+          val result =
+            await(sandboxMicroserviceHelloWorldController.hello()(fakeRequest))
+          status(result) shouldBe OK
+          bodyOf(result) shouldBe "Hello world"
+        }
+      }
+
+      "hello Scopes" should {
+
+        "return scope list" in new Fixture {
+
+          val fakeRequest =
+            FakeRequest("GET", s"/hello-scopes/")
+
+          val result =
+            await(
+              sandboxMicroserviceHelloWorldController.helloScopes()(
+                fakeRequest))
+          status(result) shouldBe OK
+          bodyOf(result) should be(
+            "List(read:hello-scopes-1, read:hello-scopes-2)")
+        }
+      }
     }
   }
-
-  "Sandbox hello function" should {
-
-    "return hello" in new Fixture {
-      val result =
-        await(mockLiveMicroserviceHelloWorldController.hello()(FakeRequest()))
-      status(result) shouldBe OK
-      bodyOf(result) shouldBe "Hello world"
-    }
-  }
-
 }
