@@ -33,3 +33,13 @@ uses:
         body:
           application/json:
             example: "\"Hello World\""
+
+
+/contact-details:
+  get:
+    displayName: Contact Details
+    description: An endpoint that currently returns a NOT_IMPLEMENTED exception
+    is: [headers.acceptHeader]
+    responses:
+      200:
+        description: Return exception
