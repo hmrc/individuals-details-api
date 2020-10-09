@@ -38,8 +38,17 @@ uses:
 /contact-details:
   get:
     displayName: Contact Details
-    description: An endpoint that currently returns a NOT_IMPLEMENTED exception
+    description: A placeholder endpoint for contact details that will throw an exception
     is: [headers.acceptHeader]
     responses:
-      200:
-        description: Return exception
+      500:
+        description: Throws an exception
+
+/:
+   get:
+     displayName: Root
+     description: A placeholder endpoint for root that will throw an exception
+     is: [headers.acceptHeader]
+     responses:
+       500:
+         description: Throws an exception
