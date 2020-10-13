@@ -132,6 +132,20 @@ class MicroserviceHelloWorldControllerSpec extends SpecBase with MockitoSugar {
           bodyOf(result) should be(
             "List(read:hello-scopes-1, read:hello-scopes-2, read:hello-scopes-3)")
         }
+
+        "return error when no scopes" in new Fixture {
+          when(scopeService.getEndPointScopes(any())).thenReturn(None)
+
+          val fakeRequest =
+            FakeRequest("GET", s"/hello-world/")
+
+          val result =
+            intercept[Exception] {
+              await(
+                liveMicroserviceHelloWorldController.helloScopes()(fakeRequest))
+            }
+          assert(result.getMessage == "No scopes defined")
+        }
       }
     }
 

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.individualsdetailsapi.controllers
 
+import com.sun.org.apache.xml.internal.dtm.ref.EmptyIterator
 import uk.gov.hmrc.auth.core.{AuthorisedFunctions, Enrolment}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -35,8 +36,8 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
   def requiresPrivilegedAuthentication(endpointScopes: Iterable[String])(
       implicit hc: HeaderCarrier): Future[List[String]] = {
 
-    //TODO - Once agreed we will need to extend retrievals to pull back the client ID
-    // to be passed to the HoD via IF
+    if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
+
     if (environment == Environment.SANDBOX)
       Future.successful(endpointScopes.toList)
     else {
