@@ -35,8 +35,8 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
   def requiresPrivilegedAuthentication(endpointScopes: Iterable[String])(
       implicit hc: HeaderCarrier): Future[List[String]] = {
 
-    //TODO - Once agreed we will need to extend retrievals to pull back the client ID
-    // to be passed to the HoD via IF
+    if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
+
     if (environment == Environment.SANDBOX)
       Future.successful(endpointScopes.toList)
     else {
