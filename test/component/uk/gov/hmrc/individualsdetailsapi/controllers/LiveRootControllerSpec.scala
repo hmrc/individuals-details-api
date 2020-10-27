@@ -20,22 +20,20 @@ import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec}
 import play.api.test.Helpers._
 import scalaj.http.Http
 
-class ContactDetailsControllerSpec extends BaseSpec {
+class LiveRootControllerSpec extends BaseSpec {
 
-  val rootScope = "read:individuals-details-contact-details"
+  val rootScope = "read:individuals-details"
 
-  feature("Live Contact Details Controller") {
-    scenario("contact-details route") {
+  feature("Live Root Controller") {
+    scenario("root route") {
       Given("A valid auth token ")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
-      When("I make a call to contact-details endpoint")
+      When("I make a call to root endpoint")
       val response =
-        Http(s"$serviceUrl/contact-details")
-          .headers(requestHeaders(acceptHeaderP1))
-          .asString
+        Http(s"$serviceUrl/").headers(requestHeaders(acceptHeaderP1)).asString
 
-      Then("The response status should be 500")
+      Then("The response tatus should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
 
     }

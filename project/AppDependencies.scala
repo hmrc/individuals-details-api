@@ -20,14 +20,14 @@ object AppDependencies {
 
   val compile = Seq(
     ws,
-    hmrc                %% "bootstrap-play-26" % "1.14.0",
-    hmrc                %% "domain"            % "5.9.0-play-26",
-    hmrc                %% "auth-client"       % "3.0.0-play-26",
-    hmrc                %% "play-hal"          % "2.1.0-play-26",
-    hmrc                %% "play-hmrc-api"     % "4.1.0-play-26",
-    hmrc                %% "mongo-caching"     % "6.15.0-play-26",
-    hmrc                %% "json-encryption"   % "4.8.0-play-26",
-    "com.typesafe.play" %% "play-json-joda"    % "2.7.4"
+    hmrc                %% "bootstrap-backend-play-26"  % "2.24.0",
+    hmrc                %% "domain"                     % "5.9.0-play-26",
+    hmrc                %% "auth-client"                % "3.0.0-play-26",
+    hmrc                %% "play-hal"                   % "2.1.0-play-26",
+    hmrc                %% "play-hmrc-api"              % "4.1.0-play-26",
+    hmrc                %% "mongo-caching"              % "6.15.0-play-26",
+    hmrc                %% "json-encryption"            % "4.8.0-play-26",
+    "com.typesafe.play" %% "play-json-joda"             % "2.7.4"
   )
 
   def test(scope: String = "test,it") = Seq(

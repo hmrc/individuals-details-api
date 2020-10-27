@@ -28,7 +28,7 @@ import uk.gov.hmrc.individualsdetailsapi.domains.{
   MatchNotFoundException
 }
 
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 abstract class CommonController @Inject()(
     cc: ControllerComponents
