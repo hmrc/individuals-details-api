@@ -23,12 +23,12 @@ import play.api.http.HttpErrorHandler
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.api.controllers.DocumentationController
 import uk.gov.hmrc.individualsdetailsapi.views._
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 @Singleton
 class APIDocumentationController @Inject()(cc: ControllerComponents,
                                            assets: Assets,
-                                           errorHandler: HttpErrorHandler,
                                            config: Configuration)
-    extends DocumentationController(cc, assets, errorHandler) {
+    extends BackendController(cc) {
 
   private lazy val privilegedWhitelistedApplicationIds =
     config
@@ -36,10 +36,17 @@ class APIDocumentationController @Inject()(cc: ControllerComponents,
         "api.access.version-P1.0.whitelistedApplicationIds")
       .getOrElse(Seq.empty)
 
-  override def definition(): Action[AnyContent] = Action { _ =>
+  def definition(): Action[AnyContent] = Action { _ =>
     Ok(txt.definition(privilegedWhitelistedApplicationIds))
       .withHeaders(CONTENT_TYPE -> JSON)
   }
+
+  def documentation(
+      version: String,
+      endpointName: String
+  ): Action[AnyContent] =
+    assets.at(s"/public/api/documentation/$version",
+              s"${endpointName.replaceAll(" ", "-")}.xml")
 
   def raml(version: String, file: String) =
     assets.at(s"/public/api/conf/$version", file)

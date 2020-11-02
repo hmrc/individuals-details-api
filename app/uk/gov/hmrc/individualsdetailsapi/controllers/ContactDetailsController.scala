@@ -32,7 +32,7 @@ abstract class ContactDetailsController @Inject()(
 
   def contactDetails(): Action[AnyContent] = Action.async { implicit request =>
     val scopes =
-      scopeService.getEndPointScopes("/individuals/details/contact-details/")
+      scopeService.getEndPointScopes("contact-details")
 
     requiresPrivilegedAuthentication(scopes)
       .flatMap { authScopes =>

@@ -25,6 +25,8 @@ object JsonFormatters {
       Json.obj("code" -> e.errorCode, "message" -> e.message)
   }
 
+  implicit val matchedCitizenJsonFormat = Json.format[MatchedCitizen]
+
   implicit val errorInvalidRequestFormat = new Format[ErrorInvalidRequest] {
     def reads(json: JsValue): JsResult[ErrorInvalidRequest] = JsSuccess(
       ErrorInvalidRequest((json \ "message").as[String])

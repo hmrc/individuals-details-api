@@ -31,7 +31,7 @@ abstract class RootController @Inject()(
 
   def root(): Action[AnyContent] = Action.async { implicit request =>
     val scopes =
-      scopeService.getEndPointScopes("/individuals/benefits-and-credits")
+      scopeService.getEndPointScopes("benefits-and-credits")
 
     requiresPrivilegedAuthentication(scopes)
       .flatMap { authScopes =>
