@@ -91,7 +91,7 @@ trait ScopesConfig extends MockitoSugar {
         link = "/a/b/c?matchId=<matchId>{&fromDate,toDate}",
         fields = Map(
           "A" -> "payments",
-          "B" -> "employer/employerName",
+          "B" -> "employer/employerName=\"foo bar\"",
           "C" -> "employer/employerAddress/line1",
           "D" -> "employer/employerAddress/line2",
           "E" -> "employer/employerAddress/line3",

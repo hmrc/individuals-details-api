@@ -16,6 +16,8 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.services
 
+import java.net.URLEncoder
+
 import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
@@ -37,7 +39,17 @@ class ScopesHelperSpec
     "return correct query string" in {
       val result =
         scopesHelper.getQueryStringFor(List(mockScope2), mockEndpoint1)
-      result shouldBe "employer(employerAddress(line1,line2,line3),employerDistrictNumber,employerName,employerSchemeReference),payments"
+      result shouldBe "employer(employerAddress(line1,line2,line3),employerDistrictNumber,employerName=\"foo bar\",employerSchemeReference),payments"
+    }
+
+    "return correct encoded url safe query string" in {
+      val result =
+        scopesHelper.urlSafe(
+          scopesHelper.getQueryStringFor(List(mockScope2), mockEndpoint1))
+      result shouldBe URLEncoder.encode(
+        "employer(employerAddress(line1,line2,line3),employerDistrictNumber,employerName=\"foo bar\",employerSchemeReference),payments",
+        "UTF-8"
+      )
     }
 
     "generate Hal response" in {

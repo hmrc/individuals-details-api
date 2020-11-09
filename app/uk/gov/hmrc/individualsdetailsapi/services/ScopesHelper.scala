@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.individualsdetailsapi.service
 
+import java.net.URLEncoder
+
 import javax.inject.Inject
 import play.api.hal.Hal.{linksSeq, state}
 import play.api.hal.{HalLink, HalResource}
@@ -30,6 +32,9 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
     */
   def getQueryStringFor(scopes: List[String], endpoint: String): String =
     PathTree(scopesService.getValidItemsFor(scopes, endpoint)).toString
+
+  def urlSafe(param: String) =
+    URLEncoder.encode(param, "UTF-8")
 
   /**
     * @param endpoint The endpoint that the user has called
