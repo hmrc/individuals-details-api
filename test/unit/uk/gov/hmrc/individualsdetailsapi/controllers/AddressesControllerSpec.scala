@@ -17,8 +17,8 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import akka.stream.Materializer
-import org.mockito.ArgumentMatchers._
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core.authorise.Predicate
@@ -31,16 +31,15 @@ import uk.gov.hmrc.auth.core.{
 }
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsdetailsapi.controllers.{
-  LiveContactDetailsController,
-  SandboxContactDetailsController
+  LiveAddressesController,
+  SandboxAddressesController
 }
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
-
+class AddressesControllerSpec extends SpecBase with MockitoSugar {
   implicit lazy val materializer: Materializer = fakeApplication.materializer
   implicit lazy val ec: ExecutionContext =
     fakeApplication.injector.instanceOf[ExecutionContext]
@@ -80,15 +79,15 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
     val scopes: Iterable[String] =
       Iterable("read:hello-scopes-1", "read:hello-scopes-2")
 
-    val liveContactDetailsController =
-      new LiveContactDetailsController(
+    val liveAddressesController =
+      new LiveAddressesController(
         fakeAuthConnector(myRetrievals),
         cc,
         scopeService
       )
 
-    val sandboxContactDetailsController =
-      new SandboxContactDetailsController(
+    val sandboxAddressesController =
+      new SandboxAddressesController(
         fakeAuthConnector(myRetrievals),
         cc,
         scopeService
@@ -97,20 +96,20 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
     when(scopeService.getEndPointScopes(any())).thenReturn(scopes)
   }
 
-  "contact details controller" when {
+  "addresses controller" when {
 
     "the live controller" should {
 
-      "contact details function" should {
+      "addresses function" should {
 
         "throw an exception" in new Fixture {
 
           val fakeRequest =
-            FakeRequest("GET", s"/contact-details/")
+            FakeRequest("GET", s"/addresses/")
 
           val result =
             intercept[Exception] {
-              await(liveContactDetailsController.contactDetails()(fakeRequest))
+              await(liveAddressesController.addresses()(fakeRequest))
             }
           assert(result.getMessage == "NOT_IMPLEMENTED")
         }
@@ -119,11 +118,11 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           when(scopeService.getEndPointScopes(any())).thenReturn(None)
 
           val fakeRequest =
-            FakeRequest("GET", s"/contact-details/")
+            FakeRequest("GET", s"/addresses/")
 
           val result =
             intercept[Exception] {
-              await(liveContactDetailsController.contactDetails()(fakeRequest))
+              await(liveAddressesController.addresses()(fakeRequest))
             }
           assert(result.getMessage == "No scopes defined")
         }
@@ -137,12 +136,11 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
         "throw an exception" in new Fixture {
 
           val fakeRequest =
-            FakeRequest("GET", s"/contact-details/")
+            FakeRequest("GET", s"/sandbox/addresses/")
 
           val result =
             intercept[Exception] {
-              await(
-                sandboxContactDetailsController.contactDetails()(fakeRequest))
+              await(sandboxAddressesController.addresses()(fakeRequest))
             }
           assert(result.getMessage == "NOT_IMPLEMENTED")
         }

@@ -1,4 +1,5 @@
 GET        /hello-world             uk.gov.hmrc.individualsdetailsapi.controllers.SandboxMicroserviceHelloWorldController.hello
 GET        /hello-scopes            uk.gov.hmrc.individualsdetailsapi.controllers.SandboxMicroserviceHelloWorldController.helloScopes
 GET        /contact-details         uk.gov.hmrc.individualsdetailsapi.controllers.SandboxContactDetailsController.contactDetails
-GET        /                        uk.gov.hmrc.individualsdetailsapi.controllers.LiveRootController.root
+GET        /addresses               uk.gov.hmrc.individualsdetailsapi.controllers.SandboxAddressesController.addresses
+GET        /                        uk.gov.hmrc.individualsdetailsapi.controllers.SandboxRootController.root
