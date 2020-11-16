@@ -22,12 +22,13 @@ import scalaj.http.Http
 
 class SandboxContactDetailsControllerSpec extends BaseSpec {
 
-  val rootScope = "read:individuals-details-contact-details"
+  val rootScopes =
+    List("read:individuals-details-hmcts-c4", "read:individuals-details-laa-c4")
 
   feature("Sandbox Contact Details Controller") {
     scenario("contact-details route") {
       Given("A valid auth token ")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
+      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
       When("I make a call to contact-details endpoint")
       val response =
