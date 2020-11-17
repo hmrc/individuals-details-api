@@ -20,16 +20,29 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.AUTHORIZATION
 import play.api.http.{HeaderNames, Status}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, Json}
 import play.api.libs.json.Json.{arr, obj, toJson}
 import uk.gov.hmrc.auth.core.Enrolment
+import uk.gov.hmrc.auth.core.authorise.Predicate
 
 object AuthStub extends MockHost(22000) {
 
-  private def privilegedAuthority(scopes: List[String]) = obj(
-    "authorise" -> Json.toJson(scopes.map(Enrolment(_))),
-    "retrieve" -> arr(toJson("allEnrolments"))
-  )
+  def authPredicate(scopes: Iterable[String]): Predicate = {
+    scopes.map(Enrolment(_): Predicate).reduce(_ and _)
+  }
+
+  private def privilegedAuthority(scopes: List[String]) = {
+    val p = authPredicate(scopes)
+
+    val predicateJson = p.toJson match {
+      case arr: JsArray => arr
+      case other        => Json.arr(other)
+    }
+    obj(
+      "authorise" -> predicateJson,
+      "retrieve" -> arr(toJson("allEnrolments"))
+    )
+  }
 
   def willAuthorizePrivilegedAuthToken(authBearerToken: String,
                                        scope: String): StubMapping =
