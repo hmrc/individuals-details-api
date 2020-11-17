@@ -80,10 +80,11 @@ object ApiConfig {
         val scopeConfig = scopeTree.listChildren
           .map(
             key =>
-              ScopeConfig(
-                name = key,
-                fields =
-                  config.getStringList(s"scopes.$key.fields").asScala.toList))
+              ScopeConfig(name = key,
+                          fields = config
+                            .getStringList(s"""scopes."$key".fields""")
+                            .asScala
+                            .toList))
           .toList
 
         ApiConfig(

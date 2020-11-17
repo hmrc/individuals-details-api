@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.Enrolment
 object AuthStub extends MockHost(22000) {
 
   private def privilegedAuthority(scopes: List[String]) = obj(
-    "authorise" -> arr(Json.toJson(scopes.map(Enrolment(_)))),
+    "authorise" -> Json.toJson(scopes.map(Enrolment(_))),
     "retrieve" -> arr(toJson("allEnrolments"))
   )
 

@@ -23,7 +23,15 @@ import scalaj.http.Http
 class LiveAddressesControllerSpec extends BaseSpec {
 
   val rootScopes =
-    List("read:individuals-details-hmcts-c4", "read:individuals-details-laa-c4")
+    List(
+      "read:individuals-details-hmcts-c3",
+      "read:individuals-details-hmcts-c4",
+      "read:individuals-details-laa-c3",
+      "read:individuals-details-laa-c4",
+      "read:individuals-details-lsani-c1",
+      "read:individuals-details-lsani-c3",
+      "read:individuals-details-nictsejo-c4"
+    )
 
   feature("Live Addresses Controller") {
     scenario("addresses route") {
@@ -38,7 +46,7 @@ class LiveAddressesControllerSpec extends BaseSpec {
 
       Then("The response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
-
+      println(response.body)
     }
   }
 
