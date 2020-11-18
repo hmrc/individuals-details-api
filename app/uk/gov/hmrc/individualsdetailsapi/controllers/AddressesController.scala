@@ -16,23 +16,23 @@
 
 package uk.gov.hmrc.individualsdetailsapi.controllers
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
 
 import scala.concurrent.ExecutionContext
 
-abstract class ContactDetailsController @Inject()(
+abstract class AddressesController @Inject()(
     cc: ControllerComponents,
     scopeService: ScopesService
 )(implicit val ec: ExecutionContext)
     extends CommonController(cc)
     with PrivilegedAuthentication {
 
-  def contactDetails(): Action[AnyContent] = Action.async { implicit request =>
+  def addresses(): Action[AnyContent] = Action.async { implicit request =>
     val scopes =
-      scopeService.getEndPointScopes("contact-details")
+      scopeService.getEndPointScopes("addresses")
 
     requiresPrivilegedAuthentication(scopes)
       .flatMap { authScopes =>
@@ -43,26 +43,20 @@ abstract class ContactDetailsController @Inject()(
   }
 }
 
-@Singleton
-class LiveContactDetailsController @Inject()(
+class LiveAddressesController @Inject()(
     val authConnector: AuthConnector,
     cc: ControllerComponents,
     scopeService: ScopesService
 )(implicit override val ec: ExecutionContext)
-    extends ContactDetailsController(cc, scopeService) {
-
-  override val environment = Environment.PRODUCTION
-
+    extends AddressesController(cc, scopeService) {
+  override val environment: String = Environment.PRODUCTION
 }
 
-@Singleton
-class SandboxContactDetailsController @Inject()(
+class SandboxAddressesController @Inject()(
     val authConnector: AuthConnector,
     cc: ControllerComponents,
     scopeService: ScopesService
 )(implicit override val ec: ExecutionContext)
-    extends ContactDetailsController(cc, scopeService) {
-
-  override val environment = Environment.SANDBOX
-
+    extends AddressesController(cc, scopeService) {
+  override val environment: String = Environment.SANDBOX
 }

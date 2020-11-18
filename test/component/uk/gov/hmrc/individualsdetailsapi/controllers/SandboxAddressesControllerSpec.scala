@@ -20,19 +20,19 @@ import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec}
 import play.api.test.Helpers._
 import scalaj.http.Http
 
-class SandboxContactDetailsControllerSpec extends BaseSpec {
+class SandboxAddressesControllerSpec extends BaseSpec {
 
   val rootScopes =
     List("read:individuals-details-hmcts-c4", "read:individuals-details-laa-c4")
 
-  feature("Sandbox Contact Details Controller") {
-    scenario("contact-details route") {
+  feature("Sandbox Addresses Controller") {
+    scenario("addresses route") {
       Given("A valid auth token ")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
 
-      When("I make a call to contact-details endpoint")
+      When("I make a call to addresses endpoint")
       val response =
-        Http(s"$serviceUrl/sandbox/contact-details")
+        Http(s"$serviceUrl/sandbox/addresses")
           .headers(requestHeaders(acceptHeaderP1))
           .asString
 
@@ -41,5 +41,4 @@ class SandboxContactDetailsControllerSpec extends BaseSpec {
 
     }
   }
-
 }

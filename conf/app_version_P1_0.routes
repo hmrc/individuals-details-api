@@ -1,4 +1,5 @@
 GET        /hello-world             uk.gov.hmrc.individualsdetailsapi.controllers.LiveMicroserviceHelloWorldController.hello
 GET        /hello-scopes            uk.gov.hmrc.individualsdetailsapi.controllers.LiveMicroserviceHelloWorldController.helloScopes
 GET        /contact-details         uk.gov.hmrc.individualsdetailsapi.controllers.LiveContactDetailsController.contactDetails
+GET        /addresses               uk.gov.hmrc.individualsdetailsapi.controllers.LiveAddressesController.addresses
 GET        /                        uk.gov.hmrc.individualsdetailsapi.controllers.LiveRootController.root
