@@ -21,7 +21,7 @@ import java.util.UUID
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
-import uk.gov.hmrc.individualsdetailsapi.services.cache.ShortLivedCache
+import uk.gov.hmrc.individualsdetailsapi.cache.ShortLivedCache
 import uk.gov.hmrc.integration.ServiceSpec
 import uk.gov.hmrc.mongo.MongoSpecSupport
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.TestSupport
