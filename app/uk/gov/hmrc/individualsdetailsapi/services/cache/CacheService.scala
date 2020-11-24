@@ -28,7 +28,7 @@ import uk.gov.hmrc.individualsdetailsapi.cache.{
 import scala.concurrent.{ExecutionContext, Future}
 
 class CacheService @Inject()(
-    cachingClient: ShortLivedCache,
+    val cachingClient: ShortLivedCache,
     conf: CacheConfiguration)(implicit ec: ExecutionContext) {
 
   def get[T: Format](cacheId: String, fallbackFunction: => Future[T])(
