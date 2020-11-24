@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Addresses",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of endpoint links that indicate possible actions related to the current resource.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The Uniform Resource Identifier (URI) for the endpoint to get addresses for the requested match ID.",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/details/addresses/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
+            }
+          }
+        }
+      }
+    },
+    "residences": {
+      "type": "array",
+      "description": "List of users residences",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "The particular residence type."
+        },
+        "noLongerUsed": {
+          "type": "string",
+          "description": "Indicates if the NOMINATED residence is no longer used (NLU) or not."
+        },
+        "address": {
+          "properties": {
+            "line1": {
+              "type": "string",
+              "description": "First line of the address"
+            },
+            "line2": {
+              "type": "string",
+              "description": "Second line of the address"
+            },
+            "line3": {
+              "type": "string",
+              "description": "Third line of the address"
+            },
+            "line4": {
+              "type": "string",
+              "description": "Forth line of the address"
+            },
+            "line5": {
+              "type": "string",
+              "description": "Fifth line of the address"
+            },
+            "postcode": {
+              "type": "string",
+              "description": "Postcode line of the address"
+            }
+          }
+        }
+      }
+    }
+  }
+}
