@@ -18,22 +18,28 @@ package uk.gov.hmrc.individualsdetailsapi.domains.integrationframework
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Format, JsPath}
+import play.api.libs.json.Reads.pattern
 
-case class IFDetailsResponse(id: IFDetails,
-                             contactDetails: Option[Seq[IFContactDetail]],
-                             residences: Option[Seq[IFResidence]])
+import scala.util.matching.Regex
 
-object IFDetailsResponse {
-  implicit val detailsResponseFormat: Format[IFDetailsResponse] = Format(
+case class IfDetails(nino: Option[String], trn: Option[String])
+
+object IfDetails {
+
+  val ninoPattern: Regex =
+    "^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D\\s]?$".r
+
+  val trnPattern: Regex = "^[0-9]{8}$".r
+
+  implicit val idFormat: Format[IfDetails] = Format(
     (
-      (JsPath \ "details").read[IFDetails] and
-        (JsPath \ "contactDetails").readNullable[Seq[IFContactDetail]] and
-        (JsPath \ "residence").readNullable[Seq[IFResidence]]
-    )(IFDetailsResponse.apply _),
+      (JsPath \ "nino")
+        .readNullable[String](pattern(ninoPattern, "InvalidNino")) and
+        (JsPath \ "trn").readNullable[String](pattern(trnPattern, "InvalidTrn"))
+    )(IfDetails.apply _),
     (
-      (JsPath \ "details").write[IFDetails] and
-        (JsPath \ "contactDetails").writeNullable[Seq[IFContactDetail]] and
-        (JsPath \ "residence").writeNullable[Seq[IFResidence]]
-    )(unlift(IFDetailsResponse.unapply))
+      (JsPath \ "nino").writeNullable[String] and
+        (JsPath \ "trn").writeNullable[String]
+    )(unlift(IfDetails.unapply))
   )
 }

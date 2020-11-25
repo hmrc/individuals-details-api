@@ -38,22 +38,22 @@ import play.api.libs.functional.syntax._
 
 import scala.util.matching.Regex
 
-case class IFContactDetail(code: Int, detailType: String, detail: String)
+case class IfContactDetail(code: Int, detailType: String, detail: String)
 
-object IFContactDetail {
+object IfContactDetail {
 
-  implicit val contactDetailsFormat: Format[IFContactDetail] = Format(
+  implicit val contactDetailsFormat: Format[IfContactDetail] = Format(
     (
       (JsPath \ "code").read[Int](min[Int](1).keepAnd(max[Int](9999))) and
         (JsPath \ "type")
           .read[String](minLength[String](1).keepAnd(maxLength[String](35))) and
         (JsPath \ "detail")
           .read[String](minLength[String](3).keepAnd(maxLength[String](72)))
-    )(IFContactDetail.apply _),
+    )(IfContactDetail.apply _),
     (
       (JsPath \ "code").write[Int] and
         (JsPath \ "type").write[String] and
         (JsPath \ "detail").write[String]
-    )(unlift(IFContactDetail.unapply))
+    )(unlift(IfContactDetail.unapply))
   )
 }

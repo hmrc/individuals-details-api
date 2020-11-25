@@ -17,16 +17,16 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.IFDetails
+import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.IfDetails
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
-class IFDetailsSpec extends UnitSpec {
+class IfDetailsSpec extends UnitSpec {
 
-  val ninoDetails = IFDetails(Some("XH123456A"), None)
-  val trnDetails = IFDetails(None, Some("12345678"))
+  val ninoDetails = IfDetails(Some("XH123456A"), None)
+  val trnDetails = IfDetails(None, Some("12345678"))
 
-  val invalidNinoDetails = IFDetails(Some("QWERTYUIOP"), None)
-  val invalidTrnDetails = IFDetails(None, Some("QWERTYUIOP"))
+  val invalidNinoDetails = IfDetails(Some("QWERTYUIOP"), None)
+  val invalidTrnDetails = IfDetails(None, Some("QWERTYUIOP"))
 
   "Details" should {
     "Write to JSON when only nino provided" in {
@@ -51,22 +51,22 @@ class IFDetailsSpec extends UnitSpec {
     }
 
     "Validate successful when reading valid nino" in {
-      val result = Json.toJson(ninoDetails).validate[IFDetails]
+      val result = Json.toJson(ninoDetails).validate[IfDetails]
       result.isSuccess shouldBe true
     }
 
     "Validate successful when reading valid trn" in {
-      val result = Json.toJson(trnDetails).validate[IFDetails]
+      val result = Json.toJson(trnDetails).validate[IfDetails]
       result.isSuccess shouldBe true
     }
 
     "Validate unsuccessfully when reading invalid nino" in {
-      val result = Json.toJson(invalidNinoDetails).validate[IFDetails]
+      val result = Json.toJson(invalidNinoDetails).validate[IfDetails]
       result.isError shouldBe true
     }
 
     "Validate unsuccessfully when reading invalid trn" in {
-      val result = Json.toJson(invalidTrnDetails).validate[IFDetails]
+      val result = Json.toJson(invalidTrnDetails).validate[IfDetails]
       result.isError shouldBe true
     }
   }

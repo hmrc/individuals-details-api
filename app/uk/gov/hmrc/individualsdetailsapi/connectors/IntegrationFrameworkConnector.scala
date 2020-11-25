@@ -29,8 +29,8 @@ import uk.gov.hmrc.http.{
   Upstream4xxResponse
 }
 import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{
-  IFDetails,
-  IFDetailsResponse
+  IfDetails,
+  IfDetailsResponse
 }
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -49,7 +49,7 @@ class IntegrationFrameworkConnector @Inject()(
       "microservice.services.integration-framework.environment")
 
   private val emptyResponse =
-    IFDetailsResponse(IFDetails(None, None), None, None)
+    IfDetailsResponse(IfDetails(None, None), None, None)
 
   def fetchDetails(nino: Nino, filter: Option[String])(
       implicit hc: HeaderCarrier,
@@ -57,8 +57,8 @@ class IntegrationFrameworkConnector @Inject()(
 
     val detailsUrl = s"$baseUrl/individuals/details/nino/$nino?fields=$filter"
 
-    recover[IFDetailsResponse](
-      http.GET[IFDetailsResponse](detailsUrl)(implicitly, header(), ec),
+    recover[IfDetailsResponse](
+      http.GET[IfDetailsResponse](detailsUrl)(implicitly, header(), ec),
       emptyResponse)
 
   }

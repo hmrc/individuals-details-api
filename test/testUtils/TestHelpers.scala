@@ -16,7 +16,7 @@
 
 package testUtils
 
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{IFAddress, IFContactDetail, IFDetails, IFDetailsResponse, IFResidence}
+import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{IfAddress, IfContactDetail, IfDetails, IfDetailsResponse, IfResidence}
 
 import scala.util.Random
 
@@ -39,7 +39,7 @@ trait TestHelpers {
 
   def generateAddress(number: Int) = {
     Some(
-      IFAddress(
+      IfAddress(
         Some(s"line1-$number"),
         Some(s"line2-$number"),
         Some(s"line3-$number"),
@@ -49,14 +49,14 @@ trait TestHelpers {
       ))
   }
 
-  def createValidIFDetailsResponse(): IFDetailsResponse = {
-    val ninoDetails = IFDetails(Some("XH123456A"), None)
-    val contactDetail1 = IFContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
-    val contactDetail2 = IFContactDetail(9, "MOBILE TELEPHONE", "07123 987655")
-    val residence1 = IFResidence(residenceType = Some("BASE"), address = generateAddress(2))
-    val residence2 = IFResidence(residenceType = Some("NOMINATED"), address = generateAddress(1))
+  def createValidIFDetailsResponse(): IfDetailsResponse = {
+    val ninoDetails = IfDetails(Some("XH123456A"), None)
+    val contactDetail1 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
+    val contactDetail2 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987655")
+    val residence1 = IfResidence(residenceType = Some("BASE"), address = generateAddress(2))
+    val residence2 = IfResidence(residenceType = Some("NOMINATED"), address = generateAddress(1))
 
-    IFDetailsResponse(
+    IfDetailsResponse(
       ninoDetails,
       Some(Seq(contactDetail1, contactDetail2)),
       Some(Seq(residence1, residence2))

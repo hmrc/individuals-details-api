@@ -18,15 +18,15 @@ package unit.uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
 import play.api.libs.json.Json
 import testUtils.TestHelpers
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.IFResidence
+import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.IfResidence
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
-class IFResidenceSpec extends UnitSpec with TestHelpers {
+class IfResidenceSpec extends UnitSpec with TestHelpers {
 
   val residence =
-    IFResidence(residenceType = Some("BASE"), address = generateAddress(2))
+    IfResidence(residenceType = Some("BASE"), address = generateAddress(2))
   val invalidResidence =
-    IFResidence(residenceType = Some(""), address = generateAddress(2))
+    IfResidence(residenceType = Some(""), address = generateAddress(2))
 
   "Residence details" should {
     "Write to JSON" in {
@@ -49,12 +49,12 @@ class IFResidenceSpec extends UnitSpec with TestHelpers {
     }
 
     "Validate successfully when reading valid Residence information" in {
-      val result = Json.toJson(residence).validate[IFResidence]
+      val result = Json.toJson(residence).validate[IfResidence]
       result.isSuccess shouldBe true
     }
 
     "Validate unsuccessfully when reading invalid Residence information" in {
-      val result = Json.toJson(invalidResidence).validate[IFResidence]
+      val result = Json.toJson(invalidResidence).validate[IfResidence]
       result.isError shouldBe true
     }
 

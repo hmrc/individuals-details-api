@@ -19,33 +19,33 @@ package unit.uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 import play.api.libs.json.Json
 import testUtils.TestHelpers
 import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{
-  IFContactDetail,
-  IFDetailsResponse,
-  IFDetails,
-  IFResidence
+  IfContactDetail,
+  IfDetailsResponse,
+  IfDetails,
+  IfResidence
 }
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
-class IFDetailResponseSpec extends UnitSpec with TestHelpers {
-  val ninoDetails = IFDetails(Some("XH123456A"), None)
-  val contactDetail1 = IFContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
-  val contactDetail2 = IFContactDetail(9, "MOBILE TELEPHONE", "07123 987655")
+class IfDetailResponseSpec extends UnitSpec with TestHelpers {
+  val ninoDetails = IfDetails(Some("XH123456A"), None)
+  val contactDetail1 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
+  val contactDetail2 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987655")
   val residence1 =
-    IFResidence(residenceType = Some("BASE"), address = generateAddress(2))
+    IfResidence(residenceType = Some("BASE"), address = generateAddress(2))
   val residence2 =
-    IFResidence(residenceType = Some("NOMINATED"), address = generateAddress(1))
-  val response = IFDetailsResponse(
+    IfResidence(residenceType = Some("NOMINATED"), address = generateAddress(1))
+  val response = IfDetailsResponse(
     ninoDetails,
     Some(Seq(contactDetail1, contactDetail1)),
     Some(Seq(residence1, residence2))
   )
 
-  val invalidNinoDetails = IFDetails(Some("QWERTYUIOP"), None)
+  val invalidNinoDetails = IfDetails(Some("QWERTYUIOP"), None)
   val invalidContactDetail =
-    IFContactDetail(-42, "abcdefghijklmnopqrstuvwxyz0123456789", "a")
+    IfContactDetail(-42, "abcdefghijklmnopqrstuvwxyz0123456789", "a")
   val invalidResidence =
-    IFResidence(residenceType = Some(""), address = generateAddress(2))
-  val invalidDetailsResponse = IFDetailsResponse(
+    IfResidence(residenceType = Some(""), address = generateAddress(2))
+  val invalidDetailsResponse = IfDetailsResponse(
     invalidNinoDetails,
     Some(Seq(invalidContactDetail)),
     Some(Seq(invalidResidence))
@@ -100,13 +100,13 @@ class IFDetailResponseSpec extends UnitSpec with TestHelpers {
     }
 
     "Validates successfully when reading valid Details Response" in {
-      val result = Json.toJson(response).validate[IFDetailsResponse]
+      val result = Json.toJson(response).validate[IfDetailsResponse]
       result.isSuccess shouldBe true
     }
 
     "Validates unsuccessfully when reading invalid Details Response" in {
       val result =
-        Json.toJson(invalidDetailsResponse).validate[IFDetailsResponse]
+        Json.toJson(invalidDetailsResponse).validate[IfDetailsResponse]
       result.isError shouldBe true
     }
 

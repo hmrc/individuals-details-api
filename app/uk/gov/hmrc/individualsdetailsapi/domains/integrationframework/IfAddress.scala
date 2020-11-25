@@ -20,7 +20,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.{Format, JsPath}
 import play.api.libs.json.Reads.{maxLength, minLength}
 
-case class IFAddress(
+case class IfAddress(
     line1: Option[String],
     line2: Option[String],
     line3: Option[String],
@@ -29,8 +29,8 @@ case class IFAddress(
     postcode: Option[String]
 )
 
-object IFAddress {
-  implicit val addressFormat: Format[IFAddress] = Format(
+object IfAddress {
+  implicit val addressFormat: Format[IfAddress] = Format(
     (
       (JsPath \ "line1").readNullable[String](
         minLength[String](1).keepAnd(maxLength[String](35))) and
@@ -44,7 +44,7 @@ object IFAddress {
           minLength[String](1).keepAnd(maxLength[String](35))) and
         (JsPath \ "postcode").readNullable[String](
           minLength[String](1).keepAnd(maxLength[String](10)))
-    )(IFAddress.apply _),
+    )(IfAddress.apply _),
     (
       (JsPath \ "line1").writeNullable[String] and
         (JsPath \ "line2").writeNullable[String] and
@@ -52,6 +52,6 @@ object IFAddress {
         (JsPath \ "line4").writeNullable[String] and
         (JsPath \ "line5").writeNullable[String] and
         (JsPath \ "postcode").writeNullable[String]
-    )(unlift(IFAddress.unapply))
+    )(unlift(IfAddress.unapply))
   )
 }

@@ -21,9 +21,9 @@ import testUtils.TestHelpers
 import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework._
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
-class IFAddressSpec extends UnitSpec with TestHelpers {
+class IfAddressSpec extends UnitSpec with TestHelpers {
 
-  val address = IFAddress(
+  val address = IfAddress(
     Some("line1"),
     Some("line2"),
     Some("line3"),
@@ -34,7 +34,7 @@ class IFAddressSpec extends UnitSpec with TestHelpers {
   "Address" should {
 
     "write to JSON successfully" in {
-      val result = Json.toJson(address).validate[IFAddress]
+      val result = Json.toJson(address).validate[IfAddress]
       result.isSuccess shouldBe true
     }
 
@@ -42,14 +42,14 @@ class IFAddressSpec extends UnitSpec with TestHelpers {
       "lines are equal to min length" in {
         val line = generateString(1)
         val result =
-          Json.toJson(address.copy(line1 = Some(line))).validate[IFAddress]
+          Json.toJson(address.copy(line1 = Some(line))).validate[IfAddress]
         result.isSuccess shouldBe true
       }
 
       "lines are equal to max length" in {
         val line = generateString(35)
         val result =
-          Json.toJson(address.copy(line1 = Some(line))).validate[IFAddress]
+          Json.toJson(address.copy(line1 = Some(line))).validate[IfAddress]
         result.isSuccess shouldBe true
       }
     }
@@ -58,7 +58,7 @@ class IFAddressSpec extends UnitSpec with TestHelpers {
       "lines are longer than max length" in {
         val line = generateString(101)
         val result =
-          Json.toJson(address.copy(line1 = Some(line))).validate[IFAddress]
+          Json.toJson(address.copy(line1 = Some(line))).validate[IfAddress]
         result.isError shouldBe true
       }
     }
