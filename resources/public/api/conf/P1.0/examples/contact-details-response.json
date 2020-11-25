@@ -10,8 +10,12 @@
       "detail": "07123 987654"
     },
     {
-      "type": "PRIMARY E-MAIL",
-      "detail": "fred.blogs@hotmail.com"
+      "type": "DAYTIME TELEPHONE",
+      "detail": "07123 987654"
+    },
+    {
+      "type": "EVENING TELEPHONE",
+      "detail": "07123 987654"
     }
   ]
 }

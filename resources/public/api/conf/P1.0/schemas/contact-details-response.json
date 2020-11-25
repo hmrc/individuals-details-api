@@ -26,12 +26,12 @@
         "detail": {
           "type": "string",
           "description": "String of information related to type",
-          "example": "fred.blogs@hotmail.com"
+          "example": "07123 987654"
         },
         "type": {
           "type": "string",
           "description": "The particular contact type.",
-          "example": "PRIMARY E-MAIL"
+          "example": "MOBILE TELEPHONE"
         }
       }
     }
