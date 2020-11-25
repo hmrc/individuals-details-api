@@ -9,12 +9,12 @@ import play.api.libs.json.Json
 import testUtils.TestHelpers
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, Upstream5xxResponse}
-import uk.gov.hmrc.individualsdetailsapi.connectors.IntegrationFrameworkConnector
+import uk.gov.hmrc.individualsdetailsapi.connectors.IfConnector
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.ExecutionContext
 
-class IntegrationFrameworkConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers {
+class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers {
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
@@ -39,7 +39,7 @@ class IntegrationFrameworkConnectorSpec extends SpecBase with BeforeAndAfterEach
   trait Setup {
     implicit val hc = HeaderCarrier()
 
-    val underTest = fakeApplication.injector.instanceOf[IntegrationFrameworkConnector]
+    val underTest = fakeApplication.injector.instanceOf[IfConnector]
   }
 
   override def beforeEach() {

@@ -36,7 +36,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IntegrationFrameworkConnector @Inject()(
+class IfConnector @Inject()(
     servicesConfig: ServicesConfig,
     http: HttpClient)(implicit ec: ExecutionContext) {
 
