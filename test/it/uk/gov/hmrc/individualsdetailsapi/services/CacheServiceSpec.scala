@@ -48,8 +48,6 @@ class CacheServiceSpec
 
         val svc = app.injector.instanceOf[CacheService]
 
-        svc.cachingClient.drop
-
         svc
           .get("foo", Future.successful(TestClass("bar")))
           .futureValue mustEqual TestClass("bar")
@@ -64,8 +62,6 @@ class CacheServiceSpec
       running(app) {
 
         val svc = app.injector.instanceOf[CacheService]
-
-        svc.cachingClient.drop
 
         svc
           .get("foo", Future.successful(TestClass("bar")))
