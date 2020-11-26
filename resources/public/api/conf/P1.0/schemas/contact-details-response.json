@@ -20,18 +20,23 @@
       }
     },
     "contactDetails" : {
-      "type": "array",
-      "description": "List of contact details for the individual",
+      "type": "object",
+      "description": "Has telephone numbers for the individual",
       "properties": {
-        "detail": {
+        "mobileTelephone": {
           "type": "string",
-          "description": "String of information related to type",
+          "description": "String representation of mobile telephone number",
           "example": "07123 987654"
         },
-        "type": {
+        "daytimeTelephone": {
           "type": "string",
-          "description": "The particular contact type.",
-          "example": "MOBILE TELEPHONE"
+          "description": "String representation of daytime telephone number",
+          "example": "07123 987654"
+        },
+        "eveningTelephone": {
+          "type": "string",
+          "description": "String representation of evening telephone number",
+          "example": "07123 987654"
         }
       }
     }

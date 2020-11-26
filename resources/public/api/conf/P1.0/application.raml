@@ -39,6 +39,8 @@ uses:
         displayName: Root
         description: Use this endpoint to get a list of all available endpoints for Individuals Details.
         is: [headers.acceptHeader]
+        (annotations.sandboxData): !include sandbox/root.md
+        (annotations.scope): "The scopes you have been assigned"
         headers:
           Authorization:
             description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
@@ -81,6 +83,8 @@ uses:
         displayName: Contact Details
         description: Use this endpoint to get an individual’s contact details.
         is: [headers.acceptHeader]
+        (annotations.sandboxData): !include sandbox/contact-details.md
+        (annotations.scope): "The scopes you have been assigned"
         headers:
           Authorization:
             description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
@@ -118,6 +122,8 @@ uses:
         displayName: Addresses
         description: Use this endpoint to get a list of all available endpoints for Individuals Details.
         is: [headers.acceptHeader]
+        (annotations.sandboxData): !include sandbox/addresses.md
+        (annotations.scope): "The scopes you have been assigned"
         headers:
           Authorization:
             description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.

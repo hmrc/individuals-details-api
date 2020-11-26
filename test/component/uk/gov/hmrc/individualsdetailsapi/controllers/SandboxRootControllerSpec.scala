@@ -22,6 +22,8 @@ import scalaj.http.Http
 
 class SandboxRootControllerSpec extends BaseSpec {
 
+  val matchId: String = "2b2e7e84-102f-4338-93f9-1950b35d822b"
+
   val rootScope = "read:individuals-details"
 
   feature("Live Root Controller") {
@@ -31,11 +33,11 @@ class SandboxRootControllerSpec extends BaseSpec {
 
       When("I make a call to root endpoint")
       val response =
-        Http(s"$serviceUrl/sandbox")
+        Http(s"$serviceUrl/sandbox?matchId=$matchId")
           .headers(requestHeaders(acceptHeaderP1))
           .asString
 
-      Then("The response tatus should be 500")
+      Then("The response status should be 500")
       response.code shouldBe INTERNAL_SERVER_ERROR
 
     }

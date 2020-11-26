@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.individualsdetailsapi.controllers
 
+import java.util.UUID
+
 import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -30,16 +32,17 @@ abstract class AddressesController @Inject()(
     extends CommonController(cc)
     with PrivilegedAuthentication {
 
-  def addresses(): Action[AnyContent] = Action.async { implicit request =>
-    val scopes =
-      scopeService.getEndPointScopes("addresses")
+  def addresses(matchId: UUID): Action[AnyContent] = Action.async {
+    implicit request =>
+      val scopes =
+        scopeService.getEndPointScopes("addresses")
 
-    requiresPrivilegedAuthentication(scopes)
-      .flatMap { authScopes =>
-        //TODO implement routes and scopes
-        throw new Exception("NOT_IMPLEMENTED")
-      }
-      .recover(recovery)
+      requiresPrivilegedAuthentication(scopes)
+        .flatMap { authScopes =>
+          //TODO implement routes and scopes
+          throw new Exception("NOT_IMPLEMENTED")
+        }
+        .recover(recovery)
   }
 }
 

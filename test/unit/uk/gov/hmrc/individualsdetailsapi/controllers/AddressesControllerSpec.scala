@@ -16,6 +16,8 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
+import java.util.UUID
+
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -40,6 +42,9 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 import scala.concurrent.{ExecutionContext, Future}
 
 class AddressesControllerSpec extends SpecBase with MockitoSugar {
+
+  val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b");
+
   implicit lazy val materializer: Materializer = fakeApplication.materializer
   implicit lazy val ec: ExecutionContext =
     fakeApplication.injector.instanceOf[ExecutionContext]
@@ -109,7 +114,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           val result =
             intercept[Exception] {
-              await(liveAddressesController.addresses()(fakeRequest))
+              await(liveAddressesController.addresses(matchId)(fakeRequest))
             }
           assert(result.getMessage == "NOT_IMPLEMENTED")
         }
@@ -122,7 +127,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           val result =
             intercept[Exception] {
-              await(liveAddressesController.addresses()(fakeRequest))
+              await(liveAddressesController.addresses(matchId)(fakeRequest))
             }
           assert(result.getMessage == "No scopes defined")
         }
@@ -140,7 +145,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           val result =
             intercept[Exception] {
-              await(sandboxAddressesController.addresses()(fakeRequest))
+              await(sandboxAddressesController.addresses(matchId)(fakeRequest))
             }
           assert(result.getMessage == "NOT_IMPLEMENTED")
         }
