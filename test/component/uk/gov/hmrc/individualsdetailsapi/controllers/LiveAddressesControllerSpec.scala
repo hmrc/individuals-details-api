@@ -22,6 +22,8 @@ import scalaj.http.Http
 
 class LiveAddressesControllerSpec extends BaseSpec {
 
+  val matchId: String = "2b2e7e84-102f-4338-93f9-1950b35d822b"
+
   val rootScopes =
     List(
       "read:individuals-details-hmcts-c3",
@@ -40,7 +42,7 @@ class LiveAddressesControllerSpec extends BaseSpec {
 
       When("I make a call to addresses endpoint")
       val response =
-        Http(s"$serviceUrl/addresses/")
+        Http(s"$serviceUrl/addresses/?matchId=$matchId")
           .headers(requestHeaders(acceptHeaderP1))
           .asString
 

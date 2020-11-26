@@ -34,27 +34,124 @@ uses:
               application/json:
                 example: "\"Hello World\""
 
+    /:
+      get:
+        displayName: Root
+        description: Use this endpoint to get a list of all available endpoints for Individuals Details.
+        is: [headers.acceptHeader]
+        (annotations.sandboxData): !include sandbox/root.md
+        (annotations.scope): "The scopes you have been assigned"
+        headers:
+          Authorization:
+            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
+            type: string
+            required: true
+            example: Bearer <BEARER_TOKEN>
+        queryParameters:
+          matchId:
+            description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+            type: string
+            example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        responses:
+          200:
+            description: Throws an exception
+            body:
+                application/json:
+                    example: !include examples/root-response.json
+                    type: !include schemas/root-response.json
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  BadRequest:
+                    description: Invalid request
+                    value:
+                      code: INVALID_REQUEST
+          404:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  NotFound:
+                    description: Not found
+                    value:
+                      code: NOT_FOUND
 
     /contact-details:
       get:
         displayName: Contact Details
-        description: A placeholder endpoint for contact details that will throw an exception
+        description: Use this endpoint to get an individual’s contact details.
         is: [headers.acceptHeader]
+        (annotations.sandboxData): !include sandbox/contact-details.md
+        (annotations.scope): "The scopes you have been assigned"
+        headers:
+          Authorization:
+            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
+            type: string
+            required: true
+            example: Bearer <BEARER_TOKEN>
         responses:
           200:
             description: Throws an exception
             body:
                 application/json:
-                    example: "\"Not yet implemented\""
+                  example: !include examples/contact-details-response.json
+                  type: !include schemas/contact-details-response.json
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  BadRequest:
+                    description: Invalid request
+                    value:
+                      code: INVALID_REQUEST
+          404:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  NotFound:
+                    description: Not found
+                    value:
+                      code: NOT_FOUND
 
-    /:
+    /addresses:
       get:
-        displayName: Root
-        description: A placeholder endpoint for root that will throw an exception
+        displayName: Addresses
+        description: Use this endpoint to get a list of all available endpoints for Individuals Details.
         is: [headers.acceptHeader]
+        (annotations.sandboxData): !include sandbox/addresses.md
+        (annotations.scope): "The scopes you have been assigned"
+        headers:
+          Authorization:
+            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
+            type: string
+            required: true
+            example: Bearer <BEARER_TOKEN>
         responses:
           200:
             description: Throws an exception
             body:
                 application/json:
                     example: "\"Not yet implemented\""
+          400:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  BadRequest:
+                    description: Invalid request
+                    value:
+                      code: INVALID_REQUEST
+          404:
+            body:
+              application/json:
+                type: types.errorResponse
+                examples:
+                  NotFound:
+                    description: Not found
+                    value:
+                      code: NOT_FOUND
+

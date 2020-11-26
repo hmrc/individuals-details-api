@@ -1,5 +1,5 @@
 GET        /hello-world             uk.gov.hmrc.individualsdetailsapi.controllers.SandboxMicroserviceHelloWorldController.hello
 GET        /hello-scopes            uk.gov.hmrc.individualsdetailsapi.controllers.SandboxMicroserviceHelloWorldController.helloScopes
-GET        /contact-details         uk.gov.hmrc.individualsdetailsapi.controllers.SandboxContactDetailsController.contactDetails
-GET        /addresses               uk.gov.hmrc.individualsdetailsapi.controllers.SandboxAddressesController.addresses
-GET        /                        uk.gov.hmrc.individualsdetailsapi.controllers.SandboxRootController.root
+GET        /contact-details         uk.gov.hmrc.individualsdetailsapi.controllers.SandboxContactDetailsController.contactDetails(matchId: java.util.UUID)
+GET        /addresses               uk.gov.hmrc.individualsdetailsapi.controllers.SandboxAddressesController.addresses(matchId: java.util.UUID)
+GET        /                        uk.gov.hmrc.individualsdetailsapi.controllers.SandboxRootController.root(matchId: java.util.UUID)

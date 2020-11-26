@@ -1,0 +1,12 @@
+{
+  "_links": {
+    "self": {
+      "href": "/individuals/details/contact-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
+    }
+  },
+  "contactDetails": {
+    "mobileTelephone": "07123 987654",
+    "daytimeTelephone": "07123 987654",
+    "eveningTelephone": "07123 987654"
+  }
+}

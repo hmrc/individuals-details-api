@@ -22,6 +22,8 @@ import scalaj.http.Http
 
 class SandboxContactDetailsControllerSpec extends BaseSpec {
 
+  val matchId: String = "2b2e7e84-102f-4338-93f9-1950b35d822b"
+
   val rootScopes =
     List("read:individuals-details-hmcts-c4", "read:individuals-details-laa-c4")
 
@@ -32,7 +34,7 @@ class SandboxContactDetailsControllerSpec extends BaseSpec {
 
       When("I make a call to contact-details endpoint")
       val response =
-        Http(s"$serviceUrl/sandbox/contact-details")
+        Http(s"$serviceUrl/sandbox/contact-details?matchId=$matchId")
           .headers(requestHeaders(acceptHeaderP1))
           .asString
 

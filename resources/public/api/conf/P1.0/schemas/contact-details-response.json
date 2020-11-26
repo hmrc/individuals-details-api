@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Contact Details",
+  "type": "object",
+  "properties": {
+    "_links": {
+      "type": "object",
+      "description": "A list of endpoint links that indicate possible actions related to the current resource.",
+      "properties": {
+        "self": {
+          "type": "object",
+          "description": "The Uniform Resource Identifier (URI) for the endpoint to get addresses for the requested match ID. ",
+          "properties": {
+            "href": {
+              "type": "string",
+              "example": "/individuals/details/contact-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
+            }
+          }
+        }
+      }
+    },
+    "contactDetails" : {
+      "type": "object",
+      "description": "Has telephone numbers for the individual",
+      "properties": {
+        "mobileTelephone": {
+          "type": "string",
+          "description": "String representation of mobile telephone number",
+          "example": "07123 987654"
+        },
+        "daytimeTelephone": {
+          "type": "string",
+          "description": "String representation of daytime telephone number",
+          "example": "07123 987654"
+        },
+        "eveningTelephone": {
+          "type": "string",
+          "description": "String representation of evening telephone number",
+          "example": "07123 987654"
+        }
+      }
+    }
+  }
+}
