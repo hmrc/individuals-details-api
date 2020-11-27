@@ -15,7 +15,8 @@
               "type": "string",
               "example": "/individuals/details/addresses?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
             }
-          }
+          },
+          "required": ["href"]
         },
         "contactDetails": {
           "type": "object",
@@ -25,7 +26,8 @@
               "type": "string",
               "example": "/individuals/details/contact-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
             }
-          }
+          },
+          "required": ["href"]
         },
         "self": {
           "type": "object",
@@ -35,9 +37,12 @@
               "type": "string",
               "example": "/individuals/details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
             }
-          }
+          },
+          "required": ["href"]
         }
-      }
+      },
+      "required": ["contactDetails", "addresses", "self"]
     }
-  }
+  },
+  "required": ["_links"]
 }
