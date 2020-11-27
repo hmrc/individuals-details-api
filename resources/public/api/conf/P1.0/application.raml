@@ -91,7 +91,7 @@ uses:
             example: Bearer <BEARER_TOKEN>
         responses:
           200:
-            description: Throws an exception
+            description: Use this endpoint to get an individual’s contact details
             body:
                 application/json:
                   example: !include examples/contact-details-response.json
@@ -129,10 +129,11 @@ uses:
             example: Bearer <BEARER_TOKEN>
         responses:
           200:
-            description: Throws an exception
+            description: Use this endpoint to get an individual’s addresses
             body:
                 application/json:
-                    example: "\"Not yet implemented\""
+                  example: !include examples/addresses-response.json
+                  type: !include schemas/addresses-response.json
           400:
             body:
               application/json:

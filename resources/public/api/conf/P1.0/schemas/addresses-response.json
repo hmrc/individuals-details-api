@@ -15,9 +15,11 @@
               "type": "string",
               "example": "/individuals/details/addresses/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
             }
-          }
+          },
+          "required": ["href"]
         }
-      }
+      },
+      "required": ["self"]
     },
     "residences": {
       "type": "array",
@@ -61,5 +63,6 @@
         }
       }
     }
-  }
+  },
+  "required": ["_links", "residences"]
 }
