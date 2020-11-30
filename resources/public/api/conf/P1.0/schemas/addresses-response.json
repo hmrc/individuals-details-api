@@ -24,40 +24,43 @@
     "residences": {
       "type": "array",
       "description": "List of users residences",
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "The particular residence type."
-        },
-        "noLongerUsed": {
-          "type": "string",
-          "description": "Indicates if the NOMINATED residence is no longer used (NLU) or not."
-        },
-        "address": {
-          "properties": {
-            "line1": {
-              "type": "string",
-              "description": "First line of the address"
-            },
-            "line2": {
-              "type": "string",
-              "description": "Second line of the address"
-            },
-            "line3": {
-              "type": "string",
-              "description": "Third line of the address"
-            },
-            "line4": {
-              "type": "string",
-              "description": "Forth line of the address"
-            },
-            "line5": {
-              "type": "string",
-              "description": "Fifth line of the address"
-            },
-            "postcode": {
-              "type": "string",
-              "description": "Postcode line of the address"
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "The particular residence type."
+          },
+          "noLongerUsed": {
+            "type": "string",
+            "description": "Indicates if the NOMINATED residence is no longer used (NLU) or not."
+          },
+          "address": {
+            "properties": {
+              "line1": {
+                "type": "string",
+                "description": "First line of the address"
+              },
+              "line2": {
+                "type": "string",
+                "description": "Second line of the address"
+              },
+              "line3": {
+                "type": "string",
+                "description": "Third line of the address"
+              },
+              "line4": {
+                "type": "string",
+                "description": "Forth line of the address"
+              },
+              "line5": {
+                "type": "string",
+                "description": "Fifth line of the address"
+              },
+              "postcode": {
+                "type": "string",
+                "description": "Postcode line of the address"
+              }
             }
           }
         }
