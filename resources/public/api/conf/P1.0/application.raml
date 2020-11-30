@@ -89,6 +89,11 @@ uses:
             type: string
             required: true
             example: Bearer <BEARER_TOKEN>
+        queryParameters:
+          matchId:
+            description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+            type: string
+            example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         responses:
           200:
             description: Use this endpoint to get an individual’s contact details
@@ -127,6 +132,11 @@ uses:
             type: string
             required: true
             example: Bearer <BEARER_TOKEN>
+        queryParameters:
+          matchId:
+            description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+            type: string
+            example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         responses:
           200:
             description: Use this endpoint to get an individual’s addresses
