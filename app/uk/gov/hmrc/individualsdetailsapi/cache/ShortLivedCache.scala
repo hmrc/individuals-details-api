@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.services.cache
+package uk.gov.hmrc.individualsdetailsapi.cache
 
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue}
 import play.modules.reactivemongo.ReactiveMongoComponent
 import uk.gov.hmrc.cache.TimeToLive
-import uk.gov.hmrc.cache.repository.{CacheMongoRepository, CacheRepository}
+import uk.gov.hmrc.cache.repository.CacheMongoRepository
 import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
 
@@ -33,9 +33,13 @@ class ShortLivedCache @Inject()(
     val cacheConfig: CacheConfiguration,
     configuration: Configuration,
     mongo: ReactiveMongoComponent)(implicit ec: ExecutionContext)
-    extends CacheMongoRepository("shortLivedCache", cacheConfig.cacheTtl)(
+    extends CacheMongoRepository(
+      cacheConfig.collName,
+      cacheConfig.cacheTtl
+    )(
       mongo.mongoConnector.db,
-      ec)
+      ec
+    )
     with TimeToLive {
 
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(
@@ -66,8 +70,29 @@ class ShortLivedCache @Inject()(
 
 @Singleton
 class CacheConfiguration @Inject()(configuration: Configuration) {
-  lazy val cacheEnabled =
-    configuration.getOptional[Boolean]("cache.enabled").getOrElse(true)
-  lazy val cacheTtl =
-    configuration.getOptional[Int]("cache.ttlInSeconds").getOrElse(60 * 15)
+
+  lazy val cacheEnabled = configuration
+    .getOptional[Boolean](
+      "cache.enabled"
+    )
+    .getOrElse(true)
+
+  lazy val cacheTtl = configuration
+    .getOptional[Int](
+      "cache.ttlInSeconds"
+    )
+    .getOrElse(60 * 15)
+
+  lazy val collName = configuration
+    .getOptional[String](
+      "cache.collName"
+    )
+    .getOrElse("individuals-details-cache")
+
+  lazy val key = configuration
+    .getOptional[String](
+      "cache.key"
+    )
+    .getOrElse("individuals-details")
+
 }

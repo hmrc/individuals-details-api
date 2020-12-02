@@ -16,46 +16,33 @@
 
 package uk.gov.hmrc.individualsdetailsapi.services.cache
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import uk.gov.hmrc.individualsdetailsapi.cache.{
+  CacheConfiguration,
+  ShortLivedCache
+}
 
-trait CacheService {
+import scala.concurrent.{ExecutionContext, Future}
 
-  val shortLivedCache: ShortLivedCache
-  val conf: CacheConfiguration
-  val key: String
+class CacheService @Inject()(
+    val cachingClient: ShortLivedCache,
+    conf: CacheConfiguration)(implicit ec: ExecutionContext) {
 
-  lazy val cacheEnabled: Boolean = conf.cacheEnabled
-
-  def get[T: Format](cacheId: CacheId, fallbackFunction: => Future[T])(
+  def get[T: Format](cacheId: String, fallbackFunction: => Future[T])(
       implicit hc: HeaderCarrier): Future[T] =
-    if (cacheEnabled)
-      shortLivedCache.fetchAndGetEntry[T](cacheId.id, key) flatMap {
+    if (conf.cacheEnabled)
+      cachingClient.fetchAndGetEntry[T](cacheId, conf.key) flatMap {
         case Some(value) =>
           Future.successful(value)
         case None =>
           fallbackFunction map { result =>
-            shortLivedCache.cache(cacheId.id, key, result)
+            cachingClient.cache(cacheId, conf.key, result)
             result
           }
       } else {
       fallbackFunction
     }
-}
-
-@Singleton
-class DetailsCache @Inject()(val shortLivedCache: ShortLivedCache,
-                             val conf: CacheConfiguration)
-    extends CacheService {
-  val key: String = "individuals-details"
-}
-
-trait CacheId {
-  val id: String
-
-  override def toString: String = id
 }
