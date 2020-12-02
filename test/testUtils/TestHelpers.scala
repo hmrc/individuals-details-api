@@ -16,7 +16,13 @@
 
 package testUtils
 
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{IfAddress, IfContactDetail, IfDetails, IfDetailsResponse, IfResidence}
+import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{
+  IfAddress,
+  IfContactDetail,
+  IfDetails,
+  IfDetailsResponse,
+  IfResidence
+}
 
 import scala.util.Random
 
@@ -53,8 +59,10 @@ trait TestHelpers {
     val ninoDetails = IfDetails(Some("XH123456A"), None)
     val contactDetail1 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
     val contactDetail2 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987655")
-    val residence1 = IfResidence(residenceType = Some("BASE"), address = generateAddress(2))
-    val residence2 = IfResidence(residenceType = Some("NOMINATED"), address = generateAddress(1))
+    val residence1 =
+      IfResidence(residenceType = Some("BASE"), address = generateAddress(2))
+    val residence2 = IfResidence(residenceType = Some("NOMINATED"),
+                                 address = generateAddress(1))
 
     IfDetailsResponse(
       ninoDetails,

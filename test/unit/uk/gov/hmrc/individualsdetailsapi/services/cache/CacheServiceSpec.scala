@@ -29,7 +29,11 @@ import uk.gov.hmrc.individualsdetailsapi.cache.{
   CacheConfiguration,
   ShortLivedCache
 }
-import uk.gov.hmrc.individualsdetailsapi.services.cache.CacheService
+import uk.gov.hmrc.individualsdetailsapi.services.cache.{
+  CacheId,
+  CacheIdBase,
+  CacheService
+}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -41,7 +45,7 @@ class CacheServiceSpec
     with Matchers
     with BeforeAndAfterEach {
 
-  val cacheId = UUID.randomUUID().toString
+  val cacheId = TestCacheId("someid")
   val cachedValue = TestClass("cached value")
   val newValue = TestClass("new value")
 
@@ -65,7 +69,7 @@ class CacheServiceSpec
 
       given(
         mockClient.fetchAndGetEntry[TestClass](
-          eqTo(cacheId),
+          eqTo(cacheId.id),
           eqTo("individuals-details"))(any()))
         .willReturn(Future.successful(Some(cachedValue)))
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
@@ -78,12 +82,12 @@ class CacheServiceSpec
 
       given(
         mockClient.fetchAndGetEntry[TestClass](
-          eqTo(cacheId),
+          eqTo(cacheId.id),
           eqTo("individuals-details"))(any()))
         .willReturn(Future.successful(None))
 
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
-      verify(mockClient).cache[TestClass](eqTo(cacheId),
+      verify(mockClient).cache[TestClass](eqTo(cacheId.id),
                                           eqTo("individuals-details"),
                                           eqTo(newValue))(any())
 
@@ -97,7 +101,23 @@ class CacheServiceSpec
 
     }
   }
+
+  "CacheId" should {
+
+    "produce a cache id based on matchId and scopes" in {
+
+      val matchId = UUID.randomUUID()
+      val fields = "ABDFH"
+
+      CacheId(matchId, fields).id shouldBe
+        s"$matchId-ABDFH"
+
+    }
+
+  }
 }
+
+case class TestCacheId(id: String) extends CacheIdBase
 
 case class TestClass(value: String)
 

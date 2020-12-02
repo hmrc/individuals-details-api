@@ -36,9 +36,8 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IfConnector @Inject()(
-    servicesConfig: ServicesConfig,
-    http: HttpClient)(implicit ec: ExecutionContext) {
+class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
+    implicit ec: ExecutionContext) {
 
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
   private val integrationFrameworkBearerToken =
