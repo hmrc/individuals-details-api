@@ -16,10 +16,12 @@
 
 package uk.gov.hmrc.individualsdetailsapi.services.cache
 
+import java.util.UUID
+
 import javax.inject.Inject
+import org.joda.time.Interval
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.HeaderCarrier
-
 import uk.gov.hmrc.individualsdetailsapi.cache.{
   CacheConfiguration,
   ShortLivedCache
@@ -31,18 +33,40 @@ class CacheService @Inject()(
     val cachingClient: ShortLivedCache,
     conf: CacheConfiguration)(implicit ec: ExecutionContext) {
 
-  def get[T: Format](cacheId: String, fallbackFunction: => Future[T])(
+  def get[T: Format](cacheId: CacheIdBase, fallbackFunction: => Future[T])(
       implicit hc: HeaderCarrier): Future[T] =
     if (conf.cacheEnabled)
-      cachingClient.fetchAndGetEntry[T](cacheId, conf.key) flatMap {
+      cachingClient.fetchAndGetEntry[T](cacheId.id, conf.key) flatMap {
         case Some(value) =>
           Future.successful(value)
         case None =>
           fallbackFunction map { result =>
-            cachingClient.cache(cacheId, conf.key, result)
+            cachingClient.cache(cacheId.id, conf.key, result)
             result
           }
       } else {
       fallbackFunction
     }
+}
+
+// Cache ID implementations
+// This can then be concatenated for multiple scopes.
+// Example;
+// read:scope-1 =  [A, B, C]
+// read:scope-2 = [D, E, F]
+// The cache key (if two scopes alone) would be;
+// `id +  [A, B, C, D, E, F]` Or formatted to `id-ABCDEF`
+// The `fields` param is obtained with scopeService.getValidFieldsForCacheKey(scopes: List[String])
+
+trait CacheIdBase {
+  val id: String
+
+  override def toString: String = id
+}
+
+case class CacheId(matchId: UUID, fields: String) extends CacheIdBase {
+
+  lazy val id: String =
+    s"$matchId-$fields"
+
 }
