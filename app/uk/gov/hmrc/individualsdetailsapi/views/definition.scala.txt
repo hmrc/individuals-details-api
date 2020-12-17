@@ -9,38 +9,38 @@
     },
     {
       "key":"read:individuals-details-laa-c3",
-      "name":"access individuals details information for laa use case 3",
-      "description":"Scope for LAA use case 3 to access individuals details information on individuals"
+      "name":"access individuals contact information for laa use case 3",
+      "description":"Scope for LAA use case 3 to access contact information on individuals"
     },
     {
       "key":"read:individuals-details-laa-c4",
-      "name":"access individuals details information for laa use case 4",
-      "description":"Scope for LAA use case 4 to access individuals details information on individuals"
+      "name":"access individuals contact information for laa use case 4",
+      "description":"Scope for LAA use case 4 to access contact information on individuals"
     },
     {
       "key":"read:individuals-details-hmcts-c3",
-      "name":"access individuals details information for hmcts use case 3",
-      "description":"Scope for HMCTS use case 3 to access individuals details information on individuals"
+      "name":"access individuals contact information for hmcts use case 3",
+      "description":"Scope for HMCTS use case 3 to access contact information on individuals"
     },
     {
       "key":"read:individuals-details-hmcts-c4",
-      "name":"access individuals details information for hmcts use case 4",
-      "description":"Scope for HMCTS use case 4 to access individuals details information on individuals"
+      "name":"access individuals contact information for hmcts use case 4",
+      "description":"Scope for HMCTS use case 4 to access contact information on individuals"
     },
     {
       "key":"read:individuals-details-lsani-c1",
-      "name":"access individuals details information for lsani use case 1",
-      "description":"Scope for LSANI use case 1 to access individuals details information on individuals"
+      "name":"access individuals contact information for lsani use case 1",
+      "description":"Scope for LSANI use case 1 to access contact information on individuals"
     },
     {
       "key":"read:individuals-details-lsani-c3",
-      "name":"access individuals details information for lsani use case 3",
-      "description":"Scope for LSANI use case 3 to access individuals details information on individuals"
+      "name":"access individuals contact information for lsani use case 3",
+      "description":"Scope for LSANI use case 3 to access contact information on individuals"
     },
     {
       "key":"read:individuals-details-nictsejo-c4",
-      "name":"access individuals details information for nictsejo use case 4",
-      "description":"Scope for NICTSEJO use case 4 to access individuals details information on individuals"
+      "name":"access individuals contact information for nictsejo use case 4",
+      "description":"Scope for NICTSEJO use case 4 to access contact information on individuals"
     }
   ],
   "api":{
