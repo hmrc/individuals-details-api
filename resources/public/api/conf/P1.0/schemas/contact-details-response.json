@@ -5,11 +5,11 @@
   "properties": {
     "_links": {
       "type": "object",
-      "description": "A list of endpoint links that indicate possible actions related to the current resource.",
+      "description": "A list of links for possible actions related to this endpoint.",
       "properties": {
         "self": {
           "type": "object",
-          "description": "The Uniform Resource Identifier (URI) for the endpoint to get addresses for the requested match ID. ",
+          "description": "The Uniform Resource Identifier (URI) for this endpoint.",
           "properties": {
             "href": {
               "type": "string",
@@ -23,22 +23,22 @@
     },
     "contactDetails" : {
       "type": "object",
-      "description": "Has telephone numbers for the individual",
+      "description": "Telephone numbers for the individual.",
       "properties": {
         "mobileTelephone": {
           "type": "string",
-          "description": "String representation of mobile telephone number",
-          "example": "07123 987654"
+          "description": "The mobile telephone number for the individual.",
+          "example": "07700 900000"
         },
         "daytimeTelephone": {
           "type": "string",
-          "description": "String representation of daytime telephone number",
-          "example": "07123 987654"
+          "description": "The daytime telephone number for the individual.",
+          "example": "01632 960000"
         },
         "eveningTelephone": {
           "type": "string",
-          "description": "String representation of evening telephone number",
-          "example": "07123 987654"
+          "description": "The evening telephone number for the individual.",
+          "example": "01632 960000"
         }
       }
     }

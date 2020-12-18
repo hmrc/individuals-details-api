@@ -5,11 +5,11 @@
   "properties": {
     "_links": {
       "type": "object",
-      "description": "A list of endpoint links that indicate possible actions related to the current resource.",
+      "description": "A list of links for possible actions related to this endpoint.",
       "properties": {
         "self": {
           "type": "object",
-          "description": "The Uniform Resource Identifier (URI) for the endpoint to get addresses for the requested match ID.",
+          "description": "The Uniform Resource Identifier (URI) for this endpoint.",
           "properties": {
             "href": {
               "type": "string",
@@ -23,43 +23,46 @@
     },
     "residences": {
       "type": "array",
-      "description": "List of users residences",
+      "description": "The list of the individual's residences.",
       "items": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "description": "The particular residence type."
+            "description": "The type of residence."
           },
-          "noLongerUsed": {
-            "type": "string",
-            "description": "Indicates if the NOMINATED residence is no longer used (NLU) or not."
+          "inUse": {
+            "type": "boolean",
+            "description": "Flags if the residence is currently in use."
           },
           "address": {
+            "type": "object",
+            "description": "An address for the individual.",
             "properties": {
               "line1": {
                 "type": "string",
-                "description": "First line of the address"
+                "description": "Address line 1."
               },
               "line2": {
                 "type": "string",
-                "description": "Second line of the address"
+                "description": "Address line 2."
               },
               "line3": {
                 "type": "string",
-                "description": "Third line of the address"
+                "description": "Address line 3."
               },
               "line4": {
                 "type": "string",
-                "description": "Forth line of the address"
+                "description": "Address line 4."
               },
               "line5": {
                 "type": "string",
-                "description": "Fifth line of the address"
+                "description": "Address line 5."
               },
               "postcode": {
                 "type": "string",
-                "description": "Postcode line of the address"
+                "description": "The postcode for the address.",
+                "example": "AA1 1AA"
               }
             }
           }
