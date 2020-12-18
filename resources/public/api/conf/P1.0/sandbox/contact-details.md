@@ -29,5 +29,12 @@
         <td><p>404 (Not Found)</p>
         <p>{ &quot;code&quot; : &quot;NOT_FOUND&quot;,<br/>&quot;message&quot; : &quot;The resource cannot be found&quot; }</p></td>
     </tr>
+    <tr>
+        <td><p>Missing CorrelationId</p></td>
+        <td><p>CorrelationId header missing</p></td>
+        <td><p>400 (Bad Request)</p>
+        <p>{ &quot;code&quot; : &quot;INVALID_REQUEST&quot;,<br/>&quot;message&quot; : &quot;CorrelationId is required&quot; }</p>
+        </td>
+    </tr>    
     </tbody>
 </table>
