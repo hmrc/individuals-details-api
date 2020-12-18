@@ -15,6 +15,10 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/details/addresses?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get address details"
             }
           },
           "required": ["href"]
@@ -27,6 +31,10 @@
               "type": "string",
               "description": "The URL of the endpoint.",
               "example": "/individuals/details/contact-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get contact details"
             }
           },
           "required": ["href"]
