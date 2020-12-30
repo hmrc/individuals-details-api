@@ -5,7 +5,7 @@
   "properties": {
     "_links": {
       "type": "object",
-      "description": "A list of endpoint links that indicate possible actions related to the current resource.",
+      "description": "A list of links for possible actions related to this endpoint.",
       "properties": {
         "addresses": {
           "type": "object",
@@ -13,7 +13,12 @@
           "properties": {
             "href": {
               "type": "string",
+              "description": "The URL of the endpoint.",
               "example": "/individuals/details/addresses?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get addresses"
             }
           },
           "required": ["href"]
@@ -24,14 +29,19 @@
           "properties": {
             "href": {
               "type": "string",
+              "description": "The URL of the endpoint.",
               "example": "/individuals/details/contact-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430"
+            },
+            "title": {
+              "type": "string",
+              "description": "Get contact details"
             }
           },
           "required": ["href"]
         },
         "self": {
           "type": "object",
-          "description": "The URI for this endpoint.",
+          "description": "The Uniform Resource Identifier (URI) for this endpoint.",
           "properties": {
             "href": {
               "type": "string",

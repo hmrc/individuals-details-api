@@ -22,33 +22,22 @@ uses:
   annotations: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/annotations.raml
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
 /individuals/details:
-    /hello-world:
-      get:
-        displayName: Hello World
-        description: An endpoint that returns hello world
-        is: [headers.acceptHeader]
-        responses:
-          200:
-            description: Return hello world
-            body:
-              application/json:
-                example: "\"Hello World\""
-
     /:
       get:
-        displayName: Root
+        displayName: Get a list of all available endpoints
         description: Use this endpoint to get a list of all available endpoints for Individuals Details.
         is: [headers.acceptHeader]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/root.md
         headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
+          correlationId:
+            description: A universally unique identifier (UUID), used for traceability purposes.
             type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
-            description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+            description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         responses:
@@ -79,19 +68,20 @@ uses:
 
     /contact-details:
       get:
-        displayName: Contact Details
+        displayName: Get contact details
         description: Use this endpoint to get an individual’s contact details.
         is: [headers.acceptHeader]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/contact-details.md
         headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
+          correlationId:
+            description: A universally unique identifier (UUID), used for traceability purposes.
             type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
-            description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+            description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         responses:
@@ -122,19 +112,20 @@ uses:
 
     /addresses:
       get:
-        displayName: Addresses
-        description: Use this endpoint to get a list of all available endpoints for Individuals Details.
+        displayName: Get address details
+        description: !include docs/address-details.md
         is: [headers.acceptHeader]
+        (annotations.scope): "assigned"
+        securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/addresses.md
         headers:
-          Authorization:
-            description: An OAuth 2.0 Bearer Token with the scopes you have been assigned.
+          correlationId:
+            description: A universally unique identifier (UUID), used for traceability purposes.
             type: string
-            required: true
-            example: Bearer <BEARER_TOKEN>
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
-            description: A short-lived UUID, typically valid for several hours. Generated through the Individuals Matching API.
+            description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
             type: string
             example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
         responses:
