@@ -19,33 +19,31 @@ package uk.gov.hmrc.individualsdetailsapi.controllers
 import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
+import play.api.hal.HalLink
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
+import uk.gov.hmrc.individualsdetailsapi.controllers.authentication.PrivilegedAuthentication
+import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 abstract class RootController @Inject()(
     cc: ControllerComponents,
-    scopeService: ScopesService
-) extends CommonController(cc)
-    with PrivilegedAuthentication {
+    scopeService: ScopesService,
+    scopesHelper: ScopesHelper)(implicit val ec: ExecutionContext)
+      extends CommonController(cc) with PrivilegedAuthentication {
 
-  def root(matchId: UUID): Action[AnyContent] = Action.async {
-    implicit request =>
-      val scopes =
-        scopeService.getEndPointScopes("benefits-and-credits")
-
-      requiresPrivilegedAuthentication(scopes)
-        .flatMap { authScopes =>
-          //TODO:- add actual scopes
-          throw new Exception("NOT_IMPLEMENTED")
+  def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
+    {
+      requiresPrivilegedAuthentication(scopeService.getAllScopes) { authScopes =>
+        employmentsService.resolve(matchId) map { _ =>
+          val selfLink = HalLink("self", s"/individuals/employments/?matchId=$matchId")
+          Ok(scopesHelper.getHalLinks(matchId, authScopes) ++ selfLink)
         }
-        .recover(recovery)
-
+      } recover recovery
+    }
   }
 
-}
 @Singleton
 class LiveRootController @Inject()(
     val authConnector: AuthConnector,

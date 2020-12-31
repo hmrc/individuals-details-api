@@ -35,11 +35,11 @@ object IfDetails {
     (
       (JsPath \ "nino")
         .readNullable[String](pattern(ninoPattern, "InvalidNino")) and
-        (JsPath \ "trn").readNullable[String](pattern(trnPattern, "InvalidTrn"))
+      (JsPath \ "trn").readNullable[String](pattern(trnPattern, "InvalidTrn"))
     )(IfDetails.apply _),
     (
       (JsPath \ "nino").writeNullable[String] and
-        (JsPath \ "trn").writeNullable[String]
+      (JsPath \ "trn").writeNullable[String]
     )(unlift(IfDetails.unapply))
   )
 }

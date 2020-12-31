@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 class APIDocumentationController @Inject()(cc: ControllerComponents,
                                            assets: Assets,
                                            config: Configuration)
-    extends BackendController(cc) {
+    extends  BackendController(cc) {
 
   private lazy val privilegedWhitelistedApplicationIds =
     config

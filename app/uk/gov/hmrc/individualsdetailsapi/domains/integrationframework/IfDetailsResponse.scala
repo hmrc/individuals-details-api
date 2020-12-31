@@ -27,13 +27,13 @@ object IfDetailsResponse {
   implicit val detailsResponseFormat: Format[IfDetailsResponse] = Format(
     (
       (JsPath \ "details").read[IfDetails] and
-        (JsPath \ "contactDetails").readNullable[Seq[IfContactDetail]] and
-        (JsPath \ "residence").readNullable[Seq[IfResidence]]
+      (JsPath \ "contactDetails").readNullable[Seq[IfContactDetail]] and
+      (JsPath \ "residence").readNullable[Seq[IfResidence]]
     )(IfDetailsResponse.apply _),
     (
       (JsPath \ "details").write[IfDetails] and
-        (JsPath \ "contactDetails").writeNullable[Seq[IfContactDetail]] and
-        (JsPath \ "residence").writeNullable[Seq[IfResidence]]
+      (JsPath \ "contactDetails").writeNullable[Seq[IfContactDetail]] and
+      (JsPath \ "residence").writeNullable[Seq[IfResidence]]
     )(unlift(IfDetailsResponse.unapply))
   )
 }

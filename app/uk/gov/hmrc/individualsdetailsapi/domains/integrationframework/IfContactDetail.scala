@@ -45,15 +45,14 @@ object IfContactDetail {
   implicit val contactDetailsFormat: Format[IfContactDetail] = Format(
     (
       (JsPath \ "code").read[Int](min[Int](1).keepAnd(max[Int](9999))) and
-        (JsPath \ "type")
-          .read[String](minLength[String](1).keepAnd(maxLength[String](35))) and
-        (JsPath \ "detail")
-          .read[String](minLength[String](3).keepAnd(maxLength[String](72)))
+      (JsPath \ "type").read[String](minLength[String](1).keepAnd(maxLength[String](35))) and
+      (JsPath \ "detail")
+        .read[String](minLength[String](3).keepAnd(maxLength[String](72)))
     )(IfContactDetail.apply _),
     (
       (JsPath \ "code").write[Int] and
-        (JsPath \ "type").write[String] and
-        (JsPath \ "detail").write[String]
+      (JsPath \ "type").write[String] and
+      (JsPath \ "detail").write[String]
     )(unlift(IfContactDetail.unapply))
   )
 }

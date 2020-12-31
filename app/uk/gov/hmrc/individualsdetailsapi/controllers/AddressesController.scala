@@ -28,21 +28,15 @@ import scala.concurrent.ExecutionContext
 abstract class AddressesController @Inject()(
     cc: ControllerComponents,
     scopeService: ScopesService
-)(implicit val ec: ExecutionContext)
-    extends CommonController(cc)
-    with PrivilegedAuthentication {
+)(implicit val ec: ExecutionContext) extends CommonController(cc) with PrivilegedAuthentication {
 
   def addresses(matchId: UUID): Action[AnyContent] = Action.async {
     implicit request =>
-      val scopes =
-        scopeService.getEndPointScopes("addresses")
+      val scopes = scopeService.getEndPointScopes("addresses")
 
-      requiresPrivilegedAuthentication(scopes)
-        .flatMap { authScopes =>
-          //TODO implement routes and scopes
-          throw new Exception("NOT_IMPLEMENTED")
-        }
-        .recover(recovery)
+      requiresPrivilegedAuthentication(scopes) { authScopes =>
+
+      } recover recovery
   }
 }
 
