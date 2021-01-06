@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 class APIDocumentationController @Inject()(cc: ControllerComponents,
                                            assets: Assets,
                                            config: Configuration)
-    extends  BackendController(cc) {
+    extends BackendController(cc) {
 
   private lazy val privilegedWhitelistedApplicationIds =
     config

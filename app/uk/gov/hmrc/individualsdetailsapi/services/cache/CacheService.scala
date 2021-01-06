@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CacheService @Inject()(
-                              cachingClient: ShortLivedCache,
-                              conf: CacheConfiguration)(implicit ec: ExecutionContext) {
+    cachingClient: ShortLivedCache,
+    conf: CacheConfiguration)(implicit ec: ExecutionContext) {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
@@ -67,8 +67,7 @@ trait CacheIdBase {
   override def toString: String = id
 }
 
-case class CacheId(matchId: UUID, fields: String)
-  extends CacheIdBase {
+case class CacheId(matchId: UUID, fields: String) extends CacheIdBase {
 
   lazy val id: String =
     s"$matchId-$fields"

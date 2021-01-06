@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,24 +35,24 @@ object IfAddress {
     (
       (JsPath \ "line1").readNullable[String](
         minLength[String](1).keepAnd(maxLength[String](35))) and
-      (JsPath \ "line2").readNullable[String](
-        minLength[String](1).keepAnd(maxLength[String](35))) and
-      (JsPath \ "line3").readNullable[String](
-        minLength[String](1).keepAnd(maxLength[String](35))) and
-      (JsPath \ "line4").readNullable[String](
-        minLength[String](1).keepAnd(maxLength[String](35))) and
-      (JsPath \ "line5").readNullable[String](
-        minLength[String](1).keepAnd(maxLength[String](35))) and
-      (JsPath \ "postcode").readNullable[String](
-        minLength[String](1).keepAnd(maxLength[String](10)))
+        (JsPath \ "line2").readNullable[String](
+          minLength[String](1).keepAnd(maxLength[String](35))) and
+        (JsPath \ "line3").readNullable[String](
+          minLength[String](1).keepAnd(maxLength[String](35))) and
+        (JsPath \ "line4").readNullable[String](
+          minLength[String](1).keepAnd(maxLength[String](35))) and
+        (JsPath \ "line5").readNullable[String](
+          minLength[String](1).keepAnd(maxLength[String](35))) and
+        (JsPath \ "postcode").readNullable[String](
+          minLength[String](1).keepAnd(maxLength[String](10)))
     )(IfAddress.apply _),
     (
       (JsPath \ "line1").writeNullable[String] and
-      (JsPath \ "line2").writeNullable[String] and
-      (JsPath \ "line3").writeNullable[String] and
-      (JsPath \ "line4").writeNullable[String] and
-      (JsPath \ "line5").writeNullable[String] and
-      (JsPath \ "postcode").writeNullable[String]
+        (JsPath \ "line2").writeNullable[String] and
+        (JsPath \ "line3").writeNullable[String] and
+        (JsPath \ "line4").writeNullable[String] and
+        (JsPath \ "line5").writeNullable[String] and
+        (JsPath \ "postcode").writeNullable[String]
     )(unlift(IfAddress.unapply))
   )
 }

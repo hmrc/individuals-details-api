@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,18 @@ package uk.gov.hmrc.individualsdetailsapi.controllers
 import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
+import play.api.hal.Hal.state
+import play.api.mvc.hal._
+import play.api.hal.HalLink
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
-import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, LiveDetailsService, SandboxDetailsService}
+import uk.gov.hmrc.individualsdetailsapi.services.{
+  DetailsService,
+  LiveDetailsService,
+  SandboxDetailsService
+}
 
 import scala.concurrent.ExecutionContext
 
@@ -38,7 +46,18 @@ abstract class ContactDetailsController @Inject()(
     implicit request =>
       val scopes = scopeService.getEndPointScopes("contact-details")
       requiresPrivilegedAuthentication(scopes) { authScopes =>
-        detailsService.
+        detailsService
+          .getContactDetails(matchId, "contact-details", authScopes)
+          .map { contactDetails =>
+            {
+              val selfLink = HalLink(
+                "self",
+                s"/individuals/details/contact-details?matchId=$matchId")
+              val contactDetailsJsObject =
+                Json.obj("contactDetails" -> Json.toJson(contactDetails))
+              Ok(state(contactDetailsJsObject) ++ selfLink)
+            }
+          }
       } recover recovery
   }
 }
@@ -63,7 +82,7 @@ class SandboxContactDetailsController @Inject()(
     scopeService: ScopesService,
     detailsService: SandboxDetailsService
 )(implicit override val ec: ExecutionContext)
-    extends ContactDetailsController(cc, scopeService, detailsService = ) {
+    extends ContactDetailsController(cc, scopeService, detailsService) {
 
   override val environment = Environment.SANDBOX
 

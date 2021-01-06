@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ trait ScopesConfig extends MockitoSugar {
     (s"api-config.scopes.$mockScope7.fields", List("Q", "R", "S", "T")),
     (s"api-config.endpoints.$mockEndpoint1.endpoint",
      "/a/b/c?matchId=<matchId>{&fromDate,toDate}"),
+    (s"api-config.endpoints.$mockEndpoint1.title", "endpoint1"),
     (s"api-config.endpoints.$mockEndpoint1.fields.A", "payments"),
     (s"api-config.endpoints.$mockEndpoint1.fields.B", "employer/employerName"),
     (s"api-config.endpoints.$mockEndpoint1.fields.C",
@@ -67,12 +68,14 @@ trait ScopesConfig extends MockitoSugar {
     (s"api-config.endpoints.$mockEndpoint1.fields.L", "payrollId"),
     (s"api-config.endpoints.$mockEndpoint2.endpoint",
      "/a/b/d?matchId=<matchId>{&fromDate,toDate}"),
+    (s"api-config.endpoints.$mockEndpoint2.title", "endpoint2"),
     (s"api-config.endpoints.$mockEndpoint2.fields.M", "field1"),
     (s"api-config.endpoints.$mockEndpoint2.fields.N", "field2"),
     (s"api-config.endpoints.$mockEndpoint2.fields.Q", "field2"),
     (s"api-config.endpoints.$mockEndpoint2.fields.R", "field2"),
     (s"api-config.endpoints.$mockEndpoint3.endpoint",
      "/a/b/e?matchId=<matchId>{&fromDate,toDate}"),
+    (s"api-config.endpoints.$mockEndpoint3.title", "endpoint3"),
     (s"api-config.endpoints.$mockEndpoint3.fields.O", "field3"),
     (s"api-config.endpoints.$mockEndpoint3.fields.P", "field4")
   )
@@ -88,6 +91,7 @@ trait ScopesConfig extends MockitoSugar {
     endpoints = List(
       EndpointConfig(
         name = mockEndpoint1,
+        title = "endpoint1",
         link = "/a/b/c?matchId=<matchId>{&fromDate,toDate}",
         fields = Map(
           "A" -> "payments",
@@ -105,12 +109,14 @@ trait ScopesConfig extends MockitoSugar {
         )
       ),
       EndpointConfig(name = mockEndpoint2,
+                     title = "endpoint2",
                      link = "/a/b/d?matchId=<matchId>{&fromDate,toDate}",
                      fields = Map(
                        "M" -> "field1",
                        "N" -> "field2"
                      )),
       EndpointConfig(name = mockEndpoint3,
+                     title = "endpoint3",
                      link = "/a/b/e?matchId=<matchId>{&fromDate,toDate}",
                      fields = Map(
                        "O" -> "field3",

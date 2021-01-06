@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
       implicit hc: HeaderCarrier,
       ec: ExecutionContext) = {
 
-    val detailsUrl = s"$baseUrl/individuals/details/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"
+    val detailsUrl =
+      s"$baseUrl/individuals/details/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"
 
     recover[IfDetailsResponse](
       http.GET[IfDetailsResponse](detailsUrl)(implicitly, header(), ec),

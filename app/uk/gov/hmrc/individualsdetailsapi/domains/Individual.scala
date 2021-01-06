@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,18 @@ import java.util.UUID
 import org.joda.time.LocalDate.parse
 import org.joda.time.{Interval, LocalDate}
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
+import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{
+  IfAddress,
+  IfContactDetail,
+  IfResidence
+}
 
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 
 case class Individual(matchId: UUID,
                       nino: String,
-                      firstName: String,
-                      lastName: String,
-                      dateOfBirth: LocalDate)
+                      contactDetails: Option[Seq[IfContactDetail]],
+                      residences: Option[Seq[IfResidence]])
 
 object SandboxDetailsData {
 
@@ -52,10 +56,78 @@ object SandboxDetailsData {
   val sandboxUtr = SaUtr("2432552635")
 
   private def amanda() = Individual(
-    sandboxMatchId,
-    sandboxNino.nino,
-    "Amanda",
-    "Joseph",
-    parse("1960-01-15")
+    matchId = sandboxMatchId,
+    nino = sandboxNino.nino,
+    contactDetails = Some(
+      Seq(
+        IfContactDetail(
+          code = 7,
+          detailType = "DAYTIME TELEPHONE",
+          detail = "01234 567890"
+        ),
+        IfContactDetail(
+          code = 8,
+          detailType = "EVENING TELEPHONE",
+          detail = "01234 567890"
+        ),
+        IfContactDetail(
+          code = 9,
+          detailType = "MOBILE TELEPHONE",
+          detail = "01234 567890"
+        )
+      )),
+    residences = Some(
+      Seq(
+        IfResidence(
+          statusCode = Option("1"),
+          status = Option("VERIFIED"),
+          typeCode = Option(14),
+          residenceType = Option("NOMINATED"),
+          deliveryInfo = None,
+          retLetterServ = None,
+          addressCode = Option("1"),
+          addressType = Option("UK"),
+          address = Option(IfAddress(
+            line1 = Option("24 Trinity Street"),
+            line2 = Option("Dawley Bank"),
+            line3 = Option("Telford"),
+            line4 = Option("Shropshire"),
+            line5 = Option("UK"),
+            postcode = Option("TF3 4ER")
+          )),
+          houseId = None,
+          homeCountry = None,
+          otherCountry = None,
+          deadLetterOfficeDate = None,
+          startDateTime = None,
+          noLongerUsed = Option("N")
+        ),
+        IfResidence(
+          statusCode = Option("3"),
+          status = Option("AS INPUT"),
+          typeCode = Option(13),
+          residenceType = Option("BASE"),
+          deliveryInfo = None,
+          retLetterServ = None,
+          addressCode = Option("2"),
+          addressType = Option("NON-UK"),
+          address = Option(
+            IfAddress(
+              line1 = Option("La Petite Maison"),
+              line2 = Option("Rue de Bastille"),
+              line3 = Option("Vieux Ville"),
+              line4 = Option("Dordogne"),
+              line5 = Option("France"),
+              postcode = None
+            )
+          ),
+          houseId = None,
+          homeCountry = None,
+          otherCountry = None,
+          deadLetterOfficeDate = None,
+          startDateTime = None,
+          noLongerUsed = Option("Y")
+        )
+      ))
   )
 }

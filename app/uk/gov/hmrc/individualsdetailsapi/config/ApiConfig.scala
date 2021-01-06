@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ import uk.gov.hmrc.individualsdetailsapi.service.PathTree
 
 import scala.collection.JavaConverters._
 
-case class ApiConfig(scopes: List[ScopeConfig], endpoints: List[EndpointConfig]) {
+case class ApiConfig(scopes: List[ScopeConfig],
+                     endpoints: List[EndpointConfig]) {
 
   def getScope(scope: String): Option[ScopeConfig] =
     scopes.find(c => c.name == scope)
@@ -34,51 +35,61 @@ case class ApiConfig(scopes: List[ScopeConfig], endpoints: List[EndpointConfig])
 
 case class ScopeConfig(name: String, fields: List[String]) {}
 
-case class EndpointConfig(name: String, link: String, title: String, fields: Map[String, String])
+case class EndpointConfig(name: String,
+                          link: String,
+                          title: String,
+                          fields: Map[String, String])
 
 object ApiConfig {
 
-  implicit val configLoader: ConfigLoader[ApiConfig] = (rootConfig: Config, path: String) => {
+  implicit val configLoader: ConfigLoader[ApiConfig] =
+    (rootConfig: Config, path: String) => {
 
-    val config = rootConfig.getConfig(path)
+      val config = rootConfig.getConfig(path)
 
-    def parseConfig(path: String): PathTree = {
-      val keys: List[String] = config
-        .getConfig(path)
-        .entrySet()
-        .asScala
-        .map(x => x.getKey.replaceAllLiterally("\"", ""))
+      def parseConfig(path: String): PathTree = {
+        val keys: List[String] = config
+          .getConfig(path)
+          .entrySet()
+          .asScala
+          .map(x => x.getKey.replaceAllLiterally("\"", ""))
+          .toList
+
+        PathTree(keys, "\\.")
+      }
+
+      val endpointTree = parseConfig("endpoints")
+      val endpointConfig: List[EndpointConfig] = endpointTree.listChildren
+        .flatMap(
+          key =>
+            endpointTree
+              .getChild(key)
+              .flatMap(node => node.getChild("fields"))
+              .map(node =>
+                EndpointConfig(
+                  name = key,
+                  link = config.getString(s"endpoints.$key.endpoint"),
+                  title = config.getString(s"endpoints.$key.title"),
+                  fields = node.listChildren.toList.sorted
+                    .map(field =>
+                      (field,
+                       config.getString(s"endpoints.$key.fields.$field")))
+                    .toMap
+              )))
         .toList
 
-      PathTree(keys, "\\.")
+      val scopeTree = parseConfig("scopes")
+      val scopeConfig = scopeTree.listChildren
+        .map(key =>
+          ScopeConfig(
+            name = key,
+            fields =
+              config.getStringList(s"""scopes."$key".fields""").asScala.toList))
+        .toList
+
+      ApiConfig(
+        scopes = scopeConfig,
+        endpoints = endpointConfig
+      )
     }
-
-    val endpointTree = parseConfig("endpoints")
-    val endpointConfig: List[EndpointConfig] = endpointTree.listChildren
-      .flatMap(
-        key =>
-          endpointTree
-            .getChild(key)
-            .flatMap(node => node.getChild("fields"))
-            .map(node =>
-              EndpointConfig(
-                name = key,
-                link = config.getString(s"endpoints.$key.endpoint"),
-                title = config.getString(s"endpoints.$key.title"),
-                fields = node.listChildren.toList.sorted
-                  .map(field => (field, config.getString(s"endpoints.$key.fields.$field")))
-                  .toMap
-            )))
-      .toList
-
-    val scopeTree = parseConfig("scopes")
-    val scopeConfig = scopeTree.listChildren
-      .map(key => ScopeConfig(name = key, fields = config.getStringList(s"""scopes."$key".fields""").asScala.toList))
-      .toList
-
-    ApiConfig(
-      scopes = scopeConfig,
-      endpoints = endpointConfig
-    )
-  }
 }

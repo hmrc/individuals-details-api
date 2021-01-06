@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,12 @@ import javax.inject.Inject
 import play.api.mvc.{ControllerComponents, Result}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment}
+import uk.gov.hmrc.auth.core.{
+  AuthorisationException,
+  AuthorisedFunctions,
+  Enrolment
+}
 import uk.gov.hmrc.http.{HeaderCarrier, TooManyRequestException}
-import uk.gov.hmrc.individualsdetailsapi.controllers.authentication.Environment
 import uk.gov.hmrc.individualsdetailsapi.domains._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -48,8 +51,10 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
   def authPredicate(scopes: Iterable[String]): Predicate =
     scopes.map(Enrolment(_): Predicate).reduce(_ or _)
 
-  def requiresPrivilegedAuthentication(endpointScopes: Iterable[String])(f: Iterable[String] => Future[Result])(
-    implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Result] = {
+  def requiresPrivilegedAuthentication(endpointScopes: Iterable[String])(
+      f: Iterable[String] => Future[Result])(
+      implicit hc: HeaderCarrier,
+      ec: ExecutionContext): Future[Result] = {
 
     if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
 

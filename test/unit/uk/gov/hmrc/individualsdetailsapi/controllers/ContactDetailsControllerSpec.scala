@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,11 @@ import uk.gov.hmrc.individualsdetailsapi.controllers.{
   LiveContactDetailsController,
   SandboxContactDetailsController
 }
-import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
+import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
+import uk.gov.hmrc.individualsdetailsapi.services.{
+  LiveDetailsService,
+  SandboxDetailsService
+}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -77,9 +81,14 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
     enrolments
   )
 
-  trait Fixture {
+  trait Fixture extends ScopesConfigHelper {
 
-    val scopeService = mock[ScopesService]
+    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
+    lazy val scopeService: ScopesService = new ScopesService(mockScopesConfig)
+    lazy val scopesHelper: ScopesHelper = new ScopesHelper(scopeService)
+
+    val mockLiveDetailsService = mock[LiveDetailsService]
+    val mockSandboxDetailsService = mock[SandboxDetailsService]
 
     val scopes: Iterable[String] =
       Iterable("read:hello-scopes-1", "read:hello-scopes-2")
@@ -88,14 +97,16 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
       new LiveContactDetailsController(
         fakeAuthConnector(myRetrievals),
         cc,
-        scopeService
+        scopeService,
+        mockLiveDetailsService
       )
 
     val sandboxContactDetailsController =
       new SandboxContactDetailsController(
         fakeAuthConnector(myRetrievals),
         cc,
-        scopeService
+        scopeService,
+        mockSandboxDetailsService
       )
 
     when(scopeService.getEndPointScopes(any())).thenReturn(scopes)

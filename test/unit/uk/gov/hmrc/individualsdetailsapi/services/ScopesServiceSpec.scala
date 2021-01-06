@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class ScopesServiceSpec
     }
 
     "return empty list if endpoint not found" in {
-      val result = scopesService.getEndpointFieldKeys("test-scope");
+      val result = scopesService.getEndpointFieldKeys("test-scope")
       result shouldBe List()
     }
 
@@ -72,20 +72,24 @@ class ScopesServiceSpec
 
     "get valid data items keys for single scope" in {
       val result =
-        scopesService.getValidFieldsForCacheKey(List(mockScope1))
+        scopesService.getValidFieldsForCacheKey(
+          List(mockScope1),
+          List(mockEndpoint1, mockEndpoint2, mockEndpoint3))
       result shouldBe "ABF"
     }
 
     "get valid data items keys for multiple scopes" in {
       val result =
-        scopesService.getValidFieldsForCacheKey(List(mockScope1, mockScope2))
+        scopesService.getValidFieldsForCacheKey(
+          List(mockScope1, mockScope2),
+          List(mockEndpoint1, mockEndpoint2, mockEndpoint3))
       result shouldBe "ABFCDEG"
     }
 
     "get valid data items keys for multiple scopes including no match" in {
-      val result =
-        scopesService.getValidFieldsForCacheKey(
-          List(mockScope1, mockScope2, "not-exists"))
+      val result = scopesService.getValidFieldsForCacheKey(
+        List(mockScope1, mockScope2, "not-exists"),
+        List(mockEndpoint1, mockEndpoint2, mockEndpoint3))
       result shouldBe "ABFCDEG"
     }
 
@@ -97,13 +101,16 @@ class ScopesServiceSpec
     }
 
     "get links for valid endpoints" in {
-      val result = scopesService.getLinks(List(mockScope1))
-      result shouldBe Map(
-        mockEndpoint1 -> "/a/b/c?matchId=<matchId>{&fromDate,toDate}")
+      val result = scopesService.getEndpoints(List(mockScope1))
+      result.size shouldBe 1
+      val config1 = result.head
+      config1.name shouldBe mockEndpoint1
+      config1.link shouldBe "/a/b/c?matchId=<matchId>{&fromDate,toDate}"
 
-      val result2 = scopesService.getLinks(List(mockScope4))
-      result2 shouldBe Map(
-        mockEndpoint2 -> "/a/b/d?matchId=<matchId>{&fromDate,toDate}")
+      val result2 = scopesService.getEndpoints(List(mockScope4))
+      val config2 = result2.head
+      config2.name shouldBe mockEndpoint2
+      config2.link shouldBe "/a/b/d?matchId=<matchId>{&fromDate,toDate}"
     }
 
     "get the scopes associated to an endpoint" in {
