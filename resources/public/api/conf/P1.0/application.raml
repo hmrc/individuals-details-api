@@ -32,7 +32,7 @@ uses:
         (annotations.sandboxData): !include sandbox/root.md
         headers:
           correlationId:
-            description: A universally unique identifier (UUID), used for traceability purposes.
+            description: A UUID, used for traceability purposes.
             type: string
             example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
@@ -69,14 +69,14 @@ uses:
     /contact-details:
       get:
         displayName: Get contact details
-        description: Use this endpoint to get an individual’s contact details.
+        description: !include docs/contact-details.md
         is: [headers.acceptHeader]
         (annotations.scope): "assigned"
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/contact-details.md
         headers:
           correlationId:
-            description: A universally unique identifier (UUID), used for traceability purposes.
+            description: A UUID, used for traceability purposes.
             type: string
             example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
@@ -120,7 +120,7 @@ uses:
         (annotations.sandboxData): !include sandbox/addresses.md
         headers:
           correlationId:
-            description: A universally unique identifier (UUID), used for traceability purposes.
+            description: A UUID, used for traceability purposes.
             type: string
             example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
