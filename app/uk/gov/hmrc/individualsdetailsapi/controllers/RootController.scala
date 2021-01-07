@@ -47,7 +47,7 @@ abstract class RootController @Inject()(
           authScopes =>
             detailsService.resolve(matchId) map { _ =>
               val selfLink =
-                HalLink("self", s"/individuals/employments/?matchId=$matchId")
+                HalLink("self", s"/individuals/details/?matchId=$matchId")
               Ok(scopesHelper.getHalLinks(matchId, authScopes) ++ selfLink)
             }
         } recover recovery

@@ -46,15 +46,10 @@ abstract class ContactDetailsController @Inject()(
     implicit request =>
       val scopes = scopeService.getEndPointScopes("contact-details")
       requiresPrivilegedAuthentication(scopes) { authScopes =>
-        detailsService
-          .getContactDetails(matchId, "contact-details", authScopes)
-          .map { contactDetails =>
-            {
-              val selfLink = HalLink(
-                "self",
-                s"/individuals/details/contact-details?matchId=$matchId")
-              val contactDetailsJsObject =
-                Json.obj("contactDetails" -> Json.toJson(contactDetails))
+        detailsService.getContactDetails(matchId, "contact-details", authScopes)
+          .map { contactDetails =>  {
+              val selfLink = HalLink("self", s"/individuals/details/contact-details?matchId=$matchId")
+              val contactDetailsJsObject = Json.obj("contactDetails" -> Json.toJson(contactDetails))
               Ok(state(contactDetailsJsObject) ++ selfLink)
             }
           }
