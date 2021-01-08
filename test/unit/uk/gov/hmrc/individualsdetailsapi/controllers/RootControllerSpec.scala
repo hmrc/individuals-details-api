@@ -103,7 +103,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           name = "endpointName",
           link = "endpoint/link",
           title = "endpointTitle",
-          fields = Map("fieldId" -> "data/path")
+          fields = Map("fieldId" -> "data/path"),
+          filters = Map()
         )
       )
     )

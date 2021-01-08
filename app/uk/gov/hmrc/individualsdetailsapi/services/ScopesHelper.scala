@@ -30,8 +30,9 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
     * @param endpoint The endpoint for which to construct the query string
     * @return A google fields-style query string with the fields determined by the provided endpoint and scopes
     */
-  def getQueryStringFor(scopes: Iterable[String], endpoint: String): String =
-    PathTree(scopesService.getValidItemsFor(scopes, endpoint)).toString
+  def getQueryStringFor(scopes: Iterable[String], endpoint: String): String = {
+    getQueryStringFor(scopes, List(endpoint))
+  }
 
   /**
     * @param scopes The list of scopes associated with the user
@@ -39,8 +40,14 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
     * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
     */
   def getQueryStringFor(scopes: Iterable[String],
-                        endpoints: List[String]): String =
-    PathTree(scopesService.getValidItemsFor(scopes, endpoints)).toString
+                        endpoints: List[String]): String = {
+    val filters = scopesService.getValidFilters(scopes, endpoints)
+    val x =
+      s"${PathTree(scopesService.getValidItemsFor(scopes, endpoints)).toString}${if (filters.nonEmpty)
+        s"&filter=${filters.mkString("&filter=")}"
+      else ""}"
+    x
+  }
 
   /**
     * @param endpoint The endpoint that the user has called

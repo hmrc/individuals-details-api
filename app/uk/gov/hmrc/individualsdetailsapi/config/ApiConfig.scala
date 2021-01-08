@@ -38,7 +38,8 @@ case class ScopeConfig(name: String, fields: List[String]) {}
 case class EndpointConfig(name: String,
                           link: String,
                           title: String,
-                          fields: Map[String, String])
+                          fields: Map[String, String],
+                          filters: Map[String, String] = Map())
 
 object ApiConfig {
 
@@ -74,6 +75,14 @@ object ApiConfig {
                     .map(field =>
                       (field,
                        config.getString(s"endpoints.$key.fields.$field")))
+                    .toMap,
+                  filters = node.listChildren.toList
+                    .filter(field =>
+                      config.hasPath(s"endpoints.$key.filters.$field"))
+                    .sorted
+                    .map(field =>
+                      (field,
+                       config.getString(s"endpoints.$key.filters.$field")))
                     .toMap
               )))
         .toList

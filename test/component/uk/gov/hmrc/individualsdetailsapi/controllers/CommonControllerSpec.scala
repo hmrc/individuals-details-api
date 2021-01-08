@@ -109,7 +109,8 @@ trait CommonControllerSpec extends BaseSpec {
       And("IF will return response")
       IfStub.searchDetails(nino, ifDetailsResponse)
 
-      When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+      When(
+        s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
       val response = invokeEndpoint(s"$serviceUrl/${endpoint}?matchId=$matchId")
 
       Then("The response status should be 200")
