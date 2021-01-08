@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
     servicesConfig.getString(
       "microservice.services.integration-framework.environment")
 
+  private val cidClientId = servicesConfig.getString("cid-client-id")
+
   private val emptyResponse =
     IfDetailsResponse(IfDetails(None, None), None, None)
 
@@ -69,7 +71,10 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
         authorization =
           Some(Authorization(s"Bearer $integrationFrameworkBearerToken")))
       .withExtraHeaders(
-        Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
+        Seq(
+          "Environment" -> integrationFrameworkEnvironment,
+          "x-end-client-id" -> cidClientId
+        ) ++ extraHeaders: _*)
 
   private def recover[A](x: Future[A], emptyResponse: A): Future[A] =
     x.recoverWith {
