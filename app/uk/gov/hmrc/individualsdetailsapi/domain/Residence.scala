@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.domains
+package uk.gov.hmrc.individualsdetailsapi.domain
 
 import play.api.libs.functional.syntax.unlift
 import play.api.libs.json.{Format, JsPath, Json}
 import play.api.libs.functional.syntax._
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.IfResidence
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfResidence
 
 case class Residence(residenceType: Option[String],
                      address: Option[Address],

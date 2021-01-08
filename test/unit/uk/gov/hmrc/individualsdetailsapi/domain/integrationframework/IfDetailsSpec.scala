@@ -17,7 +17,7 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.IfDetails
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetails
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
 class IfDetailsSpec extends UnitSpec {

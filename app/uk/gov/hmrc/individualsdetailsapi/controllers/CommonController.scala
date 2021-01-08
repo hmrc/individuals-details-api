@@ -25,7 +25,7 @@ import uk.gov.hmrc.auth.core.{
   Enrolment
 }
 import uk.gov.hmrc.http.{HeaderCarrier, TooManyRequestException}
-import uk.gov.hmrc.individualsdetailsapi.domains._
+import uk.gov.hmrc.individualsdetailsapi.domain._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -25,7 +25,7 @@ import uk.gov.hmrc.individualsdetailsapi.connectors.{
   IfConnector,
   IndividualsMatchingApiConnector
 }
-import uk.gov.hmrc.individualsdetailsapi.domains.{
+import uk.gov.hmrc.individualsdetailsapi.domain.{
   ContactDetails,
   Individual,
   MatchNotFoundException,
@@ -34,8 +34,8 @@ import uk.gov.hmrc.individualsdetailsapi.domains.{
   Residences,
   SandboxDetailsData
 }
-import uk.gov.hmrc.individualsdetailsapi.domains.SandboxDetailsData._
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{
+import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData._
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
   IfContactDetail,
   IfDetails,
   IfDetailsResponse,

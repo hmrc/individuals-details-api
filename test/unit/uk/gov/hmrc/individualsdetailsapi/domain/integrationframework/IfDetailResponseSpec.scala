@@ -18,7 +18,7 @@ package unit.uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
 import play.api.libs.json.Json
 import testUtils.TestHelpers
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
   IfContactDetail,
   IfDetailsResponse,
   IfDetails,

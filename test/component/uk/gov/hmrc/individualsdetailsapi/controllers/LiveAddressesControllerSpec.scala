@@ -16,39 +16,53 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec}
-import play.api.test.Helpers._
-import scalaj.http.Http
+import java.util.UUID
 
-class LiveAddressesControllerSpec extends BaseSpec {
+import play.api.libs.json.{JsValue, Json}
 
-  val matchId: String = "2b2e7e84-102f-4338-93f9-1950b35d822b"
+class LiveAddressesControllerSpec extends CommonControllerSpec {
 
-  val rootScopes =
-    List(
-      "read:individuals-details-hmcts-c3",
-      "read:individuals-details-hmcts-c4",
-      "read:individuals-details-laa-c3",
-      "read:individuals-details-laa-c4",
-      "read:individuals-details-lsani-c1",
-      "read:individuals-details-lsani-c3",
-      "read:individuals-details-nictsejo-c4"
-    )
+  override val matchId: UUID =
+    UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b")
+  override val endpoint: String = "addresses"
+  override val nino = "AB123456C"
+  override val rootScope = List(
+    "read:individuals-details-hmcts-c3",
+    "read:individuals-details-hmcts-c4",
+    "read:individuals-details-laa-c3",
+    "read:individuals-details-laa-c4",
+    "read:individuals-details-lsani-c1",
+    "read:individuals-details-lsani-c3",
+    "read:individuals-details-nictsejo-c4"
+  )
 
-  feature("Live Addresses Controller") {
-    scenario("addresses route") {
-      Given("A valid auth token ")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("I make a call to addresses endpoint")
-      val response =
-        Http(s"$serviceUrl/addresses/?matchId=$matchId")
-          .headers(requestHeaders(acceptHeaderP1))
-          .asString
-
-      Then("The response status should be 500")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-    }
-  }
-
+  override val expectedJson: JsValue = Json.parse(s"""{
+     |  "_links" : {
+     |    "self" : {
+     |      "href" : "/individuals/details/addresses?matchId=$matchId"
+     |    }
+     |  },
+     |  "residences" : [ {
+     |    "residenceType" : "NOMINATED",
+     |    "address" : {
+     |      "line1" : "24 Trinity Street",
+     |      "line2" : "Dawley Bank",
+     |      "line3" : "Telford",
+     |      "line4" : "Shropshire",
+     |      "line5" : "UK",
+     |      "postcode" : "TF3 4ER"
+     |    },
+     |    "inUse" : true
+     |  }, {
+     |    "residenceType" : "BASE",
+     |    "address" : {
+     |      "line1" : "La Petite Maison",
+     |      "line2" : "Rue de Bastille",
+     |      "line3" : "Vieux Ville",
+     |      "line4" : "Dordogne",
+     |      "line5" : "France"
+     |    },
+     |    "inUse" : false
+     |  } ]
+     |}""".stripMargin)
 }

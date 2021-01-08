@@ -19,11 +19,10 @@ package uk.gov.hmrc.individualsdetailsapi.controllers
 import controllers.Assets
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
-import play.api.http.HttpErrorHandler
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.api.controllers.DocumentationController
 import uk.gov.hmrc.individualsdetailsapi.views._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+
 @Singleton
 class APIDocumentationController @Inject()(cc: ControllerComponents,
                                            assets: Assets,

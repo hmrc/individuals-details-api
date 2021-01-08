@@ -26,13 +26,27 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, _}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
+import uk.gov.hmrc.auth.core.{
+  AuthConnector,
+  Enrolment,
+  Enrolments,
+  InsufficientEnrolments
+}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsdetailsapi.config.EndpointConfig
-import uk.gov.hmrc.individualsdetailsapi.controllers.{LiveRootController, SandboxRootController}
-import uk.gov.hmrc.individualsdetailsapi.domains.{MatchNotFoundException, MatchedCitizen}
+import uk.gov.hmrc.individualsdetailsapi.controllers.{
+  LiveRootController,
+  SandboxRootController
+}
+import uk.gov.hmrc.individualsdetailsapi.domain.{
+  MatchNotFoundException,
+  MatchedCitizen
+}
 import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
-import uk.gov.hmrc.individualsdetailsapi.services.{LiveDetailsService, SandboxDetailsService}
+import uk.gov.hmrc.individualsdetailsapi.services.{
+  LiveDetailsService,
+  SandboxDetailsService
+}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,7 +56,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
   val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b");
 
   implicit lazy val materializer: Materializer = fakeApplication.materializer
-  implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
+  implicit lazy val ec: ExecutionContext =
+    fakeApplication.injector.instanceOf[ExecutionContext]
 
   trait Fixture extends ScopesConfigHelper {
 
@@ -105,11 +120,10 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/")
 
           when(mockLiveDetailsService.resolve(eqTo(matchId))(any()))
-            .thenReturn(Future.successful(MatchedCitizen(matchId, nino = Nino("AB123456C"))))
+            .thenReturn(Future.successful(
+              MatchedCitizen(matchId, nino = Nino("AB123456C"))))
 
           val result = liveRootController.root(matchId)(fakeRequest)
-
-          bodyOf(result).onComplete(t => println(Json.prettyPrint(Json.parse(t.get))))
 
           status(result) shouldBe OK
         }
@@ -152,9 +166,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
           val result =
             intercept[Exception] {
-              await(
-                liveRootController.root(matchId)(
-                  fakeRequest))
+              await(liveRootController.root(matchId)(fakeRequest))
             }
           assert(result.getMessage == "No scopes defined")
         }
@@ -167,11 +179,10 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/")
 
           when(mockSandboxDetailsService.resolve(eqTo(matchId))(any()))
-            .thenReturn(Future.successful(MatchedCitizen(matchId, nino = Nino("AB123456C"))))
+            .thenReturn(Future.successful(
+              MatchedCitizen(matchId, nino = Nino("AB123456C"))))
 
           val result = sandboxRootController.root(matchId)(fakeRequest)
-
-          bodyOf(result).onComplete(t => println(Json.prettyPrint(Json.parse(t.get))))
 
           status(result) shouldBe OK
         }
@@ -202,9 +213,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
           val result =
             intercept[Exception] {
-              await(
-                sandboxRootController.root(matchId)(
-                  fakeRequest))
+              await(sandboxRootController.root(matchId)(fakeRequest))
             }
           assert(result.getMessage == "No scopes defined")
         }

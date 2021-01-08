@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.domains
+package uk.gov.hmrc.individualsdetailsapi.domain
 
 import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.IfContactDetail
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfContactDetail
 
 // TODO: Our model is assuming that there will only be one of each telephone number type... check this?
 

@@ -23,7 +23,7 @@ import scala.concurrent.Future
 import scala.concurrent.Future.{failed, successful}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsdetailsapi.connectors.IndividualsMatchingApiConnector
-import uk.gov.hmrc.individualsdetailsapi.domains.{
+import uk.gov.hmrc.individualsdetailsapi.domain.{
   MatchNotFoundException,
   MatchedCitizen,
   SandboxDetailsData

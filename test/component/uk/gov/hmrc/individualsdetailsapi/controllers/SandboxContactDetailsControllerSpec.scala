@@ -16,32 +16,33 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
+import java.util.UUID
+
 import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec}
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import scalaj.http.Http
+import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData
 
-class SandboxContactDetailsControllerSpec extends BaseSpec {
+class SandboxContactDetailsControllerSpec extends CommonControllerSpec {
 
-  val matchId: String = "2b2e7e84-102f-4338-93f9-1950b35d822b"
-
-  val rootScopes =
+  override val matchId: UUID = SandboxDetailsData.sandboxMatchId
+  override val endpoint: String = "sandbox/contact-details"
+  override val nino = "AB123456C"
+  override val rootScope =
     List("read:individuals-details-hmcts-c4", "read:individuals-details-laa-c4")
 
-  feature("Sandbox Contact Details Controller") {
-    scenario("contact-details route") {
-      Given("A valid auth token ")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
-
-      When("I make a call to contact-details endpoint")
-      val response =
-        Http(s"$serviceUrl/sandbox/contact-details?matchId=$matchId")
-          .headers(requestHeaders(acceptHeaderP1))
-          .asString
-
-      Then("The response status should be 500")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-
-    }
-  }
+  override val expectedJson: JsValue = Json.parse(s"""{
+   |  "_links" : {
+   |    "self" : {
+   |      "href" : "/individuals/details/contact-details?matchId=$matchId"
+   |    }
+   |  },
+   |  "contactDetails" : {
+   |    "daytimeTelephone" : "01234 567890",
+   |    "eveningTelephone" : "01234 567890",
+   |    "mobileTelephone" : "01234 567890"
+   |  }
+   |}""".stripMargin)
 
 }

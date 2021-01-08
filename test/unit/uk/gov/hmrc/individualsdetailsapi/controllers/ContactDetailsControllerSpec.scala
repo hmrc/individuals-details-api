@@ -28,7 +28,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.individualsdetailsapi.controllers.{LiveContactDetailsController, SandboxContactDetailsController}
-import uk.gov.hmrc.individualsdetailsapi.domains.{ContactDetails, MatchNotFoundException}
+import uk.gov.hmrc.individualsdetailsapi.domain.{ContactDetails, MatchNotFoundException}
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
 import uk.gov.hmrc.individualsdetailsapi.services.{LiveDetailsService, SandboxDetailsService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
@@ -98,8 +98,6 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           val result = liveContactDetailsController.contactDetails(matchId)(fakeRequest)
 
-          bodyOf(result).onComplete(t => println(Json.prettyPrint(Json.parse(t.get))))
-
           status(result) shouldBe OK
         }
 
@@ -162,8 +160,6 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
               mobileTelephone = Some("0123 456789")))))
 
           val result = sandboxContactDetailsController.contactDetails(matchId)(fakeRequest)
-
-          bodyOf(result).onComplete(t => println(Json.prettyPrint(Json.parse(t.get))))
 
           status(result) shouldBe OK
         }

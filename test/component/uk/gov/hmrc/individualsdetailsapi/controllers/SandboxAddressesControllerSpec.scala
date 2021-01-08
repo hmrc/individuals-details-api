@@ -16,31 +16,47 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec}
-import play.api.test.Helpers._
-import scalaj.http.Http
+import java.util.UUID
 
-class SandboxAddressesControllerSpec extends BaseSpec {
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData
 
-  val matchId: String = "2b2e7e84-102f-4338-93f9-1950b35d822b"
+class SandboxAddressesControllerSpec extends CommonControllerSpec {
 
-  val rootScopes =
+  override val rootScope =
     List("read:individuals-details-hmcts-c4", "read:individuals-details-laa-c4")
 
-  feature("Sandbox Addresses Controller") {
-    scenario("addresses route") {
-      Given("A valid auth token ")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScopes)
+  override val matchId: UUID = SandboxDetailsData.sandboxMatchId
+  override val endpoint: String = "sandbox/addresses"
+  override val nino = "AB123456C"
 
-      When("I make a call to addresses endpoint")
-      val response =
-        Http(s"$serviceUrl/sandbox/addresses?matchId=$matchId")
-          .headers(requestHeaders(acceptHeaderP1))
-          .asString
-
-      Then("The response status should be 500")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-
-    }
-  }
+  override val expectedJson: JsValue = Json.parse(s"""{
+   |  "_links" : {
+   |    "self" : {
+   |      "href" : "/individuals/details/addresses?matchId=$matchId"
+   |    }
+   |  },
+   |  "residences" : [ {
+   |    "residenceType" : "NOMINATED",
+   |    "address" : {
+   |      "line1" : "24 Trinity Street",
+   |      "line2" : "Dawley Bank",
+   |      "line3" : "Telford",
+   |      "line4" : "Shropshire",
+   |      "line5" : "UK",
+   |      "postcode" : "TF3 4ER"
+   |    },
+   |    "inUse" : true
+   |  }, {
+   |    "residenceType" : "BASE",
+   |    "address" : {
+   |      "line1" : "La Petite Maison",
+   |      "line2" : "Rue de Bastille",
+   |      "line3" : "Vieux Ville",
+   |      "line4" : "Dordogne",
+   |      "line5" : "France"
+   |    },
+   |    "inUse" : false
+   |  } ]
+   |}""".stripMargin)
 }

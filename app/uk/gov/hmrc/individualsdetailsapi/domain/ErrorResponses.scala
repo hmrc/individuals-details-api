@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.domains
+package uk.gov.hmrc.individualsdetailsapi.domain
 
 import play.api.http.Status._
 import play.api.libs.json.Json

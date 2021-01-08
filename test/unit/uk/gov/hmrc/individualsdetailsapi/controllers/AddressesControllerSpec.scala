@@ -26,11 +26,26 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, _}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
-import uk.gov.hmrc.individualsdetailsapi.controllers.{LiveAddressesController, SandboxAddressesController}
-import uk.gov.hmrc.individualsdetailsapi.domains.{Address, MatchNotFoundException, Residence}
+import uk.gov.hmrc.auth.core.{
+  AuthConnector,
+  Enrolment,
+  Enrolments,
+  InsufficientEnrolments
+}
+import uk.gov.hmrc.individualsdetailsapi.controllers.{
+  LiveAddressesController,
+  SandboxAddressesController
+}
+import uk.gov.hmrc.individualsdetailsapi.domain.{
+  Address,
+  MatchNotFoundException,
+  Residence
+}
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
-import uk.gov.hmrc.individualsdetailsapi.services.{LiveDetailsService, SandboxDetailsService}
+import uk.gov.hmrc.individualsdetailsapi.services.{
+  LiveDetailsService,
+  SandboxDetailsService
+}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,7 +55,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
   val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b");
 
   implicit lazy val materializer: Materializer = fakeApplication.materializer
-  implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
+  implicit lazy val ec: ExecutionContext =
+    fakeApplication.injector.instanceOf[ExecutionContext]
 
   trait Fixture extends ScopesConfigHelper {
 
@@ -51,7 +67,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
     val mockSandboxDetailsService = mock[SandboxDetailsService]
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
-    when(mockAuthConnector.authorise(
+    when(
+      mockAuthConnector.authorise(
         eqTo(Enrolment("test-scope")),
         refEq(Retrievals.allEnrolments))(any(), any()))
       .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
@@ -80,14 +97,15 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
     val residences = Seq(
       Residence(
         residenceType = Option("NOMINATED"),
-        address = Option(Address(
-          line1 = Option("24 Trinity Street"),
-          line2 = Option("Dawley Bank"),
-          line3 = Option("Telford"),
-          line4 = Option("Shropshire"),
-          line5 = Option("UK"),
-          postcode = Option("TF3 4ER")
-        )),
+        address = Option(
+          Address(
+            line1 = Option("24 Trinity Street"),
+            line2 = Option("Dawley Bank"),
+            line3 = Option("Telford"),
+            line4 = Option("Shropshire"),
+            line5 = Option("UK"),
+            postcode = Option("TF3 4ER")
+          )),
         inUse = Option(true)
       ),
       Residence(
@@ -117,12 +135,14 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           val fakeRequest = FakeRequest("GET", s"/addresses/")
 
-          when(mockLiveDetailsService.getResidences(eqTo(matchId), eqTo("addresses"), eqTo(List("test-scope")))(any(), any()))
+          when(
+            mockLiveDetailsService.getResidences(
+              eqTo(matchId),
+              eqTo("addresses"),
+              eqTo(List("test-scope")))(any(), any()))
             .thenReturn(Future.successful(residences))
 
           val result = liveAddressesController.addresses(matchId)(fakeRequest)
-
-          bodyOf(result).onComplete(t => println(Json.prettyPrint(Json.parse(t.get))))
 
           status(result) shouldBe OK
         }
@@ -132,7 +152,10 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/addresses/")
 
           when(
-            mockLiveDetailsService.getResidences(eqTo(matchId), eqTo("addresses"), eqTo(List("test-scope")))(any(), any()))
+            mockLiveDetailsService.getResidences(
+              eqTo(matchId),
+              eqTo("addresses"),
+              eqTo(List("test-scope")))(any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result = liveAddressesController.addresses(matchId)(fakeRequest)
@@ -166,9 +189,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           val result =
             intercept[Exception] {
-              await(
-                liveAddressesController.addresses(matchId)(
-                  fakeRequest))
+              await(liveAddressesController.addresses(matchId)(fakeRequest))
             }
           assert(result.getMessage == "No scopes defined")
         }
@@ -179,12 +200,15 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
         "return addresses when successful" in new Fixture {
 
           val fakeRequest = FakeRequest("GET", s"/addresses/")
-          when(mockSandboxDetailsService.getResidences(eqTo(matchId), eqTo("addresses"), eqTo(List("test-scope")))(any(), any()))
+          when(
+            mockSandboxDetailsService.getResidences(
+              eqTo(matchId),
+              eqTo("addresses"),
+              eqTo(List("test-scope")))(any(), any()))
             .thenReturn(Future.successful(residences))
 
-          val result = sandboxAddressesController.addresses(matchId)(fakeRequest)
-
-          bodyOf(result).onComplete(t => println(Json.prettyPrint(Json.parse(t.get))))
+          val result =
+            sandboxAddressesController.addresses(matchId)(fakeRequest)
 
           status(result) shouldBe OK
         }
@@ -194,10 +218,14 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/addresses/")
 
           when(
-            mockSandboxDetailsService.getResidences(eqTo(matchId), eqTo("addresses"), eqTo(List("test-scope")))(any(), any()))
+            mockSandboxDetailsService.getResidences(
+              eqTo(matchId),
+              eqTo("addresses"),
+              eqTo(List("test-scope")))(any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
-          val result = sandboxAddressesController.addresses(matchId)(fakeRequest)
+          val result =
+            sandboxAddressesController.addresses(matchId)(fakeRequest)
 
           status(result) shouldBe NOT_FOUND
 
@@ -216,9 +244,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           val result =
             intercept[Exception] {
-              await(
-                sandboxAddressesController.addresses(matchId)(
-                  fakeRequest))
+              await(sandboxAddressesController.addresses(matchId)(fakeRequest))
             }
           assert(result.getMessage == "No scopes defined")
         }

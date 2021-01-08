@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.{
   TooManyRequestException,
   Upstream4xxResponse
 }
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
   IfDetails,
   IfDetailsResponse
 }

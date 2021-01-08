@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.domains
+package uk.gov.hmrc.individualsdetailsapi.domain
 
 import java.util.UUID
 
 import org.joda.time.LocalDate.parse
 import org.joda.time.{Interval, LocalDate}
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
   IfAddress,
   IfContactDetail,
   IfResidence

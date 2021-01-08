@@ -21,13 +21,13 @@ import java.util.UUID
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsdetailsapi.domains.{
+import uk.gov.hmrc.individualsdetailsapi.domain.{
   MatchNotFoundException,
   MatchedCitizen
 }
 import uk.gov.hmrc.individualsdetailsapi.services.SandboxCitizenMatchingService
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.TestSupport
-import uk.gov.hmrc.individualsdetailsapi.domains.SandboxDetailsData.{
+import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData.{
   sandboxMatchId,
   sandboxNino
 }

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.domains
+package uk.gov.hmrc.individualsdetailsapi.domain
 
 import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.IfAddress
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfAddress
 
 case class Address(line1: Option[String],
                    line2: Option[String],
