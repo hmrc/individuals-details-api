@@ -51,7 +51,7 @@ class IfConnectorSpec
       "microservice.services.integration-framework.port" -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
       "microservice.services.integration-framework.environment" -> integrationFrameworkEnvironment,
-      "cid-client-id" -> clientId
+      "consumer-client-ids.moj-client-id" -> clientId
     )
     .build()
 

@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsdetailsapi.connectors
 
 import javax.inject.Inject
 import org.joda.time.{Interval, LocalDate}
-import play.api.Logger
+import play.api.{Configuration, Logger}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.http.{
@@ -36,8 +36,9 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
-    implicit ec: ExecutionContext) {
+class IfConnector @Inject()(servicesConfig: ServicesConfig,
+                            config: Configuration,
+                            http: HttpClient)(implicit ec: ExecutionContext) {
 
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
   private val integrationFrameworkBearerToken =
@@ -47,7 +48,10 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
     servicesConfig.getString(
       "microservice.services.integration-framework.environment")
 
-  private val cidClientId = servicesConfig.getString("cid-client-id")
+  private val cidClientId =
+    config
+      .getOptional[String]("consumer-client-ids.moj-client-id")
+      .getOrElse("moj-client-id")
 
   private val emptyResponse =
     IfDetailsResponse(IfDetails(None, None), None, None)
