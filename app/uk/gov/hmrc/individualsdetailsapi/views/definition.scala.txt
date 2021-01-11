@@ -50,7 +50,7 @@
     "categories": ["PRIVATE_GOVERNMENT"],
     "versions":[
       {
-        "version":"P1.0",
+        "version":"1.0",
         "status":"PUBLISHED",
         "access":{
           "type":"PRIVATE",
