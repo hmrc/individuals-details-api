@@ -33,7 +33,9 @@ case class ApiConfig(scopes: List[ScopeConfig],
 
 }
 
-case class ScopeConfig(name: String, fields: List[String]) {}
+case class ScopeConfig(name: String,
+                       fields: List[String],
+                       filters: List[String]) {}
 
 case class EndpointConfig(name: String,
                           link: String,
@@ -89,11 +91,22 @@ object ApiConfig {
 
       val scopeTree = parseConfig("scopes")
       val scopeConfig = scopeTree.listChildren
-        .map(key =>
-          ScopeConfig(
-            name = key,
-            fields =
-              config.getStringList(s"""scopes."$key".fields""").asScala.toList))
+        .map(
+          key =>
+            ScopeConfig(
+              name = key,
+              fields = config
+                .getStringList(s"""scopes."$key".fields""")
+                .asScala
+                .toList,
+              filters =
+                if (config.hasPath(s"""scopes."$key".filters"""))
+                  config
+                    .getStringList(s"""scopes."$key".filters""")
+                    .asScala
+                    .toList
+                else List()
+          ))
         .toList
 
       ApiConfig(

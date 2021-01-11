@@ -82,11 +82,11 @@ trait ScopesConfig extends MockitoSugar {
 
   val mockApiConfig = ApiConfig(
     scopes = List(
-      ScopeConfig(mockScope1, List("A", "B", "F")),
-      ScopeConfig(mockScope2, List("A", "B", "C", "D", "E", "F", "G")),
-      ScopeConfig(mockScope3, List("A", "P")),
-      ScopeConfig(mockScope4, List("M", "N")),
-      ScopeConfig(mockScope5, List("O", "P"))
+      ScopeConfig(mockScope1, List("A", "B", "F"), List()),
+      ScopeConfig(mockScope2, List("A", "B", "C", "D", "E", "F", "G"), List()),
+      ScopeConfig(mockScope3, List("A", "P"), List()),
+      ScopeConfig(mockScope4, List("M", "N"), List()),
+      ScopeConfig(mockScope5, List("O", "P"), List())
     ),
     endpoints = List(
       EndpointConfig(

@@ -31,6 +31,12 @@ class ScopesService @Inject()(configuration: Configuration) {
       .map(s => s.fields)
       .getOrElse(List())
 
+  private[service] def getScopeFilterKeys(scope: String): List[String] =
+    apiConfig
+      .getScope(scope)
+      .map(s => s.filters)
+      .getOrElse(List())
+
   def getScopeItems(scope: String): List[String] =
     getScopeItemsKeys(scope)
       .flatMap(fieldId =>

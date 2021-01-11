@@ -28,7 +28,6 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
-  IfDetails,
   IfDetailsResponse
 }
 
