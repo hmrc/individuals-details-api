@@ -33,7 +33,7 @@ class APIDocumentationController @Inject()(cc: ControllerComponents,
   private lazy val privilegedWhitelistedApplicationIds =
     config
       .getOptional[Seq[String]](
-        "api.access.version-P1.0.whitelistedApplicationIds")
+        "api.access.version-1.0.whitelistedApplicationIds")
       .getOrElse(Seq.empty)
 
   private lazy val endpointsEnabled: Boolean =

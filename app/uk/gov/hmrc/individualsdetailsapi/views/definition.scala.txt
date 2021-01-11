@@ -54,7 +54,7 @@
     "categories": ["PRIVATE_GOVERNMENT"],
     "versions":[
       {
-        "version":"P1.0",
+        "version":"1.0",
         "status":@Json.toJson(status),
         "endpointsEnabled":@Json.toJson(endpointsEnabled),
         "access":{
