@@ -65,7 +65,6 @@ trait TestHelpers {
                                  address = generateAddress(1))
 
     IfDetailsResponse(
-      ninoDetails,
       Some(Seq(contactDetail1, contactDetail2)),
       Some(Seq(residence1, residence2))
     )

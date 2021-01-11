@@ -44,7 +44,6 @@ trait CommonControllerSpec extends BaseSpec {
     .map(
       i =>
         IfDetailsResponse(
-          IfDetails(Option(i.nino), None),
           i.contactDetails,
           i.residences
       )
@@ -115,8 +114,6 @@ trait CommonControllerSpec extends BaseSpec {
 
       Then("The response status should be 200")
       response.code shouldBe OK
-      val r = Json.parse(response.body)
-      print(Json.prettyPrint(r))
       Json.parse(response.body) shouldBe expectedJson
     }
   }

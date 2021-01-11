@@ -48,7 +48,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
       "microservice.services.integration-framework.environment")
 
   private val emptyResponse =
-    IfDetailsResponse(IfDetails(None, None), None, None)
+    IfDetailsResponse(None, None)
 
   def fetchDetails(nino: Nino, filter: Option[String])(
       implicit hc: HeaderCarrier,

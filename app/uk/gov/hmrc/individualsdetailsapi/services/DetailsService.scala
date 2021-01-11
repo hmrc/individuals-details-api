@@ -78,11 +78,13 @@ trait DetailsService {
       ec: ExecutionContext): Future[Seq[Residence]] = {
 
     retrieveAndMap[Seq[Residence]](matchId, endpoint, scopes) { response =>
-      response.residences
-        .getOrElse(Seq())
-        .map(Residence.create)
-        .filter(_.isDefined)
-        .map(_.get)
+      {
+        response.residences
+          .getOrElse(Seq())
+          .map(Residence.create)
+          .filter(_.isDefined)
+          .map(_.get)
+      }
     }
   }
 }
@@ -111,10 +113,7 @@ class SandboxDetailsService @Inject()(
 
     SandboxDetailsData.findByMatchId(matchId) match {
       case Some(i) =>
-        Future.successful(
-          IfDetailsResponse(IfDetails(Option(i.nino), None),
-                            i.contactDetails,
-                            i.residences)) map responseMapper
+        Future.successful(IfDetailsResponse(i.contactDetails, i.residences)) map responseMapper
       case None => Future.failed(new MatchNotFoundException)
     }
   }

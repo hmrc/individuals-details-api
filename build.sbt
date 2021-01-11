@@ -78,7 +78,7 @@ lazy val microservice =
       Resolver.bintrayRepo("hmrc", "releases"),
       Resolver.jcenterRepo
     ))
-    .settings(PlayKeys.playDefaultPort := 9652)
+    .settings(PlayKeys.playDefaultPort := 9655)
     .settings(majorVersion := 0)
 
 lazy val ComponentTest = config("component") extend Test

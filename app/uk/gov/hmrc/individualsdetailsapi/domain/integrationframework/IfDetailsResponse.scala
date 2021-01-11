@@ -19,21 +19,18 @@ package uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Format, JsPath}
 
-case class IfDetailsResponse(id: IfDetails,
-                             contactDetails: Option[Seq[IfContactDetail]],
+case class IfDetailsResponse(contactDetails: Option[Seq[IfContactDetail]],
                              residences: Option[Seq[IfResidence]])
 
 object IfDetailsResponse {
   implicit val detailsResponseFormat: Format[IfDetailsResponse] = Format(
     (
-      (JsPath \ "details").read[IfDetails] and
-        (JsPath \ "contactDetails").readNullable[Seq[IfContactDetail]] and
-        (JsPath \ "residence").readNullable[Seq[IfResidence]]
+      (JsPath \ "contactDetails").readNullable[Seq[IfContactDetail]] and
+        (JsPath \ "residences").readNullable[Seq[IfResidence]]
     )(IfDetailsResponse.apply _),
     (
-      (JsPath \ "details").write[IfDetails] and
-        (JsPath \ "contactDetails").writeNullable[Seq[IfContactDetail]] and
-        (JsPath \ "residence").writeNullable[Seq[IfResidence]]
+      (JsPath \ "contactDetails").writeNullable[Seq[IfContactDetail]] and
+        (JsPath \ "residences").writeNullable[Seq[IfResidence]]
     )(unlift(IfDetailsResponse.unapply))
   )
 }
