@@ -92,9 +92,9 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           when(
             mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
             .thenReturn(Future.successful(Some(ContactDetails(
-              daytimeTelephone = Some("0123 456789"),
-              eveningTelephone = Some("0123 456789"),
-              mobileTelephone = Some("0123 456789")))))
+              daytimeTelephone = List("0123 456789"),
+              eveningTelephone = List("0123 456789"),
+              mobileTelephone = List("0123 456789")))))
 
           val result = liveContactDetailsController.contactDetails(matchId)(fakeRequest)
 
@@ -155,9 +155,9 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
           when(mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
             .thenReturn(Future.successful(Some(ContactDetails(
-              daytimeTelephone = Some("0123 456789"),
-              eveningTelephone = Some("0123 456789"),
-              mobileTelephone = Some("0123 456789")))))
+              daytimeTelephone = List("0123 456789"),
+              eveningTelephone = List("0123 456789"),
+              mobileTelephone = List("0123 456789")))))
 
           val result = sandboxContactDetailsController.contactDetails(matchId)(fakeRequest)
 

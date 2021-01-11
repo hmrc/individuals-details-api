@@ -5,8 +5,8 @@
     }
   },
   "contactDetails": {
-    "mobileTelephone": "07123 987654",
-    "daytimeTelephone": "07123 987654",
-    "eveningTelephone": "07123 987654"
+    "mobileTelephone": [ "07123 987654" ],
+    "daytimeTelephone": [ "07123 987654" ],
+    "eveningTelephone": [ "07123 987654" ]
   }
 }

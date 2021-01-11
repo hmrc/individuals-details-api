@@ -26,17 +26,20 @@
       "description": "Telephone numbers for the individual.",
       "properties": {
         "mobileTelephone": {
-          "type": "string",
+          "type": "array",
+          "items": { "type": "string" },
           "description": "The mobile telephone number for the individual.",
           "example": "07700 900000"
         },
         "daytimeTelephone": {
-          "type": "string",
+          "type": "array",
+          "items": { "type": "string" },
           "description": "The daytime telephone number for the individual.",
           "example": "01632 960000"
         },
         "eveningTelephone": {
-          "type": "string",
+          "type": "array",
+          "items": { "type": "string" },
           "description": "The evening telephone number for the individual.",
           "example": "01632 960000"
         }

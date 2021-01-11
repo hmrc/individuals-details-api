@@ -39,9 +39,9 @@ class SandboxContactDetailsControllerSpec extends CommonControllerSpec {
    |    }
    |  },
    |  "contactDetails" : {
-   |    "daytimeTelephone" : "01234 567890",
-   |    "eveningTelephone" : "01234 567890",
-   |    "mobileTelephone" : "01234 567890"
+   |    "daytimeTelephone" : [ "01234 567890" ],
+   |    "eveningTelephone" : [ "01234 567890" ],
+   |    "mobileTelephone" : [ "01234 567890" ]
    |  }
    |}""".stripMargin)
 
