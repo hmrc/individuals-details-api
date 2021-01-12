@@ -36,8 +36,21 @@ class APIDocumentationController @Inject()(cc: ControllerComponents,
         "api.access.version-1.0.whitelistedApplicationIds")
       .getOrElse(Seq.empty)
 
+  private lazy val endpointsEnabled: Boolean =
+    config
+      .getOptional[Boolean]("api.access.version-1.0.endpointsEnabled")
+      .getOrElse(true)
+
+  private lazy val status: String =
+    config
+      .getOptional[String]("api.access.version-1.0.status")
+      .getOrElse("BETA")
+
   def definition(): Action[AnyContent] = Action { _ =>
-    Ok(txt.definition(privilegedWhitelistedApplicationIds))
+    Ok(
+      txt.definition(privilegedWhitelistedApplicationIds,
+                     endpointsEnabled,
+                     status))
       .withHeaders(CONTENT_TYPE -> JSON)
   }
 
