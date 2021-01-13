@@ -69,7 +69,7 @@ trait DetailsService {
 
     retrieveAndMap[Option[ContactDetails]](matchId, endpoint, scopes) {
       response =>
-        response.contactDetails.flatMap(ContactDetails.create)
+        response.contactDetails.flatMap(ContactDetails.convert)
     }
   }
 
@@ -81,7 +81,7 @@ trait DetailsService {
       {
         response.residences
           .getOrElse(Seq())
-          .map(Residence.create)
+          .map(Residence.convert)
           .filter(_.isDefined)
           .map(_.get)
       }

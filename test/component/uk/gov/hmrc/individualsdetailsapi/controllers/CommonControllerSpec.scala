@@ -41,10 +41,10 @@ trait CommonControllerSpec extends BaseSpec {
   val ifDetailsResponse: IfDetailsResponse = SandboxDetailsData
     .findByMatchId(SandboxDetailsData.sandboxMatchId)
     .map(
-      i =>
+      sandboxData =>
         IfDetailsResponse(
-          i.contactDetails,
-          i.residences
+          sandboxData.contactDetails,
+          sandboxData.residences
       )
     )
     .get

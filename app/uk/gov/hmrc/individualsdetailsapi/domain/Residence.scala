@@ -55,10 +55,10 @@ object Residence {
       case _                  => Some(new Residence(residenceType, address, noLongerUsed))
     }
 
-  def create(residence: IfResidence): Option[Residence] = {
+  def convert(residence: IfResidence): Option[Residence] = {
 
     val residenceType: Option[String] = residence.residenceType
-    val address: Option[Address] = Address.create(residence.address)
+    val address: Option[Address] = Address.convert(residence.address)
     val inUse: Option[Boolean] = residence.noLongerUsed match {
       case Some("Y") => Some(false)
       case Some("N") => Some(true)

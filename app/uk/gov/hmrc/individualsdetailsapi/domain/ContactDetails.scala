@@ -19,9 +19,9 @@ package uk.gov.hmrc.individualsdetailsapi.domain
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfContactDetail
 
-case class ContactDetails(daytimeTelephone: List[String],
-                          eveningTelephone: List[String],
-                          mobileTelephone: List[String])
+case class ContactDetails(daytimeTelephones: List[String],
+                          eveningTelephones: List[String],
+                          mobileTelephones: List[String])
 
 object ContactDetails {
 
@@ -31,34 +31,26 @@ object ContactDetails {
   private val EveningTelephone: Int = 8
   private val MobileTelephone: Int = 9
 
-  def create(daytimeTelephone: List[String],
-             eveningTelephone: List[String],
-             mobileTelephone: List[String]): Option[ContactDetails] =
-    (daytimeTelephone, eveningTelephone, mobileTelephone) match {
+  def create(daytimeTelephones: List[String],
+             eveningTelephones: List[String],
+             mobileTelephones: List[String]): Option[ContactDetails] =
+    (daytimeTelephones, eveningTelephones, mobileTelephones) match {
       case (a, b, c) if a.isEmpty && b.isEmpty && c.isEmpty => None
       case _ =>
         Option(
-          new ContactDetails(daytimeTelephone,
-                             eveningTelephone,
-                             mobileTelephone))
+          new ContactDetails(daytimeTelephones,
+                             eveningTelephones,
+                             mobileTelephones))
     }
 
-  def create(contactDetails: Seq[IfContactDetail]): Option[ContactDetails] =
-    contactDetails.foldRight(
+  def convert(contactDetails: Seq[IfContactDetail]): Option[ContactDetails] =
+    (create _).tupled apply contactDetails.foldRight(
       (List.empty[String], List.empty[String], List.empty[String]))(
       (detail, tuple) =>
         detail.code match {
-          case DaytimeTelephone =>
-            tuple.copy(_1 = tuple._1.++(Seq(detail.detail)))
-          case EveningTelephone =>
-            tuple.copy(_2 = tuple._2.++(Seq(detail.detail)))
-          case MobileTelephone =>
-            tuple.copy(_3 = tuple._3.++(Seq(detail.detail)))
-          case _ => tuple
-      }) match {
-      case (daytimeTelephone: List[String],
-            eveningTelephone: List[String],
-            mobileTelephone: List[String]) =>
-        create(daytimeTelephone, eveningTelephone, mobileTelephone)
-    }
+          case DaytimeTelephone => tuple.copy(_1 = tuple._1.+:(detail.detail))
+          case EveningTelephone => tuple.copy(_2 = tuple._2.+:(detail.detail))
+          case MobileTelephone  => tuple.copy(_3 = tuple._3.+:(detail.detail))
+          case _                => tuple
+      })
 }

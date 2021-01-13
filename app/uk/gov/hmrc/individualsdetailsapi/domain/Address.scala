@@ -41,7 +41,7 @@ object Address {
       case _                                    => Some(new Address(line1, line2, line3, line4, line5, postcode))
     }
 
-  def create(ifAddress: Option[IfAddress]): Option[Address] =
+  def convert(ifAddress: Option[IfAddress]): Option[Address] =
     ifAddress.flatMap(
       address =>
         create(line1 = address.line1,
