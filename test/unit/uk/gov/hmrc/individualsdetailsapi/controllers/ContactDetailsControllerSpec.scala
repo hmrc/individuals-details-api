@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import java.util.UUID
-
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito._
@@ -27,6 +26,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
+import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.individualsdetailsapi.controllers.{LiveContactDetailsController, SandboxContactDetailsController}
 import uk.gov.hmrc.individualsdetailsapi.domain.{ContactDetails, MatchNotFoundException}
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
@@ -38,6 +38,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
   val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b");
+  val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
+  val validCorrelationHeader = ("CorrelationId", sampleCorrelationId)
 
   implicit lazy val materializer: Materializer = fakeApplication.materializer
   implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
@@ -88,6 +90,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
         "return contact-details when successful" in new Fixture {
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
+            .withHeaders(validCorrelationHeader)
 
           when(
             mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
@@ -104,6 +107,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
         "return 404 (not found) for an invalid matchId" in new Fixture {
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
+            .withHeaders(validCorrelationHeader)
 
           when(
             mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
@@ -125,6 +129,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
             .thenReturn(Future.failed(InsufficientEnrolments()))
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
+            .withHeaders(validCorrelationHeader)
 
           val result = liveContactDetailsController.contactDetails(matchId)(fakeRequest)
 
@@ -135,8 +140,8 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
         "return error when no scopes are supplied" in new Fixture {
           when(scopeService.getEndPointScopes(any())).thenReturn(None)
 
-          val fakeRequest =
-            FakeRequest("GET", s"/contact-details/")
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+            .withHeaders(validCorrelationHeader)
 
           val result =
             intercept[Exception] {
@@ -146,6 +151,41 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
             }
           assert(result.getMessage == "No scopes defined")
         }
+
+        "throws an Exception when CorrelationId header is missing" in new Fixture {
+
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+
+          when(
+            mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.successful(Some(ContactDetails(
+              daytimeTelephones = List("0123 456789"),
+              eveningTelephones = List("0123 456789"),
+              mobileTelephones = List("0123 456789")))))
+
+          val exception = intercept[BadRequestException](liveContactDetailsController.contactDetails(matchId)(fakeRequest))
+
+          exception.responseCode shouldBe BAD_REQUEST
+          exception.message shouldBe "CorrelationId is required"
+        }
+
+        "throws an Exception when CorrelationId header s missing" in new Fixture {
+
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+            .withHeaders("CorrelationId" -> "invalidId")
+
+          when(
+            mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.successful(Some(ContactDetails(
+              daytimeTelephones = List("0123 456789"),
+              eveningTelephones = List("0123 456789"),
+              mobileTelephones = List("0123 456789")))))
+
+          val exception = intercept[BadRequestException](liveContactDetailsController.contactDetails(matchId)(fakeRequest))
+
+          exception.responseCode shouldBe BAD_REQUEST
+          exception.message shouldBe "Malformed CorrelationId"
+        }
       }
 
       "using the sandbox controller" should {
@@ -153,6 +193,8 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
         "return contact-details when successful" in new Fixture {
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
+            .withHeaders(validCorrelationHeader)
+
           when(mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
             .thenReturn(Future.successful(Some(ContactDetails(
               daytimeTelephones = List("0123 456789"),
@@ -167,6 +209,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
         "return 404 (not found) for an invalid matchId" in new Fixture {
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
+            .withHeaders(validCorrelationHeader)
 
           when(
             mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
@@ -186,8 +229,8 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           when(scopeService.getEndPointScopes(any())).thenReturn(None)
 
-          val fakeRequest =
-            FakeRequest("GET", s"/contact-details/")
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+            .withHeaders(validCorrelationHeader)
 
           val result =
             intercept[Exception] {
@@ -196,6 +239,37 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
                   fakeRequest))
             }
           assert(result.getMessage == "No scopes defined")
+        }
+
+        "throw an Exception when missing CorrelationId Header" in new Fixture {
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+
+          when(mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.successful(Some(ContactDetails(
+              daytimeTelephones = List("0123 456789"),
+              eveningTelephones = List("0123 456789"),
+              mobileTelephones = List("0123 456789")))))
+
+          val exception = intercept[BadRequestException](sandboxContactDetailsController.contactDetails(matchId)(fakeRequest))
+
+          exception.responseCode shouldBe BAD_REQUEST
+          exception.message shouldBe "CorrelationId is required"
+        }
+
+        "throw an Exception when CorrelationId Header is malformed" in new Fixture {
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+            .withHeaders("CorrelationId" -> "invalidId")
+
+          when(mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.successful(Some(ContactDetails(
+              daytimeTelephones = List("0123 456789"),
+              eveningTelephones = List("0123 456789"),
+              mobileTelephones = List("0123 456789")))))
+
+          val exception = intercept[BadRequestException](sandboxContactDetailsController.contactDetails(matchId)(fakeRequest))
+
+          exception.responseCode shouldBe BAD_REQUEST
+          exception.message shouldBe "Malformed CorrelationId"
         }
       }
     }
