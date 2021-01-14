@@ -19,24 +19,18 @@ package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 import java.util.UUID
 
 import akka.stream.Materializer
-import org.mockito.ArgumentMatchers._
+import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core.{
-  AuthConnector,
-  Enrolment,
-  EnrolmentIdentifier,
-  Enrolments
-}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsdetailsapi.controllers.{
-  LiveContactDetailsController,
-  SandboxContactDetailsController
-}
+import play.api.test.Helpers._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
+import uk.gov.hmrc.individualsdetailsapi.controllers.{LiveContactDetailsController, SandboxContactDetailsController}
+import uk.gov.hmrc.individualsdetailsapi.domain.{ContactDetails, MatchNotFoundException}
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
+import uk.gov.hmrc.individualsdetailsapi.services.{LiveDetailsService, SandboxDetailsService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,82 +40,99 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
   val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b");
 
   implicit lazy val materializer: Materializer = fakeApplication.materializer
-  implicit lazy val ec: ExecutionContext =
-    fakeApplication.injector.instanceOf[ExecutionContext]
+  implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
 
-  private val enrolments = Enrolments(
-    Set(
-      Enrolment("read:hello-scopes-1",
-                Seq(EnrolmentIdentifier("FOO", "BAR")),
-                "Activated"),
-      Enrolment("read:hello-scopes-2",
-                Seq(EnrolmentIdentifier("FOO2", "BAR2")),
-                "Activated"),
-      Enrolment("read:hello-scopes-3",
-                Seq(EnrolmentIdentifier("FOO3", "BAR3")),
-                "Activated")
-    )
-  )
+  trait Fixture extends ScopesConfigHelper {
 
-  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]) =
-    new AuthConnector {
+    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
 
-      def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(
-          implicit hc: HeaderCarrier,
-          ec: ExecutionContext): Future[A] = {
-        stubbedRetrievalResult.map(_.asInstanceOf[A])
-      }
-    }
+    lazy val scopeService: ScopesService = mock[ScopesService]
+    val mockLiveDetailsService = mock[LiveDetailsService]
+    val mockSandboxDetailsService = mock[SandboxDetailsService]
+    val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
-  private def myRetrievals = Future.successful(
-    enrolments
-  )
-
-  trait Fixture {
-
-    val scopeService = mock[ScopesService]
+    when(
+      mockAuthConnector.authorise(
+        eqTo(Enrolment("test-scope")),
+        refEq(Retrievals.allEnrolments))(any(), any()))
+      .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
     val scopes: Iterable[String] =
-      Iterable("read:hello-scopes-1", "read:hello-scopes-2")
+      Iterable("test-scope")
 
     val liveContactDetailsController =
       new LiveContactDetailsController(
-        fakeAuthConnector(myRetrievals),
+        mockAuthConnector,
         cc,
-        scopeService
+        scopeService,
+        mockLiveDetailsService
       )
 
     val sandboxContactDetailsController =
       new SandboxContactDetailsController(
-        fakeAuthConnector(myRetrievals),
+        mockAuthConnector,
         cc,
-        scopeService
+        scopeService,
+        mockSandboxDetailsService
       )
 
     when(scopeService.getEndPointScopes(any())).thenReturn(scopes)
   }
 
-  "contact details controller" when {
+  "ContactDetailsController" when {
 
-    "the live controller" should {
+    "calling contactDetails" when {
 
-      "contact details function" should {
+      "using the live controller" should {
 
-        "throw an exception" in new Fixture {
+        "return contact-details when successful" in new Fixture {
 
-          val fakeRequest =
-            FakeRequest("GET", s"/contact-details/")
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
 
-          val result =
-            intercept[Exception] {
-              await(
-                liveContactDetailsController.contactDetails(matchId)(
-                  fakeRequest))
-            }
-          assert(result.getMessage == "NOT_IMPLEMENTED")
+          when(
+            mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.successful(Some(ContactDetails(
+              daytimeTelephones = List("0123 456789"),
+              eveningTelephones = List("0123 456789"),
+              mobileTelephones = List("0123 456789")))))
+
+          val result = liveContactDetailsController.contactDetails(matchId)(fakeRequest)
+
+          status(result) shouldBe OK
         }
 
-        "return error when no scopes" in new Fixture {
+        "return 404 (not found) for an invalid matchId" in new Fixture {
+
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+
+          when(
+            mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.failed(new MatchNotFoundException))
+
+          val result = liveContactDetailsController.contactDetails(matchId)(fakeRequest)
+
+          status(result) shouldBe NOT_FOUND
+
+          contentAsJson(result) shouldBe Json.obj(
+            "code" -> "NOT_FOUND",
+            "message" -> "The resource can not be found"
+          )
+        }
+
+        "return 401 when the bearer token does not have valid enrolment" in new Fixture {
+
+          when(mockAuthConnector.authorise(any(), any())(any(), any()))
+            .thenReturn(Future.failed(InsufficientEnrolments()))
+
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+
+          val result = liveContactDetailsController.contactDetails(matchId)(fakeRequest)
+
+          status(result) shouldBe UNAUTHORIZED
+          verifyNoInteractions(mockLiveDetailsService)
+        }
+
+        "return error when no scopes are supplied" in new Fixture {
           when(scopeService.getEndPointScopes(any())).thenReturn(None)
 
           val fakeRequest =
@@ -136,13 +147,44 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           assert(result.getMessage == "No scopes defined")
         }
       }
-    }
 
-    "the sandbox controller" should {
+      "using the sandbox controller" should {
 
-      "contact details function" should {
+        "return contact-details when successful" in new Fixture {
 
-        "throw an exception" in new Fixture {
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+          when(mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.successful(Some(ContactDetails(
+              daytimeTelephones = List("0123 456789"),
+              eveningTelephones = List("0123 456789"),
+              mobileTelephones = List("0123 456789")))))
+
+          val result = sandboxContactDetailsController.contactDetails(matchId)(fakeRequest)
+
+          status(result) shouldBe OK
+        }
+
+        "return 404 (not found) for an invalid matchId" in new Fixture {
+
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+
+          when(
+            mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.failed(new MatchNotFoundException))
+
+          val result = sandboxContactDetailsController.contactDetails(matchId)(fakeRequest)
+
+          status(result) shouldBe NOT_FOUND
+
+          contentAsJson(result) shouldBe Json.obj(
+            "code" -> "NOT_FOUND",
+            "message" -> "The resource can not be found"
+          )
+        }
+
+        "return error when no scopes are supplied" in new Fixture {
+
+          when(scopeService.getEndPointScopes(any())).thenReturn(None)
 
           val fakeRequest =
             FakeRequest("GET", s"/contact-details/")
@@ -153,7 +195,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
                 sandboxContactDetailsController.contactDetails(matchId)(
                   fakeRequest))
             }
-          assert(result.getMessage == "NOT_IMPLEMENTED")
+          assert(result.getMessage == "No scopes defined")
         }
       }
     }

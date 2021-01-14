@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.domains.integrationframework
+package uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Format, JsPath}
@@ -30,6 +30,7 @@ case class IfAddress(
 )
 
 object IfAddress {
+
   implicit val addressFormat: Format[IfAddress] = Format(
     (
       (JsPath \ "line1").readNullable[String](

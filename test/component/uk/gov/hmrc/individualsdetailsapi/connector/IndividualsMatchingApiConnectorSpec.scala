@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.connectors.IndividualsMatchingApiConnector
-import uk.gov.hmrc.individualsdetailsapi.domains.{
+import uk.gov.hmrc.individualsdetailsapi.domain.{
   MatchNotFoundException,
   MatchedCitizen
 }

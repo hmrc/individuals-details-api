@@ -20,12 +20,12 @@ import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, NotFoundException}
-import uk.gov.hmrc.individualsdetailsapi.domains.{
+import uk.gov.hmrc.individualsdetailsapi.domain.{
   MatchNotFoundException,
   MatchedCitizen
 }
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.individualsdetailsapi.domains.JsonFormatters._
+import uk.gov.hmrc.individualsdetailsapi.domain.JsonFormatters._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

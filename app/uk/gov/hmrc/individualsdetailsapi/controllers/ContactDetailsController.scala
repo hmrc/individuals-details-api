@@ -19,30 +19,46 @@ package uk.gov.hmrc.individualsdetailsapi.controllers
 import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
+import play.api.hal.Hal.state
+import play.api.mvc.hal._
+import play.api.hal.HalLink
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
+import uk.gov.hmrc.individualsdetailsapi.services.{
+  DetailsService,
+  LiveDetailsService,
+  SandboxDetailsService
+}
 
 import scala.concurrent.ExecutionContext
 
 abstract class ContactDetailsController @Inject()(
     cc: ControllerComponents,
-    scopeService: ScopesService
+    scopeService: ScopesService,
+    detailsService: DetailsService
 )(implicit val ec: ExecutionContext)
     extends CommonController(cc)
     with PrivilegedAuthentication {
 
   def contactDetails(matchId: UUID): Action[AnyContent] = Action.async {
     implicit request =>
-      val scopes =
-        scopeService.getEndPointScopes("contact-details")
-
-      requiresPrivilegedAuthentication(scopes)
-        .flatMap { authScopes =>
-          //TODO implement routes and scopes
-          throw new Exception("NOT_IMPLEMENTED")
-        }
-        .recover(recovery)
+      val scopes = scopeService.getEndPointScopes("contact-details")
+      requiresPrivilegedAuthentication(scopes) { authScopes =>
+        detailsService
+          .getContactDetails(matchId, "contact-details", authScopes)
+          .map { contactDetails =>
+            {
+              val selfLink = HalLink(
+                "self",
+                s"/individuals/details/contact-details?matchId=$matchId")
+              val contactDetailsJsObject =
+                Json.obj("contactDetails" -> Json.toJson(contactDetails))
+              Ok(state(contactDetailsJsObject) ++ selfLink)
+            }
+          }
+      } recover recovery
   }
 }
 
@@ -50,9 +66,10 @@ abstract class ContactDetailsController @Inject()(
 class LiveContactDetailsController @Inject()(
     val authConnector: AuthConnector,
     cc: ControllerComponents,
-    scopeService: ScopesService
+    scopeService: ScopesService,
+    detailsService: LiveDetailsService
 )(implicit override val ec: ExecutionContext)
-    extends ContactDetailsController(cc, scopeService) {
+    extends ContactDetailsController(cc, scopeService, detailsService) {
 
   override val environment = Environment.PRODUCTION
 
@@ -62,9 +79,10 @@ class LiveContactDetailsController @Inject()(
 class SandboxContactDetailsController @Inject()(
     val authConnector: AuthConnector,
     cc: ControllerComponents,
-    scopeService: ScopesService
+    scopeService: ScopesService,
+    detailsService: SandboxDetailsService
 )(implicit override val ec: ExecutionContext)
-    extends ContactDetailsController(cc, scopeService) {
+    extends ContactDetailsController(cc, scopeService, detailsService) {
 
   override val environment = Environment.SANDBOX
 

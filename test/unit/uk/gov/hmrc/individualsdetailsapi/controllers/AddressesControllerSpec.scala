@@ -19,24 +19,33 @@ package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 import java.util.UUID
 
 import akka.stream.Materializer
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
+import org.mockito.Mockito.{verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import play.api.test.Helpers.{contentAsJson, _}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{
   AuthConnector,
   Enrolment,
-  EnrolmentIdentifier,
-  Enrolments
+  Enrolments,
+  InsufficientEnrolments
 }
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsdetailsapi.controllers.{
   LiveAddressesController,
   SandboxAddressesController
 }
+import uk.gov.hmrc.individualsdetailsapi.domain.{
+  Address,
+  MatchNotFoundException,
+  Residence
+}
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
+import uk.gov.hmrc.individualsdetailsapi.services.{
+  LiveDetailsService,
+  SandboxDetailsService
+}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,77 +58,130 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
   implicit lazy val ec: ExecutionContext =
     fakeApplication.injector.instanceOf[ExecutionContext]
 
-  private val enrolments = Enrolments(
-    Set(
-      Enrolment("read:hello-scopes-1",
-                Seq(EnrolmentIdentifier("FOO", "BAR")),
-                "Activated"),
-      Enrolment("read:hello-scopes-2",
-                Seq(EnrolmentIdentifier("FOO2", "BAR2")),
-                "Activated"),
-      Enrolment("read:hello-scopes-3",
-                Seq(EnrolmentIdentifier("FOO3", "BAR3")),
-                "Activated")
-    )
-  )
+  trait Fixture extends ScopesConfigHelper {
 
-  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]) =
-    new AuthConnector {
+    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
 
-      def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(
-          implicit hc: HeaderCarrier,
-          ec: ExecutionContext): Future[A] = {
-        stubbedRetrievalResult.map(_.asInstanceOf[A])
-      }
-    }
+    lazy val scopeService: ScopesService = mock[ScopesService]
+    val mockLiveDetailsService = mock[LiveDetailsService]
+    val mockSandboxDetailsService = mock[SandboxDetailsService]
+    val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
-  private def myRetrievals = Future.successful(
-    enrolments
-  )
-
-  trait Fixture {
-
-    val scopeService = mock[ScopesService]
+    when(
+      mockAuthConnector.authorise(
+        eqTo(Enrolment("test-scope")),
+        refEq(Retrievals.allEnrolments))(any(), any()))
+      .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
     val scopes: Iterable[String] =
-      Iterable("read:hello-scopes-1", "read:hello-scopes-2")
+      Iterable("test-scope")
 
     val liveAddressesController =
       new LiveAddressesController(
-        fakeAuthConnector(myRetrievals),
+        mockAuthConnector,
         cc,
-        scopeService
+        scopeService,
+        mockLiveDetailsService
       )
 
     val sandboxAddressesController =
       new SandboxAddressesController(
-        fakeAuthConnector(myRetrievals),
+        mockAuthConnector,
         cc,
-        scopeService
+        scopeService,
+        mockSandboxDetailsService
       )
 
     when(scopeService.getEndPointScopes(any())).thenReturn(scopes)
+
+    val residences = Seq(
+      Residence(
+        residenceType = Option("NOMINATED"),
+        address = Option(
+          Address(
+            line1 = Option("24 Trinity Street"),
+            line2 = Option("Dawley Bank"),
+            line3 = Option("Telford"),
+            line4 = Option("Shropshire"),
+            line5 = Option("UK"),
+            postcode = Option("TF3 4ER")
+          )),
+        inUse = Option(true)
+      ),
+      Residence(
+        residenceType = Option("BASE"),
+        address = Option(
+          Address(
+            line1 = Option("La Petite Maison"),
+            line2 = Option("Rue de Bastille"),
+            line3 = Option("Vieux Ville"),
+            line4 = Option("Dordogne"),
+            line5 = Option("France"),
+            postcode = None
+          )
+        ),
+        inUse = Option(false)
+      )
+    )
   }
 
-  "addresses controller" when {
+  "AddressesController" when {
 
-    "the live controller" should {
+    "calling addresses" when {
 
-      "addresses function" should {
+      "using the live controller" should {
 
-        "throw an exception" in new Fixture {
+        "return addresses when successful" in new Fixture {
 
-          val fakeRequest =
-            FakeRequest("GET", s"/addresses/")
+          val fakeRequest = FakeRequest("GET", s"/addresses/")
 
-          val result =
-            intercept[Exception] {
-              await(liveAddressesController.addresses(matchId)(fakeRequest))
-            }
-          assert(result.getMessage == "NOT_IMPLEMENTED")
+          when(
+            mockLiveDetailsService.getResidences(
+              eqTo(matchId),
+              eqTo("addresses"),
+              eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.successful(residences))
+
+          val result = liveAddressesController.addresses(matchId)(fakeRequest)
+
+          status(result) shouldBe OK
         }
 
-        "return error when no scopes" in new Fixture {
+        "return 404 (not found) for an invalid matchId" in new Fixture {
+
+          val fakeRequest = FakeRequest("GET", s"/addresses/")
+
+          when(
+            mockLiveDetailsService.getResidences(
+              eqTo(matchId),
+              eqTo("addresses"),
+              eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.failed(new MatchNotFoundException))
+
+          val result = liveAddressesController.addresses(matchId)(fakeRequest)
+
+          status(result) shouldBe NOT_FOUND
+
+          contentAsJson(result) shouldBe Json.obj(
+            "code" -> "NOT_FOUND",
+            "message" -> "The resource can not be found"
+          )
+        }
+
+        "return 401 when the bearer token does not have valid enrolment" in new Fixture {
+
+          when(mockAuthConnector.authorise(any(), any())(any(), any()))
+            .thenReturn(Future.failed(InsufficientEnrolments()))
+
+          val fakeRequest = FakeRequest("GET", s"/addresses/")
+
+          val result = liveAddressesController.addresses(matchId)(fakeRequest)
+
+          status(result) shouldBe UNAUTHORIZED
+          verifyNoInteractions(mockLiveDetailsService)
+        }
+
+        "return error when no scopes are supplied" in new Fixture {
           when(scopeService.getEndPointScopes(any())).thenReturn(None)
 
           val fakeRequest =
@@ -132,22 +194,59 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
           assert(result.getMessage == "No scopes defined")
         }
       }
-    }
 
-    "the sandbox controller" should {
+      "using the sandbox controller" should {
 
-      "contact details function" should {
+        "return addresses when successful" in new Fixture {
 
-        "throw an exception" in new Fixture {
+          val fakeRequest = FakeRequest("GET", s"/addresses/")
+          when(
+            mockSandboxDetailsService.getResidences(
+              eqTo(matchId),
+              eqTo("addresses"),
+              eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.successful(residences))
+
+          val result =
+            sandboxAddressesController.addresses(matchId)(fakeRequest)
+
+          status(result) shouldBe OK
+        }
+
+        "return 404 (not found) for an invalid matchId" in new Fixture {
+
+          val fakeRequest = FakeRequest("GET", s"/addresses/")
+
+          when(
+            mockSandboxDetailsService.getResidences(
+              eqTo(matchId),
+              eqTo("addresses"),
+              eqTo(List("test-scope")))(any(), any()))
+            .thenReturn(Future.failed(new MatchNotFoundException))
+
+          val result =
+            sandboxAddressesController.addresses(matchId)(fakeRequest)
+
+          status(result) shouldBe NOT_FOUND
+
+          contentAsJson(result) shouldBe Json.obj(
+            "code" -> "NOT_FOUND",
+            "message" -> "The resource can not be found"
+          )
+        }
+
+        "return error when no scopes are supplied" in new Fixture {
+
+          when(scopeService.getEndPointScopes(any())).thenReturn(None)
 
           val fakeRequest =
-            FakeRequest("GET", s"/sandbox/addresses/")
+            FakeRequest("GET", s"/addresses/")
 
           val result =
             intercept[Exception] {
               await(sandboxAddressesController.addresses(matchId)(fakeRequest))
             }
-          assert(result.getMessage == "NOT_IMPLEMENTED")
+          assert(result.getMessage == "No scopes defined")
         }
       }
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.domains.integrationframework
+package uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
 /*
  * Copyright 2020 HM Revenue & Customs

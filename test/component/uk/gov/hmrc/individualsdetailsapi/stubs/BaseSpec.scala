@@ -27,6 +27,8 @@ import play.api.Application
 import play.api.http.HeaderNames.{ACCEPT, AUTHORIZATION, CONTENT_TYPE}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.mvc.Http.MimeTypes.JSON
+import scalaj.http.Http
+import unit.uk.gov.hmrc.individualsdetailsapi.services.ScopesConfig
 
 import scala.concurrent.duration.Duration
 
@@ -36,6 +38,7 @@ trait BaseSpec
     with BeforeAndAfterEach
     with Matchers
     with GuiceOneServerPerSuite
+    with ScopesConfig
     with GivenWhenThen {
 
   override lazy val port = 9000
@@ -44,13 +47,15 @@ trait BaseSpec
       "auditing.enabled" -> false,
       "auditing.traceRequests" -> false,
       "microservice.services.auth.port" -> AuthStub.port,
+      "microservice.services.individuals-matching-api.port" -> IndividualsMatchingApiStub.port,
+      "microservice.services.integration-framework.port" -> IfStub.port,
       "run.mode" -> "It"
     )
     .build()
 
   val timeout = Duration(5, TimeUnit.SECONDS)
   val serviceUrl = s"http://localhost:$port"
-  val mocks = Seq(AuthStub)
+  val mocks = Seq(AuthStub, IfStub, IndividualsMatchingApiStub)
   val authToken = "Bearer AUTH_TOKEN"
   val clientId = "CLIENT_ID"
   val acceptHeaderP1 = ACCEPT -> "application/vnd.hmrc.1.0+json"
@@ -70,6 +75,12 @@ trait BaseSpec
 
   override def afterAll(): Unit =
     mocks.foreach(_.server.stop())
+
+  def invokeEndpoint(endpoint: String) =
+    Http(endpoint)
+      .timeout(10000, 10000)
+      .headers(requestHeaders(acceptHeaderP1))
+      .asString
 }
 
 case class MockHost(port: Int) {

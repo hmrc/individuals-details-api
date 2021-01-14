@@ -28,7 +28,7 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 object AuthStub extends MockHost(22000) {
 
   def authPredicate(scopes: Iterable[String]): Predicate = {
-    scopes.map(Enrolment(_): Predicate).reduce(_ and _)
+    scopes.map(Enrolment(_): Predicate).reduce(_ or _)
   }
 
   private def privilegedAuthority(scopes: List[String]) = {
@@ -56,8 +56,9 @@ object AuthStub extends MockHost(22000) {
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
         .willReturn(aResponse()
           .withStatus(Status.OK)
-          .withBody(
-            """{"internalId": "some-id", "allEnrolments": [ { "key": "key", "value": "hello-world" } ]}""")))
+          .withBody(s"""{"internalId": "some-id", "allEnrolments": [ ${scopes
+            .map(scope => s"""{ "key": "$scope", "value": ""}""")
+            .reduce((a, b) => s"$a, $b")} ]}""")))
 
   def willNotAuthorizePrivilegedAuthToken(authBearerToken: String,
                                           scope: String): StubMapping =

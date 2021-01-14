@@ -39,8 +39,7 @@ object AppDependencies {
     "com.typesafe.play"      %% "play-test"                % PlayVersion.current % scope,
     "com.github.tomakehurst" % "wiremock-jre8"             % "2.27.1"            % scope,
     hmrc                     %% "reactivemongo-test"       % "4.21.0-play-26"    % scope,
-    hmrc                     %% "service-integration-test" % "0.12.0-play-26"    % scope,
-    "org.scalatest"          %% "scalatest"                % "3.0.8"             % scope
+    hmrc                     %% "service-integration-test" % "0.12.0-play-26"    % scope
   )
 
 

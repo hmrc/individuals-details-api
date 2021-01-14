@@ -17,18 +17,18 @@
 package uk.gov.hmrc.individualsdetailsapi.controllers
 import javax.inject.Inject
 import play.api.mvc.{ControllerComponents, Result}
-import uk.gov.hmrc.auth.core.AuthorisationException
-import uk.gov.hmrc.http.TooManyRequestException
-
-import uk.gov.hmrc.individualsdetailsapi.domains.{
-  ErrorInvalidRequest,
-  ErrorNotFound,
-  ErrorTooManyRequests,
-  ErrorUnauthorized,
-  MatchNotFoundException
+import uk.gov.hmrc.auth.core.authorise.Predicate
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.{
+  AuthorisationException,
+  AuthorisedFunctions,
+  Enrolment
 }
-
+import uk.gov.hmrc.http.{HeaderCarrier, TooManyRequestException}
+import uk.gov.hmrc.individualsdetailsapi.domain._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+
+import scala.concurrent.{ExecutionContext, Future}
 
 abstract class CommonController @Inject()(
     cc: ControllerComponents
@@ -41,6 +41,31 @@ abstract class CommonController @Inject()(
     case _: TooManyRequestException => ErrorTooManyRequests.toHttpResponse
     case e: IllegalArgumentException =>
       ErrorInvalidRequest(e.getMessage).toHttpResponse
+  }
+}
+
+trait PrivilegedAuthentication extends AuthorisedFunctions {
+
+  val environment: String
+
+  def authPredicate(scopes: Iterable[String]): Predicate =
+    scopes.map(Enrolment(_): Predicate).reduce(_ or _)
+
+  def requiresPrivilegedAuthentication(endpointScopes: Iterable[String])(
+      f: Iterable[String] => Future[Result])(
+      implicit hc: HeaderCarrier,
+      ec: ExecutionContext): Future[Result] = {
+
+    if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
+
+    if (environment == Environment.SANDBOX)
+      f(endpointScopes.toList)
+    else {
+      authorised(authPredicate(endpointScopes))
+        .retrieve(Retrievals.allEnrolments) {
+          case scopes => f(scopes.enrolments.map(e => e.key).toList)
+        }
+    }
   }
 }
 

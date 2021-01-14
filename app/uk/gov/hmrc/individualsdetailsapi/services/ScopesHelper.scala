@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.individualsdetailsapi.service
 
+import java.util.UUID
+
 import javax.inject.Inject
 import play.api.hal.Hal.{linksSeq, state}
 import play.api.hal.{HalLink, HalResource}
@@ -25,11 +27,25 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
 
   /**
     * @param scopes The list of scopes associated with the user
-    * @param endpoint The endpoint that the user has called
+    * @param endpoint The endpoint for which to construct the query string
     * @return A google fields-style query string with the fields determined by the provided endpoint and scopes
     */
-  def getQueryStringFor(scopes: List[String], endpoint: String): String =
-    PathTree(scopesService.getValidItemsFor(scopes, endpoint)).toString
+  def getQueryStringFor(scopes: Iterable[String], endpoint: String): String = {
+    getQueryStringFor(scopes, List(endpoint))
+  }
+
+  /**
+    * @param scopes The list of scopes associated with the user
+    * @param endpoints The endpoints for which to construct the query string
+    * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
+    */
+  def getQueryStringFor(scopes: Iterable[String],
+                        endpoints: List[String]): String = {
+    val filters = scopesService.getValidFilters(scopes, endpoints)
+    s"${PathTree(scopesService.getValidItemsFor(scopes, endpoints)).toString}${if (filters.nonEmpty)
+      s"&filter=${filters.mkString("&filter=")}"
+    else ""}"
+  }
 
   /**
     * @param endpoint The endpoint that the user has called
@@ -39,13 +55,26 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
     */
   def getHalResponse(endpoint: String,
                      scopes: List[String],
-                     data: JsValue): HalResource = {
+                     data: Option[JsValue]): HalResource = {
     val hateoasLinks = scopesService
-      .getLinks(scopes)
-      .map(link => HalLink(link._1, link._2))
+      .getEndpoints(scopes)
+      .map(link =>
+        HalLink(rel = link.name, href = link.link, name = Some(link.title)))
       .toList ++
       Seq(HalLink("self", scopesService.getEndpointLink(endpoint).get))
 
     state(data) ++ linksSeq(hateoasLinks)
   }
+
+  def getHalLinks(matchId: UUID, scopes: Iterable[String]): HalResource =
+    linksSeq(
+      scopesService
+        .getEndpoints(scopes)
+        .map(
+          endpoint =>
+            HalLink(rel = endpoint.name,
+                    href = endpoint.link.replaceAllLiterally("<matchId>",
+                                                             s"$matchId"),
+                    title = Some(endpoint.title)))
+        .toSeq)
 }

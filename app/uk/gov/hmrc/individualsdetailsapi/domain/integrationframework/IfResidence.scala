@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.domains.integrationframework
+package uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Format, JsPath}
@@ -53,37 +53,37 @@ object IfResidence {
   implicit val residencesFormat: Format[IfResidence] = Format(
     (
       (JsPath \ "statusCode").readNullable[String](pattern(statusCodePattern, "Status code is invalid")) and
-        (JsPath \ "status").readNullable[String](minLength[String](1) andKeep maxLength[String](8)) and
-        (JsPath \ "typeCode").readNullable[Int](min[Int](1) andKeep max[Int](9999)) and
-        (JsPath \ "type").readNullable[String](minLength[String](1) andKeep maxLength[String](35)) and
-        (JsPath \ "deliveryInfo").readNullable[String](minLength[String](1) andKeep maxLength[String](35)) and
-        (JsPath \ "retLetterServ").readNullable[String](minLength[String](1) andKeep maxLength[String](1)) and
-        (JsPath \ "addressCode").readNullable[String](pattern(statusCodePattern, "Address code is invalid")) and
-        (JsPath \ "addressType").readNullable[String](minLength[String](1) andKeep maxLength[String](6)) and
-        (JsPath \ "address").readNullable[IfAddress] and
-        (JsPath \ "houseId").readNullable[String](maxLength[String](35)) and
-        (JsPath \ "homeCountry").readNullable[String](maxLength[String](16)) and
-        (JsPath \ "otherCountry").readNullable[String](maxLength[String](35)) and
-        (JsPath \ "deadLetterOfficeDate").readNullable[String](pattern(datePattern, "Date is invalid")) and
-        (JsPath \ "startDateTime").readNullable[String] and
-        (JsPath \ "noLongerUsed").readNullable[String](minLength[String](1) andKeep maxLength[String](1))
-      ) (IfResidence.apply _),
+      (JsPath \ "status").readNullable[String](minLength[String](1) andKeep maxLength[String](8)) and
+      (JsPath \ "typeCode").readNullable[Int](min[Int](1) andKeep max[Int](9999)) and
+      (JsPath \ "type").readNullable[String](minLength[String](1) andKeep maxLength[String](35)) and
+      (JsPath \ "deliveryInfo").readNullable[String](minLength[String](1) andKeep maxLength[String](35)) and
+      (JsPath \ "retLetterServ").readNullable[String](minLength[String](1) andKeep maxLength[String](1)) and
+      (JsPath \ "addressCode").readNullable[String](pattern(statusCodePattern, "Address code is invalid")) and
+      (JsPath \ "addressType").readNullable[String](minLength[String](1) andKeep maxLength[String](6)) and
+      (JsPath \ "address").readNullable[IfAddress] and
+      (JsPath \ "houseId").readNullable[String](maxLength[String](35)) and
+      (JsPath \ "homeCountry").readNullable[String](maxLength[String](16)) and
+      (JsPath \ "otherCountry").readNullable[String](maxLength[String](35)) and
+      (JsPath \ "deadLetterOfficeDate").readNullable[String](pattern(datePattern, "Date is invalid")) and
+      (JsPath \ "startDateTime").readNullable[String] and
+      (JsPath \ "noLongerUsed").readNullable[String](minLength[String](1) andKeep maxLength[String](1))
+    ) (IfResidence.apply _),
     (
       (JsPath \ "statusCode").writeNullable[String] and
-        (JsPath \ "status").writeNullable[String] and
-        (JsPath \ "typeCode").writeNullable[Int] and
-        (JsPath \ "type").writeNullable[String] and
-        (JsPath \ "deliveryInfo").writeNullable[String] and
-        (JsPath \ "retLetterServ").writeNullable[String] and
-        (JsPath \ "addressCode").writeNullable[String] and
-        (JsPath \ "addressType").writeNullable[String] and
-        (JsPath \ "address").writeNullable[IfAddress] and
-        (JsPath \ "houseId").writeNullable[String] and
-        (JsPath \ "homeCountry").writeNullable[String] and
-        (JsPath \ "otherCountry").writeNullable[String] and
-        (JsPath \ "deadLetterOfficeDate").writeNullable[String] and
-        (JsPath \ "startDateTime").writeNullable[String] and
-        (JsPath \ "noLongerUsed").writeNullable[String]
-      ) (unlift(IfResidence.unapply))
+      (JsPath \ "status").writeNullable[String] and
+      (JsPath \ "typeCode").writeNullable[Int] and
+      (JsPath \ "type").writeNullable[String] and
+      (JsPath \ "deliveryInfo").writeNullable[String] and
+      (JsPath \ "retLetterServ").writeNullable[String] and
+      (JsPath \ "addressCode").writeNullable[String] and
+      (JsPath \ "addressType").writeNullable[String] and
+      (JsPath \ "address").writeNullable[IfAddress] and
+      (JsPath \ "houseId").writeNullable[String] and
+      (JsPath \ "homeCountry").writeNullable[String] and
+      (JsPath \ "otherCountry").writeNullable[String] and
+      (JsPath \ "deadLetterOfficeDate").writeNullable[String] and
+      (JsPath \ "startDateTime").writeNullable[String] and
+      (JsPath \ "noLongerUsed").writeNullable[String]
+    ) (unlift(IfResidence.unapply))
   )
 }

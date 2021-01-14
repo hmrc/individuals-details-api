@@ -52,7 +52,7 @@ class ScopesHelperSpec
       val response = scopesHelper.getHalResponse(
         endpoint = mockEndpoint1,
         scopes = List(mockScope1),
-        data = mockData
+        data = Option(mockData)
       )
 
       response.links.links.size shouldBe 2
@@ -66,7 +66,7 @@ class ScopesHelperSpec
       val response2 = scopesHelper.getHalResponse(
         endpoint = mockEndpoint2,
         scopes = List(mockScope4, mockScope5),
-        data = mockData
+        data = Option(mockData)
       )
 
       response2.links.links.size shouldBe 3

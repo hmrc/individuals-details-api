@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.{
   TooManyRequestException,
   Upstream4xxResponse
 }
-import uk.gov.hmrc.individualsdetailsapi.domains.integrationframework.{
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
   IfDetails,
   IfDetailsResponse
 }
@@ -48,13 +48,14 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
       "microservice.services.integration-framework.environment")
 
   private val emptyResponse =
-    IfDetailsResponse(IfDetails(None, None), None, None)
+    IfDetailsResponse(None, None)
 
   def fetchDetails(nino: Nino, filter: Option[String])(
       implicit hc: HeaderCarrier,
       ec: ExecutionContext) = {
 
-    val detailsUrl = s"$baseUrl/individuals/details/nino/$nino?fields=$filter"
+    val detailsUrl =
+      s"$baseUrl/individuals/details/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"
 
     recover[IfDetailsResponse](
       http.GET[IfDetailsResponse](detailsUrl)(implicitly, header(), ec),
@@ -64,7 +65,6 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
 
   private def header(extraHeaders: (String, String)*)(
       implicit hc: HeaderCarrier) =
-    // The correlationId should be passed in by the caller and will already be present in hc
     hc.copy(
         authorization =
           Some(Authorization(s"Bearer $integrationFrameworkBearerToken")))

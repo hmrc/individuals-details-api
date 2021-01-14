@@ -16,31 +16,44 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
+import java.util.UUID
+
 import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec}
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import scalaj.http.Http
+import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData
 
-class SandboxRootControllerSpec extends BaseSpec {
+class SandboxRootControllerSpec extends CommonControllerSpec {
 
-  val matchId: String = "2b2e7e84-102f-4338-93f9-1950b35d822b"
+  override val matchId: UUID = SandboxDetailsData.sandboxMatchId
+  override val endpoint: String = "sandbox"
+  override val nino = "AB123456C"
 
-  val rootScope = "read:individuals-details"
+  override val rootScope = List(
+    "read:individuals-details-hmcts-c3",
+    "read:individuals-details-hmcts-c4",
+    "read:individuals-details-laa-c3",
+    "read:individuals-details-laa-c4",
+    "read:individuals-details-lsani-c1",
+    "read:individuals-details-lsani-c3",
+    "read:individuals-details-nictsejo-c4"
+  )
 
-  feature("Live Root Controller") {
-    scenario("root route") {
-      Given("A valid auth token ")
-      AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
-
-      When("I make a call to root endpoint")
-      val response =
-        Http(s"$serviceUrl/sandbox?matchId=$matchId")
-          .headers(requestHeaders(acceptHeaderP1))
-          .asString
-
-      Then("The response status should be 500")
-      response.code shouldBe INTERNAL_SERVER_ERROR
-
-    }
-  }
+  override val expectedJson: JsValue = Json.parse(s"""{
+   |  "_links" : {
+   |    "addresses" : {
+   |      "href" : "/individuals/details/addresses?matchId=$matchId",
+   |      "title" : "Get addresses"
+   |    },
+   |    "contact-details" : {
+   |      "href" : "/individuals/details/contact-details?matchId=$matchId",
+   |      "title" : "Get contact details"
+   |    },
+   |    "self" : {
+   |      "href" : "/individuals/details/?matchId=$matchId"
+   |    }
+   |  }
+   |}""".stripMargin)
 
 }

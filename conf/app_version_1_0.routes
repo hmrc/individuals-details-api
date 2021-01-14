@@ -1,5 +1,3 @@
-GET        /hello-world             uk.gov.hmrc.individualsdetailsapi.controllers.LiveMicroserviceHelloWorldController.hello
-GET        /hello-scopes            uk.gov.hmrc.individualsdetailsapi.controllers.LiveMicroserviceHelloWorldController.helloScopes
 GET        /contact-details         uk.gov.hmrc.individualsdetailsapi.controllers.LiveContactDetailsController.contactDetails(matchId: java.util.UUID)
 GET        /addresses               uk.gov.hmrc.individualsdetailsapi.controllers.LiveAddressesController.addresses(matchId: java.util.UUID)
 GET        /                        uk.gov.hmrc.individualsdetailsapi.controllers.LiveRootController.root(matchId: java.util.UUID)
