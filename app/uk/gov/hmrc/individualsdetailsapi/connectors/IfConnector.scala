@@ -55,7 +55,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
       ec: ExecutionContext) = {
 
     val detailsUrl =
-      s"$baseUrl/individuals/details/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"
+      s"$baseUrl/individuals/details/contact/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"
 
     recover[IfDetailsResponse](
       http.GET[IfDetailsResponse](detailsUrl)(implicitly, header(), ec),

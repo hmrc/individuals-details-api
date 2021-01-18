@@ -89,7 +89,7 @@ class IfConnectorSpec
 
     "Fail when IF returns an error" in new Setup {
       stubFor(
-        get(urlPathMatching(s"/individuals/details/nino/$nino"))
+        get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
           .willReturn(aResponse().withStatus(500)))
 
       intercept[Upstream5xxResponse] {
@@ -99,7 +99,7 @@ class IfConnectorSpec
 
     "Fail when IF returns a bad request" in new Setup {
       stubFor(
-        get(urlPathMatching(s"/individuals/details/nino/$nino"))
+        get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
           .willReturn(aResponse().withStatus(400)))
 
       intercept[BadRequestException] {
@@ -109,7 +109,7 @@ class IfConnectorSpec
 
     "for standard response" in new Setup {
       stubFor(
-        get(urlPathMatching(s"/individuals/details/nino/$nino"))
+        get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
           .withHeader(
             "Authorization",
             equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
