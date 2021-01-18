@@ -127,7 +127,7 @@ class IfQueriesSpec extends BaseSpec {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-laa-c4"),
                                  endpoint)
-      queryString shouldBe "contactDetails(detail,type)&filter=contains(contactDetails/type,'TELEPHONE')"
+      queryString shouldBe "contactDetails(code,detail,type)&filter=contains(contactDetails/type,'TELEPHONE')"
     }
 
     scenario("For read:individuals-details-hmcts-c2") {
@@ -148,7 +148,7 @@ class IfQueriesSpec extends BaseSpec {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c4"),
                                  endpoint)
-      queryString shouldBe "contactDetails(detail,type)&filter=contains(contactDetails/type,'TELEPHONE')"
+      queryString shouldBe "contactDetails(code,detail,type)&filter=contains(contactDetails/type,'TELEPHONE')"
     }
 
     scenario("For read:individuals-details-lsani-c1") {
