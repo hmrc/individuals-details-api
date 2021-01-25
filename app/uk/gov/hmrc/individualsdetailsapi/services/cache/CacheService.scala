@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.individualsdetailsapi.services.cache
 
-import org.joda.time.Interval
 import play.api.libs.json.Format
 import uk.gov.hmrc.individualsdetailsapi.cache.{
   CacheConfiguration,

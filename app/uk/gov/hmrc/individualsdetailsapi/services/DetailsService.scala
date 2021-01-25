@@ -19,29 +19,22 @@ package uk.gov.hmrc.individualsdetailsapi.services
 import java.util.UUID
 
 import javax.inject.{Inject, Named, Singleton}
-import org.joda.time.{Interval, LocalDate}
+import org.joda.time.LocalDate
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsdetailsapi.connectors.{
   IfConnector,
   IndividualsMatchingApiConnector
 }
 import uk.gov.hmrc.individualsdetailsapi.domain.{
   ContactDetails,
-  Individual,
   MatchNotFoundException,
   MatchedCitizen,
   Residence,
-  Residences,
   SandboxDetailsData
 }
 import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData._
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
-  IfContactDetail,
-  IfDetails,
-  IfDetailsResponse,
-  IfResidence
-}
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
 import uk.gov.hmrc.individualsdetailsapi.services.cache.{CacheId, CacheService}
 
