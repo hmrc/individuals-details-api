@@ -90,7 +90,8 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
 
           when(
-            mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"),
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(Some(ContactDetails(
               daytimeTelephones = List("0123 456789"),
               eveningTelephones = List("0123 456789"),
@@ -106,7 +107,8 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
 
           when(
-            mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            mockLiveDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"),
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result = liveContactDetailsController.contactDetails(matchId)(fakeRequest)
@@ -153,7 +155,8 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
         "return contact-details when successful" in new Fixture {
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
-          when(mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+          when(mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"),
+            eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(Some(ContactDetails(
               daytimeTelephones = List("0123 456789"),
               eveningTelephones = List("0123 456789"),
@@ -169,7 +172,8 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
 
           when(
-            mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any()))
+            mockSandboxDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"),
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result = sandboxContactDetailsController.contactDetails(matchId)(fakeRequest)

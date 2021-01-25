@@ -20,6 +20,7 @@ import java.util.UUID
 
 import javax.inject.{Inject, Named, Singleton}
 import org.joda.time.{Interval, LocalDate}
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.connectors.{
   IfConnector,
@@ -59,12 +60,14 @@ trait DetailsService {
       endpoint: String,
       scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)(
       implicit hc: HeaderCarrier,
+      request: RequestHeader,
       ec: ExecutionContext): Future[T]
 
   def getContactDetails(matchId: UUID,
                         endpoint: String,
                         scopes: Iterable[String])(
       implicit hc: HeaderCarrier,
+      request: RequestHeader,
       ec: ExecutionContext): Future[Option[ContactDetails]] = {
 
     retrieveAndMap[Option[ContactDetails]](matchId, endpoint, scopes) {
@@ -75,6 +78,7 @@ trait DetailsService {
 
   def getResidences(matchId: UUID, endpoint: String, scopes: Iterable[String])(
       implicit hc: HeaderCarrier,
+      request: RequestHeader,
       ec: ExecutionContext): Future[Seq[Residence]] = {
 
     retrieveAndMap[Seq[Residence]](matchId, endpoint, scopes) { response =>
@@ -109,6 +113,7 @@ class SandboxDetailsService @Inject()(
       endpoint: String,
       scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)(
       implicit hc: HeaderCarrier,
+      request: RequestHeader,
       ec: ExecutionContext): Future[T] = {
 
     SandboxDetailsData.findByMatchId(matchId) match {
@@ -138,6 +143,7 @@ class LiveDetailsService @Inject()(
       endpoint: String,
       scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)(
       implicit hc: HeaderCarrier,
+      request: RequestHeader,
       ec: ExecutionContext): Future[T] = {
 
     val cacheId = CacheId(
