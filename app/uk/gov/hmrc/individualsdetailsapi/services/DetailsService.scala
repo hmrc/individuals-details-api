@@ -150,7 +150,8 @@ class LiveDetailsService @Inject()(
           val fieldsQuery =
             scopesHelper.getQueryStringFor(scopes.toList, endpoint)
           ifConnector.fetchDetails(ninoMatch.nino,
-                                   Option(fieldsQuery).filter(_.nonEmpty))
+                                   Option(fieldsQuery).filter(_.nonEmpty),
+                                   matchId.toString)
         })
       }
     ) map responseMapper

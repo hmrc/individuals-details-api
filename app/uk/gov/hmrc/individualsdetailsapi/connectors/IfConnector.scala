@@ -17,7 +17,6 @@
 package uk.gov.hmrc.individualsdetailsapi.connectors
 
 import javax.inject.Inject
-import org.joda.time.{Interval, LocalDate}
 import play.api.Logger
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.logging.Authorization
@@ -28,10 +27,7 @@ import uk.gov.hmrc.http.{
   TooManyRequestException,
   Upstream4xxResponse
 }
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
-  IfDetails,
-  IfDetailsResponse
-}
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,9 +46,11 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
   private val emptyResponse =
     IfDetailsResponse(None, None)
 
-  def fetchDetails(nino: Nino, filter: Option[String])(
+  def fetchDetails(nino: Nino, filter: Option[String], matchId: String)(
       implicit hc: HeaderCarrier,
       ec: ExecutionContext) = {
+
+    val endpoint = "IfConnector::fetchDetails"
 
     val detailsUrl =
       s"$baseUrl/individuals/details/contact/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"
