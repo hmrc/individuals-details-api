@@ -28,7 +28,7 @@ object IfStub extends MockHost(22004) {
 
   def searchDetails(nino: String, ifDetailsResponse: IfDetailsResponse) =
     mock.register(
-      get(urlPathEqualTo(s"/individuals/details/nino/$nino"))
+      get(urlPathEqualTo(s"/individuals/details/contact/nino/$nino"))
         .willReturn(
           aResponse()
             .withStatus(OK)
@@ -36,7 +36,7 @@ object IfStub extends MockHost(22004) {
 
   def enforceRateLimit(nino: String, fromDate: String, toDate: String): Unit =
     mock.register(
-      get(urlPathEqualTo(s"/individuals/details/"))
+      get(urlPathEqualTo(s"/individuals/details/contact"))
         .withQueryParam(
           "fields",
           equalTo(
