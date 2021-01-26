@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import java.util.UUID
-
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito.{verifyNoInteractions, when}
@@ -33,6 +32,7 @@ import uk.gov.hmrc.auth.core.{
   InsufficientEnrolments
 }
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.individualsdetailsapi.config.EndpointConfig
 import uk.gov.hmrc.individualsdetailsapi.controllers.{
   LiveRootController,
@@ -54,6 +54,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class RootControllerSpec extends SpecBase with MockitoSugar {
 
   val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b");
+  val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
+  val validCorrelationHeader = ("CorrelationId", sampleCorrelationId)
 
   implicit lazy val materializer: Materializer = fakeApplication.materializer
   implicit lazy val ec: ExecutionContext =
@@ -119,6 +121,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
         "return response when successful" in new Fixture {
 
           val fakeRequest = FakeRequest("GET", s"/")
+            .withHeaders(validCorrelationHeader)
 
           when(mockLiveDetailsService.resolve(eqTo(matchId))(any()))
             .thenReturn(Future.successful(
@@ -132,6 +135,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
         "return 404 (not found) for an invalid matchId" in new Fixture {
 
           val fakeRequest = FakeRequest("GET", s"/")
+            .withHeaders(validCorrelationHeader)
 
           when(mockLiveDetailsService.resolve(eqTo(matchId))(any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
@@ -152,6 +156,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
             .thenReturn(Future.failed(InsufficientEnrolments()))
 
           val fakeRequest = FakeRequest("GET", s"/")
+            .withHeaders(validCorrelationHeader)
 
           val result = liveRootController.root(matchId)(fakeRequest)
 
@@ -162,8 +167,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
         "return error when no scopes are supplied" in new Fixture {
           when(scopeService.getAllScopes).thenReturn(List())
 
-          val fakeRequest =
-            FakeRequest("GET", s"/")
+          val fakeRequest = FakeRequest("GET", s"/")
+            .withHeaders(validCorrelationHeader)
 
           val result =
             intercept[Exception] {
@@ -178,6 +183,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
         "return response when successful" in new Fixture {
 
           val fakeRequest = FakeRequest("GET", s"/")
+            .withHeaders(validCorrelationHeader)
 
           when(mockSandboxDetailsService.resolve(eqTo(matchId))(any()))
             .thenReturn(Future.successful(
@@ -191,6 +197,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
         "return 404 (not found) for an invalid matchId" in new Fixture {
 
           val fakeRequest = FakeRequest("GET", s"/")
+            .withHeaders(validCorrelationHeader)
 
           when(mockSandboxDetailsService.resolve(eqTo(matchId))(any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
@@ -209,14 +216,41 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
           when(scopeService.getAllScopes).thenReturn(List())
 
-          val fakeRequest =
-            FakeRequest("GET", s"/")
+          val fakeRequest = FakeRequest("GET", s"/")
+            .withHeaders(validCorrelationHeader)
 
           val result =
             intercept[Exception] {
               await(sandboxRootController.root(matchId)(fakeRequest))
             }
           assert(result.getMessage == "No scopes defined")
+        }
+
+        "throw an Exception when missing a CorrelationId Header" in new Fixture {
+          val fakeRequest = FakeRequest("GET", s"/")
+
+          when(mockLiveDetailsService.resolve(eqTo(matchId))(any()))
+            .thenReturn(Future.successful(
+              MatchedCitizen(matchId, nino = Nino("AB123456C"))))
+
+          val exception = intercept[BadRequestException](
+            sandboxRootController.root(matchId)(fakeRequest))
+          exception.message shouldBe "CorrelationId is required"
+          exception.responseCode shouldBe BAD_REQUEST
+        }
+
+        "throw an Exception when CorrelationId Header is malformed" in new Fixture {
+          val fakeRequest = FakeRequest("GET", s"/addresses/")
+            .withHeaders("CorrelationId" -> "invalidId")
+
+          when(mockLiveDetailsService.resolve(eqTo(matchId))(any()))
+            .thenReturn(Future.successful(
+              MatchedCitizen(matchId, nino = Nino("AB123456C"))))
+
+          val exception = intercept[BadRequestException](
+            sandboxRootController.root(matchId)(fakeRequest))
+          exception.message shouldBe "Malformed CorrelationId"
+          exception.responseCode shouldBe BAD_REQUEST
         }
       }
     }

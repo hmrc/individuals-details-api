@@ -17,12 +17,12 @@
 package uk.gov.hmrc.individualsdetailsapi.controllers
 
 import java.util.UUID
-
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.hal._
 import play.api.hal.HalLink
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils.extractCorrelationId
 import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
 import uk.gov.hmrc.individualsdetailsapi.services.{
   DetailsService,
@@ -43,6 +43,7 @@ abstract class RootController @Inject()(
   def root(matchId: UUID): Action[AnyContent] = Action.async {
     implicit request =>
       {
+        extractCorrelationId(request)
         requiresPrivilegedAuthentication(scopeService.getAllScopes) {
           authScopes =>
             detailsService.resolve(matchId) map { _ =>
