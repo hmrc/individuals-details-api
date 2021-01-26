@@ -24,6 +24,7 @@ import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.http.{
   HeaderCarrier,
   HttpClient,
+  JsValidationException,
   NotFoundException,
   TooManyRequestException,
   Upstream4xxResponse
@@ -60,7 +61,6 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
     recover[IfDetailsResponse](
       http.GET[IfDetailsResponse](detailsUrl)(implicitly, header(), ec),
       emptyResponse)
-
   }
 
   private def header(extraHeaders: (String, String)*)(
@@ -73,6 +73,10 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient)(
 
   private def recover[A](x: Future[A], emptyResponse: A): Future[A] =
     x.recoverWith {
+      case v: JsValidationException => {
+        Logger.error(v.getMessage())
+        Future.successful(emptyResponse)
+      }
       case _: NotFoundException => Future.successful(emptyResponse)
       case Upstream4xxResponse(msg, 429, _, _) => {
         Logger.warn(s"IF Rate limited: $msg")

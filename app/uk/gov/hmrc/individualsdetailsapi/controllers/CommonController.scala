@@ -22,7 +22,8 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{
   AuthorisationException,
   AuthorisedFunctions,
-  Enrolment
+  Enrolment,
+  InsufficientEnrolments
 }
 import uk.gov.hmrc.http.{HeaderCarrier, TooManyRequestException}
 import uk.gov.hmrc.individualsdetailsapi.domain._
@@ -36,11 +37,14 @@ abstract class CommonController @Inject()(
 
   private[controllers] def recovery: PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException => ErrorNotFound.toHttpResponse
+    case _: InsufficientEnrolments =>
+      ErrorUnauthorized("User does not have valid scopes").toHttpResponse
     case e: AuthorisationException =>
       ErrorUnauthorized(e.getMessage).toHttpResponse
     case _: TooManyRequestException => ErrorTooManyRequests.toHttpResponse
     case e: IllegalArgumentException =>
       ErrorInvalidRequest(e.getMessage).toHttpResponse
+    case x => ErrorInvalidRequest(x.getMessage).toHttpResponse
   }
 }
 

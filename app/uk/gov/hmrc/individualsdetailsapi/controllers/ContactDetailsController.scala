@@ -20,6 +20,7 @@ import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
 import play.api.hal.Hal.state
+import play.api.hal.Hal.links
 import play.api.mvc.hal._
 import play.api.hal.HalLink
 import play.api.libs.json.Json
@@ -45,18 +46,17 @@ abstract class ContactDetailsController @Inject()(
   def contactDetails(matchId: UUID): Action[AnyContent] = Action.async {
     implicit request =>
       val scopes = scopeService.getEndPointScopes("contact-details")
+      val selfLink =
+        HalLink("self",
+                s"/individuals/details/contact-details?matchId=$matchId")
+
       requiresPrivilegedAuthentication(scopes) { authScopes =>
         detailsService
           .getContactDetails(matchId, "contact-details", authScopes)
           .map { contactDetails =>
-            {
-              val selfLink = HalLink(
-                "self",
-                s"/individuals/details/contact-details?matchId=$matchId")
-              val contactDetailsJsObject =
-                Json.obj("contactDetails" -> Json.toJson(contactDetails))
-              Ok(state(contactDetailsJsObject) ++ selfLink)
-            }
+            val obj = contactDetails.fold(Json.obj())(cd =>
+              Json.obj("contactDetails" -> Json.toJson(cd)))
+            Ok(state(Json.obj("contactDetails" -> obj)) ++ selfLink)
           }
       } recover recovery
   }
