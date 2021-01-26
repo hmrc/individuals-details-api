@@ -34,12 +34,11 @@ import uk.gov.hmrc.individualsdetailsapi.services.{
 
 import scala.concurrent.ExecutionContext
 
-abstract class AddressesController @Inject()(
-    cc: ControllerComponents,
-    scopeService: ScopesService,
-    detailsService: DetailsService
-)(implicit val ec: ExecutionContext)
-    extends CommonController(cc)
+abstract class AddressesController @Inject()(cc: ControllerComponents,
+                                             scopeService: ScopesService,
+                                             detailsService: DetailsService)
+                                            (implicit val ec: ExecutionContext)
+  extends CommonController(cc)
     with PrivilegedAuthentication {
 
   def addresses(matchId: UUID): Action[AnyContent] = Action.async {

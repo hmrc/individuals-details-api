@@ -43,25 +43,20 @@ import scala.concurrent.Future.{failed, successful}
 
 trait DetailsService {
 
-  implicit val localDateOrdering: Ordering[LocalDate] =
-    Ordering.fromLessThan(_ isBefore _)
+  implicit val localDateOrdering: Ordering[LocalDate] = Ordering.fromLessThan(_ isBefore _)
 
-  def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen]
+  def resolve(matchId: UUID)
+             (implicit hc: HeaderCarrier): Future[MatchedCitizen]
 
-  def retrieveAndMap[T](
-      matchId: UUID,
-      endpoint: String,
-      scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)(
-      implicit hc: HeaderCarrier,
-      request: RequestHeader,
-      ec: ExecutionContext): Future[T]
+  def retrieveAndMap[T](matchId: UUID,
+                        endpoint: String,
+                        scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)
+                       (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[T]
 
   def getContactDetails(matchId: UUID,
                         endpoint: String,
-                        scopes: Iterable[String])(
-      implicit hc: HeaderCarrier,
-      request: RequestHeader,
-      ec: ExecutionContext): Future[Option[ContactDetails]] = {
+                        scopes: Iterable[String])
+                       (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[Option[ContactDetails]] = {
 
     retrieveAndMap[Option[ContactDetails]](matchId, endpoint, scopes) {
       response =>
@@ -69,10 +64,8 @@ trait DetailsService {
     }
   }
 
-  def getResidences(matchId: UUID, endpoint: String, scopes: Iterable[String])(
-      implicit hc: HeaderCarrier,
-      request: RequestHeader,
-      ec: ExecutionContext): Future[Seq[Residence]] = {
+  def getResidences(matchId: UUID, endpoint: String, scopes: Iterable[String])
+                   (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[Seq[Residence]] = {
 
     retrieveAndMap[Seq[Residence]](matchId, endpoint, scopes) { response =>
       {
@@ -95,19 +88,16 @@ class SandboxDetailsService @Inject()(
     individualsMatchingApiConnector: IndividualsMatchingApiConnector)
     extends DetailsService {
 
-  override def resolve(matchId: UUID)(
-      implicit hc: HeaderCarrier): Future[MatchedCitizen] =
+  override def resolve(matchId: UUID)
+                      (implicit hc: HeaderCarrier): Future[MatchedCitizen] =
     if (matchId.equals(sandboxMatchId))
       successful(MatchedCitizen(sandboxMatchId, sandboxNino))
     else failed(new MatchNotFoundException)
 
-  def retrieveAndMap[T](
-      matchId: UUID,
-      endpoint: String,
-      scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)(
-      implicit hc: HeaderCarrier,
-      request: RequestHeader,
-      ec: ExecutionContext): Future[T] = {
+  def retrieveAndMap[T](matchId: UUID,
+                        endpoint: String,
+                        scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)
+                       (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[T] = {
 
     SandboxDetailsData.findByMatchId(matchId) match {
       case Some(i) =>
@@ -131,13 +121,10 @@ class LiveDetailsService @Inject()(
       implicit hc: HeaderCarrier): Future[MatchedCitizen] =
     individualsMatchingApiConnector.resolve(matchId)
 
-  def retrieveAndMap[T](
-      matchId: UUID,
-      endpoint: String,
-      scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)(
-      implicit hc: HeaderCarrier,
-      request: RequestHeader,
-      ec: ExecutionContext): Future[T] = {
+  def retrieveAndMap[T](matchId: UUID,
+                        endpoint: String,
+                        scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)
+                       (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[T] = {
 
     val cacheId = CacheId(
       matchId,
