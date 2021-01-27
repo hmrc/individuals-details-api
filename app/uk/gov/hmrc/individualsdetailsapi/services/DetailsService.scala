@@ -56,7 +56,9 @@ trait DetailsService {
   def getContactDetails(matchId: UUID,
                         endpoint: String,
                         scopes: Iterable[String])
-                       (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[Option[ContactDetails]] = {
+                       (implicit hc: HeaderCarrier,
+                        request: RequestHeader,
+                        ec: ExecutionContext): Future[Option[ContactDetails]] = {
 
     retrieveAndMap[Option[ContactDetails]](matchId, endpoint, scopes) {
       response =>
@@ -65,7 +67,9 @@ trait DetailsService {
   }
 
   def getResidences(matchId: UUID, endpoint: String, scopes: Iterable[String])
-                   (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[Seq[Residence]] = {
+                   (implicit hc: HeaderCarrier,
+                    request: RequestHeader,
+                    ec: ExecutionContext): Future[Seq[Residence]] = {
 
     retrieveAndMap[Seq[Residence]](matchId, endpoint, scopes) { response =>
       {

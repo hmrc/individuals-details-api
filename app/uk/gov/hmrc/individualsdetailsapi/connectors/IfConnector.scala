@@ -60,7 +60,9 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
   private val emptyResponse = IfDetailsResponse(None, None)
 
   def fetchDetails(nino: Nino, filter: Option[String], matchId: String)
-                  (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) = {
+                  (implicit hc: HeaderCarrier,
+                   request: RequestHeader,
+                   ec: ExecutionContext) = {
 
     val endpoint = "IfConnector::fetchDetails"
 
