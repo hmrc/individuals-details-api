@@ -50,7 +50,7 @@ class AuditHelperSpec extends UnitSpec with MockitoSugar {
     "individuals-benefits-and-credits-api")
 
   val apiResponseEvent   = new ApiResponseEvent(httpExtendedAuditEvent)
-  val ifApiResponseEvent =  new IfApiResponseEvent(httpExtendedAuditEvent)
+  val ifApiResponseEvent = new IfApiResponseEvent(httpExtendedAuditEvent)
   val ifApiFailureEvent  = new IfApiFailureEvent(httpExtendedAuditEvent)
 
   val auditHelper = new AuditHelper(auditConnector, apiResponseEvent, ifApiResponseEvent, ifApiFailureEvent)
