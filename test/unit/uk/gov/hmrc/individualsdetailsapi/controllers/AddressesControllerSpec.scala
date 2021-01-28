@@ -142,7 +142,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockLiveDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any()))
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
           val result = liveAddressesController.addresses(matchId)(fakeRequest)
@@ -159,7 +159,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockLiveDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any()))
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result = liveAddressesController.addresses(matchId)(fakeRequest)
@@ -206,7 +206,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockLiveDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any()))
+              eqTo(List("test-scope")))(any(), any(),any()))
             .thenReturn(Future.successful(residences))
 
           val exception = intercept[BadRequestException](
@@ -224,7 +224,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockLiveDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any()))
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
           val exception = intercept[BadRequestException](
@@ -247,7 +247,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockSandboxDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any()))
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
           val result =
@@ -265,7 +265,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockSandboxDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any()))
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result =
@@ -300,7 +300,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockSandboxDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any()))
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
           val exception = intercept[BadRequestException](
@@ -317,7 +317,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockSandboxDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any()))
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
           val exception = intercept[BadRequestException](

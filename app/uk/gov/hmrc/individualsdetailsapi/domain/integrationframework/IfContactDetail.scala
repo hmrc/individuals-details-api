@@ -36,8 +36,6 @@ import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
 
-import scala.util.matching.Regex
-
 case class IfContactDetail(code: Int, detailType: String, detail: String)
 
 object IfContactDetail {
