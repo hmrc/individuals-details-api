@@ -25,27 +25,13 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, _}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{
-  AuthConnector,
-  Enrolment,
-  Enrolments,
-  InsufficientEnrolments
-}
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.individualsdetailsapi.controllers.{
-  LiveAddressesController,
-  SandboxAddressesController
-}
-import uk.gov.hmrc.individualsdetailsapi.domain.{
-  Address,
-  MatchNotFoundException,
-  Residence
-}
+import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.individualsdetailsapi.controllers.{LiveAddressesController, SandboxAddressesController}
+import uk.gov.hmrc.individualsdetailsapi.domain.{Address, MatchNotFoundException, Residence}
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
-import uk.gov.hmrc.individualsdetailsapi.services.{
-  LiveDetailsService,
-  SandboxDetailsService
-}
+import uk.gov.hmrc.individualsdetailsapi.services.{LiveDetailsService, SandboxDetailsService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -68,6 +54,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
     val mockLiveDetailsService = mock[LiveDetailsService]
     val mockSandboxDetailsService = mock[SandboxDetailsService]
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
+    val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
     when(
       mockAuthConnector.authorise(
@@ -83,7 +70,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
         mockAuthConnector,
         cc,
         scopeService,
-        mockLiveDetailsService
+        mockLiveDetailsService,
+        mockAuditHelper
       )
 
     val sandboxAddressesController =
@@ -91,7 +79,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
         mockAuthConnector,
         cc,
         scopeService,
-        mockSandboxDetailsService
+        mockSandboxDetailsService,
+        mockAuditHelper
       )
 
     when(scopeService.getEndPointScopes(any())).thenReturn(scopes)
@@ -199,24 +188,28 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
           assert(result.getMessage == "No scopes defined")
         }
 
-        "throw an Exception when missing CorrelationId" in new Fixture {
+        "return bad request with correct error message when missing CorrelationId" in new Fixture {
           val fakeRequest = FakeRequest("GET", s"/addresses/")
 
           when(
             mockLiveDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any(),any()))
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
-          val exception = intercept[BadRequestException](
-            liveAddressesController.addresses(matchId)(fakeRequest))
+          val result = liveAddressesController.addresses(matchId)(fakeRequest)
 
-          exception.message shouldBe "CorrelationId is required"
-          exception.responseCode shouldBe BAD_REQUEST
+          status(result) shouldBe BAD_REQUEST
+          contentAsJson(result) shouldBe Json.parse(
+            """{
+              |    "code": "INVALID_REQUEST",
+              |    "message": "CorrelationId is required"
+              |}""".stripMargin
+          )
         }
 
-        "throw an Exception when CorrelationId is malformed" in new Fixture {
+        "return bad request with correct error message when CorrelationId is malformed" in new Fixture {
           val fakeRequest = FakeRequest("GET", s"/addresses/")
             .withHeaders("CorrelationId" -> "invalidId")
 
@@ -227,11 +220,15 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
               eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
-          val exception = intercept[BadRequestException](
-            liveAddressesController.addresses(matchId)(fakeRequest))
+          val result = liveAddressesController.addresses(matchId)(fakeRequest)
 
-          exception.message shouldBe "Malformed CorrelationId"
-          exception.responseCode shouldBe BAD_REQUEST
+          status(result) shouldBe BAD_REQUEST
+          contentAsJson(result) shouldBe Json.parse(
+            """{
+              |    "code": "INVALID_REQUEST",
+              |    "message": "Malformed CorrelationId"
+              |}""".stripMargin
+          )
         }
 
       }

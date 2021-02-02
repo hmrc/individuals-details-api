@@ -24,41 +24,44 @@ import play.api.hal.HalLink
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils.extractCorrelationId
+import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
-import uk.gov.hmrc.individualsdetailsapi.services.{
-  DetailsService,
-  LiveDetailsService,
-  SandboxDetailsService
-}
+import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, LiveDetailsService, SandboxDetailsService}
 
 import scala.concurrent.ExecutionContext
 
-abstract class ContactDetailsController @Inject()(cc: ControllerComponents,
-                                                  scopeService: ScopesService,
-                                                  detailsService: DetailsService)
-                                                 (implicit val ec: ExecutionContext)
-  extends CommonController(cc)
+abstract class ContactDetailsController @Inject()(
+    cc: ControllerComponents,
+    scopeService: ScopesService,
+    detailsService: DetailsService,
+    implicit val auditHelper: AuditHelper)(implicit val ec: ExecutionContext)
+    extends CommonController(cc)
     with PrivilegedAuthentication {
 
   def contactDetails(matchId: UUID): Action[AnyContent] = Action.async {
     implicit request =>
-      extractCorrelationId(request)
       val scopes = scopeService.getEndPointScopes("contact-details")
-      requiresPrivilegedAuthentication(scopes) { authScopes =>
+      authenticate(scopes, matchId.toString) { authScopes =>
+
+        val correlationId = validateCorrelationId(request)
+
         detailsService
           .getContactDetails(matchId, "contact-details", authScopes)
           .map { contactDetails =>
             {
-              val selfLink = HalLink(
-                "self",
-                s"/individuals/details/contact-details?matchId=$matchId")
-              val contactDetailsJsObject =
-                Json.obj("contactDetails" -> Json.toJson(contactDetails))
-              Ok(state(contactDetailsJsObject) ++ selfLink)
+              val selfLink = HalLink("self", s"/individuals/details/contact-details?matchId=$matchId")
+              val contactDetailsJsObject = Json.obj("contactDetails" -> Json.toJson(contactDetails))
+              val response = state(contactDetailsJsObject) ++ selfLink
+
+              auditHelper.auditApiResponse(
+                correlationId.toString, matchId.toString, Some(authScopes.mkString(",")),
+                request, selfLink.toString, Json.toJson((response)))
+
+              Ok(response)
             }
           }
-      } recover recovery
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/details/contact-details")
   }
 }
 
@@ -67,9 +70,10 @@ class LiveContactDetailsController @Inject()(
     val authConnector: AuthConnector,
     cc: ControllerComponents,
     scopeService: ScopesService,
-    detailsService: LiveDetailsService
+    detailsService: LiveDetailsService,
+    auditHelper: AuditHelper
 )(implicit override val ec: ExecutionContext)
-    extends ContactDetailsController(cc, scopeService, detailsService) {
+    extends ContactDetailsController(cc, scopeService, detailsService, auditHelper) {
 
   override val environment = Environment.PRODUCTION
 
@@ -80,9 +84,10 @@ class SandboxContactDetailsController @Inject()(
     val authConnector: AuthConnector,
     cc: ControllerComponents,
     scopeService: ScopesService,
-    detailsService: SandboxDetailsService
+    detailsService: SandboxDetailsService,
+    auditHelper: AuditHelper
 )(implicit override val ec: ExecutionContext)
-    extends ContactDetailsController(cc, scopeService, detailsService) {
+    extends ContactDetailsController(cc, scopeService, detailsService, auditHelper) {
 
   override val environment = Environment.SANDBOX
 

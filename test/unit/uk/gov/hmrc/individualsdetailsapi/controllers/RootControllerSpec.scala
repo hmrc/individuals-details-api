@@ -19,34 +19,22 @@ package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 import java.util.UUID
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
-import org.mockito.Mockito.{verifyNoInteractions, when}
+import org.mockito.Mockito
+import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, _}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{
-  AuthConnector,
-  Enrolment,
-  Enrolments,
-  InsufficientEnrolments
-}
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.BadRequestException
+import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.config.EndpointConfig
-import uk.gov.hmrc.individualsdetailsapi.controllers.{
-  LiveRootController,
-  SandboxRootController
-}
-import uk.gov.hmrc.individualsdetailsapi.domain.{
-  MatchNotFoundException,
-  MatchedCitizen
-}
+import uk.gov.hmrc.individualsdetailsapi.controllers.{LiveRootController, SandboxRootController}
+import uk.gov.hmrc.individualsdetailsapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
-import uk.gov.hmrc.individualsdetailsapi.services.{
-  LiveDetailsService,
-  SandboxDetailsService
-}
+import uk.gov.hmrc.individualsdetailsapi.services.{LiveDetailsService, SandboxDetailsService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -70,6 +58,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
     val mockLiveDetailsService = mock[LiveDetailsService]
     val mockSandboxDetailsService = mock[SandboxDetailsService]
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
+    val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
     when(
       mockAuthConnector.authorise(
@@ -86,7 +75,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
         cc,
         scopeService,
         scopeHelper,
-        mockLiveDetailsService
+        mockLiveDetailsService,
+        mockAuditHelper
       )
 
     val sandboxRootController =
@@ -95,7 +85,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
         cc,
         scopeService,
         scopeHelper,
-        mockSandboxDetailsService
+        mockSandboxDetailsService,
+        mockAuditHelper
       )
 
     when(scopeService.getAllScopes).thenReturn(scopes.toList)
@@ -120,6 +111,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
         "return response when successful" in new Fixture {
 
+          Mockito.reset(liveRootController.auditHelper)
+
           val fakeRequest = FakeRequest("GET", s"/")
             .withHeaders(validCorrelationHeader)
 
@@ -130,6 +123,10 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           val result = liveRootController.root(matchId)(fakeRequest)
 
           status(result) shouldBe OK
+
+          verify(liveRootController.auditHelper, times(1)).
+            auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {

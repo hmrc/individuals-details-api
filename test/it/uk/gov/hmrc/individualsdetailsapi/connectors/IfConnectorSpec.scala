@@ -121,8 +121,8 @@ class IfConnectorSpec
         )
       }
 
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(
-        any())
+      verify(underTest.auditHelper,
+        times(1)).auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
 
     }
 
@@ -144,8 +144,8 @@ class IfConnectorSpec
         )
       }
 
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(
-        any())
+      verify(underTest.auditHelper,
+        times(1)).auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
 
     }
 
@@ -173,7 +173,8 @@ class IfConnectorSpec
 
       result shouldBe detailsData
 
-      verify(underTest.auditHelper, times(1)).auditIfApiResponse(any())(any())
+      verify(underTest.auditHelper,
+        times(1)).auditIfApiResponse(any(), any(), any(), any(), any(), any())(any())
 
     }
   }

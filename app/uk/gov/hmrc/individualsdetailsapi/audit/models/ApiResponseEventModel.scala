@@ -19,8 +19,8 @@ package uk.gov.hmrc.individualsdetailsapi.audit.models
 import play.api.libs.json.Json
 
 case class ApiResponseEventModel(apiVersion: String,
-                                 matchId: Option[String],
-                                 correlationId: String,
+                                 matchId: String,
+                                 correlationId: Option[String],
                                  scopes: Option[String],
                                  requestUrl: Option[String],
                                  response: String)
