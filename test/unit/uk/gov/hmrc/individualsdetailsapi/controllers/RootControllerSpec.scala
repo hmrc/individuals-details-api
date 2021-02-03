@@ -145,6 +145,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
             "code" -> "NOT_FOUND",
             "message" -> "The resource can not be found"
           )
+          verify(liveRootController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
         "return 401 when the bearer token does not have valid enrolment" in new Fixture {
@@ -159,6 +161,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) shouldBe UNAUTHORIZED
           verifyNoInteractions(mockLiveDetailsService)
+          verify(liveRootController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
         "return error when no scopes are supplied" in new Fixture {
@@ -189,6 +193,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           val result = sandboxRootController.root(matchId)(fakeRequest)
 
           status(result) shouldBe OK
+          verify(sandboxRootController.auditHelper, times(1))
+            .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {
@@ -207,6 +213,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
             "code" -> "NOT_FOUND",
             "message" -> "The resource can not be found"
           )
+          verify(sandboxRootController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
         "return error when no scopes are supplied" in new Fixture {

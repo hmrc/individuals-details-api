@@ -19,7 +19,7 @@ package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 import java.util.UUID
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
-import org.mockito.Mockito.{verifyNoInteractions, when}
+import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
@@ -131,12 +131,14 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockLiveDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any(), any()))
+              eqTo(Set("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
           val result = liveAddressesController.addresses(matchId)(fakeRequest)
 
           status(result) shouldBe OK
+          verify(liveAddressesController.auditHelper, times(1))
+            .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {
@@ -148,7 +150,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockLiveDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any(), any()))
+              eqTo(Set("test-scope")))(any(), any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result = liveAddressesController.addresses(matchId)(fakeRequest)
@@ -159,6 +161,9 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             "code" -> "NOT_FOUND",
             "message" -> "The resource can not be found"
           )
+
+          verify(liveAddressesController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
         "return 401 when the bearer token does not have valid enrolment" in new Fixture {
@@ -207,6 +212,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
               |    "message": "CorrelationId is required"
               |}""".stripMargin
           )
+          verify(liveAddressesController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
         "return bad request with correct error message when CorrelationId is malformed" in new Fixture {
@@ -229,6 +236,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
               |    "message": "Malformed CorrelationId"
               |}""".stripMargin
           )
+          verify(liveAddressesController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
       }
@@ -251,6 +260,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             sandboxAddressesController.addresses(matchId)(fakeRequest)
 
           status(result) shouldBe OK
+          verify(sandboxAddressesController.auditHelper, times(1))
+            .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {
@@ -274,6 +285,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             "code" -> "NOT_FOUND",
             "message" -> "The resource can not be found"
           )
+          verify(sandboxAddressesController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
         "return error when no scopes are supplied" in new Fixture {
