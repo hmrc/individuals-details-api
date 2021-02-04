@@ -49,7 +49,8 @@ trait BaseSpec
       "microservice.services.auth.port" -> AuthStub.port,
       "microservice.services.individuals-matching-api.port" -> IndividualsMatchingApiStub.port,
       "microservice.services.integration-framework.port" -> IfStub.port,
-      "run.mode" -> "It"
+      "run.mode" -> "It",
+      "cache.enabled" -> false
     )
     .build()
 

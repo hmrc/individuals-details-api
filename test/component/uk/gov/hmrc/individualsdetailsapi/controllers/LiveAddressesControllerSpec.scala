@@ -20,7 +20,7 @@ import java.util.UUID
 
 import play.api.libs.json.{JsValue, Json}
 
-class LiveAddressesControllerSpec extends CommonControllerSpec {
+class LiveAddressesControllerSpec extends CommonControllerWithIfRequestSpec {
 
   override val matchId: UUID =
     UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b")
@@ -65,4 +65,13 @@ class LiveAddressesControllerSpec extends CommonControllerSpec {
      |    "inUse" : false
      |  } ]
      |}""".stripMargin)
+
+  override val expectedJsonInvalidIf: JsValue = Json.parse(s"""{
+      |  "_links" : {
+      |    "self" : {
+      |      "href" : "/individuals/details/addresses?matchId=$matchId"
+      |    }
+      |  },
+      |  "residences" : [ ]
+      |}""".stripMargin)
 }

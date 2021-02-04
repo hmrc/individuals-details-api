@@ -17,14 +17,7 @@
 package it.uk.gov.hmrc.individualsdetailsapi.connectors
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.{
-  aResponse,
-  configureFor,
-  equalTo,
-  get,
-  stubFor,
-  urlPathMatching
-}
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, configureFor, equalTo, get, stubFor, urlPathMatching}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
@@ -35,16 +28,12 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import testUtils.TestHelpers
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{
-  BadRequestException,
-  HeaderCarrier,
-  HttpClient,
-  Upstream5xxResponse
-}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.connectors.IfConnector
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 import play.api.test.FakeRequest
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfContactDetail
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.ExecutionContext
@@ -66,6 +55,7 @@ class IfConnectorSpec
   override lazy val fakeApplication = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
+      "cache.enabled"  -> false,
       "microservice.services.integration-framework.host" -> "localhost",
       "microservice.services.integration-framework.port" -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
@@ -147,6 +137,34 @@ class IfConnectorSpec
       verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(
         any())
 
+    }
+
+    "Audit error when IF returns invalid data" in new Setup {
+
+      Mockito.reset(underTest.auditHelper)
+
+      val invalidData = detailsData.copy(contactDetails = Option(Seq(
+        IfContactDetail(
+          code = 7,
+          detailType = "DAYTIME TELEPHONE",
+          detail = ""
+        ))))
+
+      stubFor(
+        get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
+          .willReturn(aResponse()
+            .withStatus(200)
+            .withBody(Json.toJson(invalidData).toString())))
+
+      await(
+        underTest.fetchDetails(nino, None, matchId)(
+          hc,
+          FakeRequest().withHeaders(sampleCorrelationIdHeader),
+          ec
+        )
+      )
+
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(any())
     }
 
     "for standard response" in new Setup {

@@ -109,8 +109,9 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
   private def recover[A](x: Future[A], emptyResponse: A, apiIfFailedAuditRequest: ApiIfFailureAuditRequest)
                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] = x.recoverWith {
-      case v: JsValidationException => {
-        Logger.error(v.getMessage())
+      case validationError: JsValidationException => {
+        Logger.error(s"Error parsing IF response: ${validationError.errors}")
+        auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, s"Error parsing IF response: ${validationError.errors}")
         Future.successful(emptyResponse)
       }
       case notFound: NotFoundException => {

@@ -18,9 +18,11 @@ package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import java.util.UUID
 
+import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.{JsValue, Json}
+import play.api.test.Helpers._
 
-class LiveContactDetailsControllerSpec extends CommonControllerSpec {
+class LiveContactDetailsControllerSpec extends CommonControllerWithIfRequestSpec {
 
   override val matchId: UUID =
     UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b")
@@ -41,5 +43,14 @@ class LiveContactDetailsControllerSpec extends CommonControllerSpec {
      |    "mobileTelephones" : [ "01234 567890" ]
      |  }
      |}""".stripMargin)
+
+  override val expectedJsonInvalidIf: JsValue = Json.parse(s"""{
+      |  "_links" : {
+      |    "self" : {
+      |      "href" : "/individuals/details/contact-details?matchId=$matchId"
+      |    }
+      |  },
+      |  "contactDetails" : { }
+      |}""".stripMargin)
 
 }
