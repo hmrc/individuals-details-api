@@ -17,7 +17,6 @@
 package uk.gov.hmrc.individualsdetailsapi.controllers
 
 import java.util.UUID
-
 import javax.inject.Inject
 import play.api.hal.Hal.state
 import play.api.mvc.hal._
@@ -25,6 +24,7 @@ import play.api.hal.HalLink
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils.extractCorrelationId
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
 import uk.gov.hmrc.individualsdetailsapi.services.{
   DetailsService,
@@ -34,16 +34,16 @@ import uk.gov.hmrc.individualsdetailsapi.services.{
 
 import scala.concurrent.ExecutionContext
 
-abstract class AddressesController @Inject()(
-    cc: ControllerComponents,
-    scopeService: ScopesService,
-    detailsService: DetailsService
-)(implicit val ec: ExecutionContext)
-    extends CommonController(cc)
+abstract class AddressesController @Inject()(cc: ControllerComponents,
+                                             scopeService: ScopesService,
+                                             detailsService: DetailsService)
+                                            (implicit val ec: ExecutionContext)
+  extends CommonController(cc)
     with PrivilegedAuthentication {
 
   def addresses(matchId: UUID): Action[AnyContent] = Action.async {
     implicit request =>
+      extractCorrelationId(request)
       val scopes = scopeService.getEndPointScopes("addresses")
 
       requiresPrivilegedAuthentication(scopes) { authScopes =>

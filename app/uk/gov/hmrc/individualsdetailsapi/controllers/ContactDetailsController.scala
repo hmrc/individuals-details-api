@@ -23,28 +23,25 @@ import play.api.hal.Hal.state
 import play.api.hal.Hal.links
 import play.api.mvc.hal._
 import play.api.hal.HalLink
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils.extractCorrelationId
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
-import uk.gov.hmrc.individualsdetailsapi.services.{
-  DetailsService,
-  LiveDetailsService,
-  SandboxDetailsService
-}
+import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, LiveDetailsService, SandboxDetailsService}
 
 import scala.concurrent.ExecutionContext
 
-abstract class ContactDetailsController @Inject()(
-    cc: ControllerComponents,
-    scopeService: ScopesService,
-    detailsService: DetailsService
-)(implicit val ec: ExecutionContext)
-    extends CommonController(cc)
+abstract class ContactDetailsController @Inject()(cc: ControllerComponents,
+                                                  scopeService: ScopesService,
+                                                  detailsService: DetailsService)
+                                                 (implicit val ec: ExecutionContext)
+  extends CommonController(cc)
     with PrivilegedAuthentication {
 
   def contactDetails(matchId: UUID): Action[AnyContent] = Action.async {
     implicit request =>
+      extractCorrelationId(request)
       val scopes = scopeService.getEndPointScopes("contact-details")
       val selfLink =
         HalLink("self",
@@ -54,8 +51,7 @@ abstract class ContactDetailsController @Inject()(
         detailsService
           .getContactDetails(matchId, "contact-details", authScopes)
           .map { contactDetails =>
-            val obj = contactDetails.fold(Json.obj())(cd =>
-              Json.obj("contactDetails" -> Json.toJson(cd)))
+            val obj = contactDetails.fold(Json.obj().as[JsValue])(cd => Json.toJson(cd))
             Ok(state(Json.obj("contactDetails" -> obj)) ++ selfLink)
           }
       } recover recovery
