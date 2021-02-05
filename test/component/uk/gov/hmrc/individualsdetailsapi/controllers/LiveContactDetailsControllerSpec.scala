@@ -53,4 +53,26 @@ class LiveContactDetailsControllerSpec extends CommonControllerWithIfRequestSpec
       |  "contactDetails" : { }
       |}""".stripMargin)
 
+  scenario(s"user does not have valid scopes") {
+    Given("A valid auth token but invalid scopes")
+    AuthStub.willNotAuthorizePrivilegedAuthTokenNoScopes(authToken)
+
+    And("a valid record in the matching API")
+    IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+
+    And("IF will return response")
+    IfStub.searchDetails(nino, ifDetailsResponse)
+
+    When(
+      s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+    val response = invokeEndpoint(s"$serviceUrl/${endpoint}?matchId=$matchId")
+
+    Then("The response status should be 401")
+    response.code shouldBe UNAUTHORIZED
+    Json.parse(response.body) shouldBe Json.obj(
+      "code" -> "UNAUTHORIZED",
+      "message" ->"User does not have valid scopes"
+    )
+  }
+
 }

@@ -18,10 +18,9 @@ package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import java.util.UUID
 
-import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec}
+import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import scalaj.http.Http
 
 class LiveRootControllerSpec extends CommonControllerSpec {
 
@@ -55,5 +54,27 @@ class LiveRootControllerSpec extends CommonControllerSpec {
    |    }
    |  }
    |}""".stripMargin)
+
+  scenario(s"user does not have valid scopes") {
+    Given("A valid auth token but invalid scopes")
+    AuthStub.willNotAuthorizePrivilegedAuthTokenNoScopes(authToken)
+
+    And("a valid record in the matching API")
+    IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
+
+    And("IF will return response")
+    IfStub.searchDetails(nino, ifDetailsResponse)
+
+    When(
+      s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+    val response = invokeEndpoint(s"$serviceUrl/${endpoint}?matchId=$matchId")
+
+    Then("The response status should be 401")
+    response.code shouldBe UNAUTHORIZED
+    Json.parse(response.body) shouldBe Json.obj(
+      "code" -> "UNAUTHORIZED",
+      "message" ->"User does not have valid scopes"
+    )
+  }
 
 }

@@ -24,20 +24,10 @@ import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.http.{
-  BadRequestException,
-  HeaderCarrier,
-  HttpClient,
-  JsValidationException,
-  NotFoundException,
-  TooManyRequestException,
-  Upstream4xxResponse
-}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.individualsdetailsapi.audit.models.{
-  ApiIfAuditRequest,
-  ApiIfFailureAuditRequest
-}
+import uk.gov.hmrc.individualsdetailsapi.audit.models.{ApiIfAuditRequest, ApiIfFailureAuditRequest}
+import uk.gov.hmrc.individualsdetailsapi.domain.ErrorInternalServer
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -112,28 +102,32 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       case validationError: JsValidationException => {
         Logger.error(s"Error parsing IF response: ${validationError.errors}")
         auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, s"Error parsing IF response: ${validationError.errors}")
-        Future.successful(emptyResponse)
+        Future.failed(new InternalServerException("Something went wrong."))
       }
       case notFound: NotFoundException => {
-        auditHelper.auditIfApiFailure(apiIfFailedAuditRequest,
-                                      notFound.getMessage)
+        auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, notFound.getMessage)
         Future.successful(emptyResponse)
       }
-      case Upstream4xxResponse(msg, 429, _, _) => {
-        Logger.warn(s"IF Rate limited: $msg")
+      case Upstream5xxResponse(msg, _, _, _) => {
+        Logger.error(s"Upstream internal server error: $msg")
         auditHelper.auditIfApiFailure(apiIfFailedAuditRequest,
-                                      s"IF Rate limited: $msg")
+          s"Internal Server error: $msg")
+        Future.failed(new InternalServerException("Something went wrong."))
+      }
+      case Upstream4xxResponse(msg, 429, _, _) => {
+        Logger.warn(s"IF rate limited: $msg")
+        auditHelper.auditIfApiFailure(apiIfFailedAuditRequest,s"IF Rate limited: $msg")
         Future.failed(new TooManyRequestException(msg))
       }
       case Upstream4xxResponse(msg, _, _, _) => {
+        Logger.error(s"IF returned invalid request: $msg")
         auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, msg)
-        Future.failed(
-          new IllegalArgumentException(
-            s"Integration Framework returned INVALID_REQUEST"))
+        Future.failed(new InternalServerException("Something went wrong."))
       }
       case e: Exception => {
+        Logger.error(s"A miscellaneous exception: ${e.getMessage}")
         auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, e.getMessage)
-        Future.failed(e)
+        Future.failed(new InternalServerException("Something went wrong."))
       }
     }
 

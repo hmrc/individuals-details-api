@@ -19,13 +19,8 @@ import javax.inject.Inject
 import play.api.mvc.{ControllerComponents, Result}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{
-  AuthorisationException,
-  AuthorisedFunctions,
-  Enrolment,
-  InsufficientEnrolments
-}
-import uk.gov.hmrc.http.{HeaderCarrier, TooManyRequestException}
+import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpErrorFunctions, InternalServerException, TooManyRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsdetailsapi.domain._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -37,14 +32,11 @@ abstract class CommonController @Inject()(
 
   private[controllers] def recovery: PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException => ErrorNotFound.toHttpResponse
-    case _: InsufficientEnrolments =>
-      ErrorUnauthorized("User does not have valid scopes").toHttpResponse
-    case e: AuthorisationException =>
-      ErrorUnauthorized(e.getMessage).toHttpResponse
+    case _: InsufficientEnrolments => ErrorUnauthorized("User does not have valid scopes").toHttpResponse
+    case e: AuthorisationException => ErrorUnauthorized(e.getMessage).toHttpResponse
     case _: TooManyRequestException => ErrorTooManyRequests.toHttpResponse
-    case e: IllegalArgumentException =>
-      ErrorInvalidRequest(e.getMessage).toHttpResponse
-    case x => ErrorInvalidRequest(x.getMessage).toHttpResponse
+    case _: InternalServerException => ErrorInternalServer("Something went wrong.").toHttpResponse
+    case _ => ErrorInternalServer("Something went wrong.").toHttpResponse
   }
 }
 
