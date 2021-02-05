@@ -28,7 +28,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import testUtils.TestHelpers
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, Upstream5xxResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.connectors.IfConnector
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 import play.api.test.FakeRequest
@@ -101,7 +101,7 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
           .willReturn(aResponse().withStatus(500)))
 
-      intercept[Upstream5xxResponse] {
+      intercept[InternalServerException] {
         await(
           underTest.fetchDetails(nino, None, matchId)(
             hc,
@@ -124,7 +124,7 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
           .willReturn(aResponse().withStatus(400)))
 
-      intercept[BadRequestException] {
+      intercept[InternalServerException] {
         await(
           underTest.fetchDetails(nino, None, matchId)(
             hc,
@@ -156,13 +156,15 @@ class IfConnectorSpec
             .withStatus(200)
             .withBody(Json.toJson(invalidData).toString())))
 
-      await(
-        underTest.fetchDetails(nino, None, matchId)(
-          hc,
-          FakeRequest().withHeaders(sampleCorrelationIdHeader),
-          ec
+      intercept[InternalServerException] {
+        await(
+          underTest.fetchDetails(nino, None, matchId)(
+            hc,
+            FakeRequest().withHeaders(sampleCorrelationIdHeader),
+            ec
+          )
         )
-      )
+      }
 
       verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any())(any())
     }

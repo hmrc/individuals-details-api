@@ -76,5 +76,4 @@ class LiveRootControllerSpec extends CommonControllerSpec {
       "message" ->"User does not have valid scopes"
     )
   }
-
 }
