@@ -32,7 +32,7 @@ abstract class CommonController @Inject()(
 
   private[controllers] def recovery: PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException => ErrorNotFound.toHttpResponse
-    case _: InsufficientEnrolments => ErrorUnauthorized("User does not have valid scopes").toHttpResponse
+    case _: InsufficientEnrolments => ErrorUnauthorized("Insufficient Enrolments").toHttpResponse
     case e: AuthorisationException => ErrorUnauthorized(e.getMessage).toHttpResponse
     case _: TooManyRequestException => ErrorTooManyRequests.toHttpResponse
     case _: InternalServerException => ErrorInternalServer("Something went wrong.").toHttpResponse

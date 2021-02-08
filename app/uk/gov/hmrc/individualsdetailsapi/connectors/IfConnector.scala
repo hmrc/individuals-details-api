@@ -125,7 +125,7 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
         Future.failed(new InternalServerException("Something went wrong."))
       }
       case e: Exception => {
-        Logger.error(s"A miscellaneous exception: ${e.getMessage}")
+        Logger.error(s"Misc exception: ${e.getMessage}")
         auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, e.getMessage)
         Future.failed(new InternalServerException("Something went wrong."))
       }

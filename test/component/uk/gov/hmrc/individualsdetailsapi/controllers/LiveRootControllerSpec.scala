@@ -73,7 +73,7 @@ class LiveRootControllerSpec extends CommonControllerSpec {
     response.code shouldBe UNAUTHORIZED
     Json.parse(response.body) shouldBe Json.obj(
       "code" -> "UNAUTHORIZED",
-      "message" ->"User does not have valid scopes"
+      "message" ->"Insufficient Enrolments"
     )
   }
 }
