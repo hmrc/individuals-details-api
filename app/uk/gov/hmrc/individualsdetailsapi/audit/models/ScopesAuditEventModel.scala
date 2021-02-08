@@ -16,17 +16,12 @@
 
 package uk.gov.hmrc.individualsdetailsapi.audit.models
 
-import java.util.UUID
-
 import play.api.libs.json.Json
 
-case class ApiFailureEventModel(apiVersion: String,
-                                matchId: Option[UUID],
-                                correlationId: String,
-                                scopes: Option[String],
-                                requestUrl: Option[String],
-                                msg: String)
+case class ScopesAuditEventModel(apiVersion: String,
+                                 matchId: String,
+                                 scopes: String)
 
-object ApiFailureEventModel {
-  implicit val formatApiFailureEventModel = Json.format[ApiFailureEventModel]
+object ScopesAuditEventModel {
+  implicit val formatScopesAuditEventModel = Json.format[ScopesAuditEventModel]
 }

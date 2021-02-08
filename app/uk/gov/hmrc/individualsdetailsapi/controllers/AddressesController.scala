@@ -24,42 +24,44 @@ import play.api.hal.HalLink
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils.extractCorrelationId
+import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
-import uk.gov.hmrc.individualsdetailsapi.services.{
-  DetailsService,
-  LiveDetailsService,
-  SandboxDetailsService
-}
+import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, LiveDetailsService, SandboxDetailsService}
 
 import scala.concurrent.ExecutionContext
 
-abstract class AddressesController @Inject()(cc: ControllerComponents,
-                                             scopeService: ScopesService,
-                                             detailsService: DetailsService)
-                                            (implicit val ec: ExecutionContext)
-  extends CommonController(cc)
+abstract class AddressesController @Inject()(
+    cc: ControllerComponents,
+    scopeService: ScopesService,
+    detailsService: DetailsService,
+    implicit val auditHelper: AuditHelper)(implicit val ec: ExecutionContext)
+    extends CommonController(cc)
     with PrivilegedAuthentication {
 
   def addresses(matchId: UUID): Action[AnyContent] = Action.async {
     implicit request =>
-      extractCorrelationId(request)
       val scopes = scopeService.getEndPointScopes("addresses")
+      authenticate(scopes, matchId.toString) { authScopes =>
 
-      requiresPrivilegedAuthentication(scopes) { authScopes =>
+        val correlationId = validateCorrelationId(request)
+
         detailsService
           .getResidences(matchId, "addresses", authScopes)
           .map { addresses =>
             {
-              val selfLink =
-                HalLink("self",
-                        s"/individuals/details/addresses?matchId=$matchId")
-              val addressesJsObject =
-                Json.obj("residences" -> Json.toJson(addresses))
-              Ok(state(addressesJsObject) ++ selfLink)
+              val selfLink = HalLink("self", s"/individuals/details/addresses?matchId=$matchId")
+              val addressesJsObject = Json.obj("residences" -> Json.toJson(addresses))
+              val response = state(addressesJsObject) ++ selfLink
+
+              auditHelper.auditApiResponse(
+                correlationId.toString, matchId.toString, Some(authScopes.mkString(",")),
+                request, selfLink.toString, Json.toJson((response)))
+
+              Ok(response)
             }
           }
-      } recover recovery
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/details/addresses")
   }
 }
 
@@ -67,9 +69,10 @@ class LiveAddressesController @Inject()(
     val authConnector: AuthConnector,
     cc: ControllerComponents,
     scopeService: ScopesService,
-    detailsService: LiveDetailsService
+    detailsService: LiveDetailsService,
+    auditHelper: AuditHelper
 )(implicit override val ec: ExecutionContext)
-    extends AddressesController(cc, scopeService, detailsService) {
+    extends AddressesController(cc, scopeService, detailsService, auditHelper) {
   override val environment: String = Environment.PRODUCTION
 }
 
@@ -77,8 +80,9 @@ class SandboxAddressesController @Inject()(
     val authConnector: AuthConnector,
     cc: ControllerComponents,
     scopeService: ScopesService,
-    detailsService: SandboxDetailsService
+    detailsService: SandboxDetailsService,
+    auditHelper: AuditHelper
 )(implicit override val ec: ExecutionContext)
-    extends AddressesController(cc, scopeService, detailsService) {
+    extends AddressesController(cc, scopeService, detailsService, auditHelper) {
   override val environment: String = Environment.SANDBOX
 }

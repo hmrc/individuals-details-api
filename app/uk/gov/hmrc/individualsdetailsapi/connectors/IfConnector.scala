@@ -26,16 +26,16 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.individualsdetailsapi.audit.models.{ApiIfAuditRequest, ApiIfFailureAuditRequest}
-import uk.gov.hmrc.individualsdetailsapi.domain.ErrorInternalServer
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
-class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
-                           (implicit ec: ExecutionContext) {
+class IfConnector @Inject()(
+    servicesConfig: ServicesConfig,
+    http: HttpClient,
+    val auditHelper: AuditHelper)(implicit ec: ExecutionContext) {
 
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
 
@@ -50,10 +50,10 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
   private val emptyResponse = IfDetailsResponse(None, None)
 
-  def fetchDetails(nino: Nino, filter: Option[String], matchId: String)
-                  (implicit hc: HeaderCarrier,
-                   request: RequestHeader,
-                   ec: ExecutionContext) = {
+  def fetchDetails(nino: Nino, filter: Option[String], matchId: String)(
+      implicit hc: HeaderCarrier,
+      request: RequestHeader,
+      ec: ExecutionContext) = {
 
     val endpoint = "IfConnector::fetchDetails"
 
@@ -74,8 +74,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
       case None => throw new BadRequestException("CorrelationId is required")
     }
 
-  private def header(extraHeaders: (String, String)*)
-                    (implicit hc: HeaderCarrier) =
+  private def header(extraHeaders: (String, String)*)(
+      implicit hc: HeaderCarrier) =
     hc.copy(
         authorization =
           Some(Authorization(s"Bearer $integrationFrameworkBearerToken")))
@@ -83,52 +83,44 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
         Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
 
   private def call(url: String, endpoint: String, matchId: String)
-                  (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
-    recover[IfDetailsResponse](http.GET[IfDetailsResponse](url)(implicitly, header(), ec) map {
-        response =>
-          Logger.debug(s"$endpoint - Response: $response")
+                      (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+    recover(http.GET[IfDetailsResponse](url)(implicitly, header(), ec) map { response =>
+      Logger.debug(s"$endpoint - Response: $response")
+      auditHelper.auditIfApiResponse(extractCorrelationId(request), None, matchId, request, url, Json.toJson(response))
+      response
+    }, extractCorrelationId(request), matchId, request, url)
 
-          auditHelper.auditIfApiResponse(
-            ApiIfAuditRequest(extractCorrelationId(request), None, Some(matchId), request, url, Json.toJson(response))
-          )
+  private def recover(x: Future[IfDetailsResponse],
+                         correlationId: String,
+                         matchId: String,
+                         request: RequestHeader,
+                         requestUrl: String)
+                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IfDetailsResponse] = x.recoverWith {
 
-          response
-      },
-      emptyResponse,
-      ApiIfFailureAuditRequest(extractCorrelationId(request), None, Some(matchId), request, url))
-
-  private def recover[A](x: Future[A], emptyResponse: A, apiIfFailedAuditRequest: ApiIfFailureAuditRequest)
-                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] = x.recoverWith {
-      case validationError: JsValidationException => {
-        Logger.error(s"Error parsing IF response: ${validationError.errors}")
-        auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, s"Error parsing IF response: ${validationError.errors}")
-        Future.failed(new InternalServerException("Something went wrong."))
-      }
-      case notFound: NotFoundException => {
-        auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, notFound.getMessage)
-        Future.successful(emptyResponse)
-      }
-      case Upstream5xxResponse(msg, _, _, _) => {
-        Logger.error(s"Upstream internal server error: $msg")
-        auditHelper.auditIfApiFailure(apiIfFailedAuditRequest,
-          s"Internal Server error: $msg")
-        Future.failed(new InternalServerException("Something went wrong."))
-      }
-      case Upstream4xxResponse(msg, 429, _, _) => {
-        Logger.warn(s"IF rate limited: $msg")
-        auditHelper.auditIfApiFailure(apiIfFailedAuditRequest,s"IF Rate limited: $msg")
-        Future.failed(new TooManyRequestException(msg))
-      }
-      case Upstream4xxResponse(msg, _, _, _) => {
-        Logger.error(s"IF returned invalid request: $msg")
-        auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, msg)
-        Future.failed(new InternalServerException("Something went wrong."))
-      }
-      case e: Exception => {
-        Logger.error(s"Misc exception: ${e.getMessage}")
-        auditHelper.auditIfApiFailure(apiIfFailedAuditRequest, e.getMessage)
-        Future.failed(new InternalServerException("Something went wrong."))
-      }
+    case validationError: JsValidationException => {
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"Error parsing IF response: ${validationError.errors}")
+      Future.failed(new InternalServerException("Something went wrong."))
     }
-
+    case notFound: NotFoundException => {
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
+      Future.successful(emptyResponse)
+    }
+    case Upstream5xxResponse(msg, _, _, _) => {
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"Internal Server error: $msg")
+      Future.failed(new InternalServerException("Something went wrong."))
+    }
+    case Upstream4xxResponse(msg, 429, _, _) => {
+      Logger.warn(s"Integration Framework Rate limited: $msg")
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"IF Rate limited: $msg")
+      Future.failed(new TooManyRequestException(msg))
+    }
+    case Upstream4xxResponse(msg, _, _, _) => {
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, msg)
+      Future.failed(new InternalServerException("Something went wrong."))
+    }
+    case e: Exception => {
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, e.getMessage)
+      Future.failed(new InternalServerException("Something went wrong."))
+    }
+  }
 }
