@@ -19,33 +19,19 @@ package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 import java.util.UUID
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
-import org.mockito.Mockito.{verifyNoInteractions, when}
+import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, _}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{
-  AuthConnector,
-  Enrolment,
-  Enrolments,
-  InsufficientEnrolments
-}
+import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.individualsdetailsapi.controllers.{
-  LiveAddressesController,
-  SandboxAddressesController
-}
-import uk.gov.hmrc.individualsdetailsapi.domain.{
-  Address,
-  MatchNotFoundException,
-  Residence
-}
+import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.individualsdetailsapi.controllers.{LiveAddressesController, SandboxAddressesController}
+import uk.gov.hmrc.individualsdetailsapi.domain.{Address, MatchNotFoundException, Residence}
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
-import uk.gov.hmrc.individualsdetailsapi.services.{
-  LiveDetailsService,
-  SandboxDetailsService
-}
+import uk.gov.hmrc.individualsdetailsapi.services.{LiveDetailsService, SandboxDetailsService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -68,6 +54,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
     val mockLiveDetailsService = mock[LiveDetailsService]
     val mockSandboxDetailsService = mock[SandboxDetailsService]
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
+    val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
     when(
       mockAuthConnector.authorise(
@@ -83,7 +70,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
         mockAuthConnector,
         cc,
         scopeService,
-        mockLiveDetailsService
+        mockLiveDetailsService,
+        mockAuditHelper
       )
 
     val sandboxAddressesController =
@@ -91,7 +79,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
         mockAuthConnector,
         cc,
         scopeService,
-        mockSandboxDetailsService
+        mockSandboxDetailsService,
+        mockAuditHelper
       )
 
     when(scopeService.getEndPointScopes(any())).thenReturn(scopes)
@@ -142,12 +131,14 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockLiveDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any(), any()))
+              eqTo(Set("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
           val result = liveAddressesController.addresses(matchId)(fakeRequest)
 
           status(result) shouldBe OK
+          verify(liveAddressesController.auditHelper, times(1))
+            .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {
@@ -159,7 +150,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             mockLiveDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any(), any()))
+              eqTo(Set("test-scope")))(any(), any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result = liveAddressesController.addresses(matchId)(fakeRequest)
@@ -170,6 +161,9 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             "code" -> "NOT_FOUND",
             "message" -> "The resource can not be found"
           )
+
+          verify(liveAddressesController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
         "return 401 when the bearer token does not have valid enrolment" in new Fixture {
@@ -199,24 +193,30 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
           assert(result.getMessage == "No scopes defined")
         }
 
-        "throw an Exception when missing CorrelationId" in new Fixture {
+        "return bad request with correct error message when missing CorrelationId" in new Fixture {
           val fakeRequest = FakeRequest("GET", s"/addresses/")
 
           when(
             mockLiveDetailsService.getResidences(
               eqTo(matchId),
               eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any(),any()))
+              eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
-          val exception = intercept[BadRequestException](
-            liveAddressesController.addresses(matchId)(fakeRequest))
+          val result = liveAddressesController.addresses(matchId)(fakeRequest)
 
-          exception.message shouldBe "CorrelationId is required"
-          exception.responseCode shouldBe BAD_REQUEST
+          status(result) shouldBe BAD_REQUEST
+          contentAsJson(result) shouldBe Json.parse(
+            """{
+              |    "code": "INVALID_REQUEST",
+              |    "message": "CorrelationId is required"
+              |}""".stripMargin
+          )
+          verify(liveAddressesController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
-        "throw an Exception when CorrelationId is malformed" in new Fixture {
+        "return bad request with correct error message when CorrelationId is malformed" in new Fixture {
           val fakeRequest = FakeRequest("GET", s"/addresses/")
             .withHeaders("CorrelationId" -> "invalidId")
 
@@ -227,11 +227,17 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
               eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
-          val exception = intercept[BadRequestException](
-            liveAddressesController.addresses(matchId)(fakeRequest))
+          val result = liveAddressesController.addresses(matchId)(fakeRequest)
 
-          exception.message shouldBe "Malformed CorrelationId"
-          exception.responseCode shouldBe BAD_REQUEST
+          status(result) shouldBe BAD_REQUEST
+          contentAsJson(result) shouldBe Json.parse(
+            """{
+              |    "code": "INVALID_REQUEST",
+              |    "message": "Malformed CorrelationId"
+              |}""".stripMargin
+          )
+          verify(liveAddressesController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
       }
@@ -254,6 +260,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             sandboxAddressesController.addresses(matchId)(fakeRequest)
 
           status(result) shouldBe OK
+          verify(sandboxAddressesController.auditHelper, times(1))
+            .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {
@@ -277,6 +285,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             "code" -> "NOT_FOUND",
             "message" -> "The resource can not be found"
           )
+          verify(sandboxAddressesController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
 
         "return error when no scopes are supplied" in new Fixture {

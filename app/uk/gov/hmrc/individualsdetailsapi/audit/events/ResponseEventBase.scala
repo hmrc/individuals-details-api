@@ -26,8 +26,7 @@ import uk.gov.hmrc.individualsdetailsapi.audit.HttpExtendedAuditEvent
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
-abstract class ResponseEventBase @Inject()(
-    httpAuditEvent: HttpExtendedAuditEvent) {
+abstract class ResponseEventBase @Inject()(httpAuditEvent: HttpExtendedAuditEvent) {
 
   import httpAuditEvent.extendedDataEvent
 
@@ -35,26 +34,20 @@ abstract class ResponseEventBase @Inject()(
   def transactionName = "AuditCall"
   def apiVersion = "1.0"
 
-  def apply(correlationId: String,
+  def apply(correlationId: Option[String],
             scopes: Option[String],
-            matchId: Option[String],
+            matchId: String,
             request: RequestHeader,
             requestUrl: Option[String],
-            response: String)(
-      implicit hc: HeaderCarrier =
-        HeaderCarrierConverter.fromHeadersAndSession(request.headers)
-  ): ExtendedDataEvent = {
+            response: String)
+           (implicit hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
+           ): ExtendedDataEvent = {
 
-    val event = extendedDataEvent(auditType,
-                                  transactionName,
-                                  request,
-                                  Json.toJson(
-                                    ApiResponseEventModel(apiVersion,
-                                                          matchId,
-                                                          correlationId,
-                                                          scopes,
-                                                          requestUrl,
-                                                          response)))
+    val event = extendedDataEvent(
+      auditType,
+      transactionName,
+      request,
+      Json.toJson(ApiResponseEventModel(apiVersion, matchId, correlationId, scopes, requestUrl, response)))
 
     Logger.debug(s"$auditType - AuditEvent: $event")
 
