@@ -44,8 +44,6 @@ abstract class AddressesController @Inject()(
       val scopes = scopeService.getEndPointScopes("addresses")
       authenticate(scopes, matchId.toString) { authScopes =>
 
-        auditHelper.auditAuthScopes(matchId.toString, authScopes.mkString(","), request)
-
         val correlationId = validateCorrelationId(request)
 
         detailsService
