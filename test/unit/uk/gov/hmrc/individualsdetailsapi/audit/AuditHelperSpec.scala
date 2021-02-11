@@ -87,7 +87,7 @@ class AuditHelperSpec extends AsyncWordSpec with Matchers with MockitoSugar {
 
       val capturedEvent = captor.getValue
       capturedEvent.asInstanceOf[ExtendedDataEvent].auditSource shouldEqual "individuals-details-api"
-      capturedEvent.asInstanceOf[ExtendedDataEvent].auditType shouldEqual "ApiScopesAuditEvent"
+      capturedEvent.asInstanceOf[ExtendedDataEvent].auditType shouldEqual "AuthScopesAuditEvent"
       capturedEvent.asInstanceOf[ExtendedDataEvent].detail shouldBe result
 
     }
