@@ -31,7 +31,7 @@ class ScopesAuditEvent @Inject()(httpAuditEvent: HttpExtendedAuditEvent) {
 
   import httpAuditEvent.extendedDataEvent
 
-  def auditType = "AuthScopesAuditEvent"
+  def auditType = "ApiScopesAuditEvent"
   def transactionName = "AuditCall"
   def apiVersion = "1.0"
 
