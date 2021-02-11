@@ -18,9 +18,11 @@ package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import java.util.UUID
 
+import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.{JsValue, Json}
+import play.api.test.Helpers._
 
-class LiveAddressesControllerSpec extends CommonControllerSpec {
+class LiveAddressesControllerSpec extends CommonControllerWithIfRequestSpec {
 
   override val matchId: UUID =
     UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b")
@@ -65,4 +67,5 @@ class LiveAddressesControllerSpec extends CommonControllerSpec {
      |    "inUse" : false
      |  } ]
      |}""".stripMargin)
+
 }

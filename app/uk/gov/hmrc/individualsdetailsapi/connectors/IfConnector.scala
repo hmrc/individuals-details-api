@@ -24,14 +24,7 @@ import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.http.{
-  BadRequestException,
-  HeaderCarrier,
-  HttpClient,
-  NotFoundException,
-  TooManyRequestException,
-  Upstream4xxResponse
-}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -92,15 +85,10 @@ class IfConnector @Inject()(
   private def call(url: String, endpoint: String, matchId: String)
                       (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
     recover(http.GET[IfDetailsResponse](url)(implicitly, header(), ec) map { response =>
-
       Logger.debug(s"$endpoint - Response: $response")
-
-      auditHelper.auditIfApiResponse(extractCorrelationId(request), None,
-        matchId, request, url, Json.toJson(response))
-
+      auditHelper.auditIfApiResponse(extractCorrelationId(request), None, matchId, request, url, Json.toJson(response))
       response
-    },
-      extractCorrelationId(request), matchId, request, url)
+    }, extractCorrelationId(request), matchId, request, url)
 
   private def recover(x: Future[IfDetailsResponse],
                          correlationId: String,
@@ -108,9 +96,18 @@ class IfConnector @Inject()(
                          request: RequestHeader,
                          requestUrl: String)
                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IfDetailsResponse] = x.recoverWith {
+
+    case validationError: JsValidationException => {
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"Error parsing IF response: ${validationError.errors}")
+      Future.failed(new InternalServerException("Something went wrong."))
+    }
     case notFound: NotFoundException => {
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
       Future.successful(emptyResponse)
+    }
+    case Upstream5xxResponse(msg, _, _, _) => {
+      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"Internal Server error: $msg")
+      Future.failed(new InternalServerException("Something went wrong."))
     }
     case Upstream4xxResponse(msg, 429, _, _) => {
       Logger.warn(s"Integration Framework Rate limited: $msg")
@@ -119,12 +116,11 @@ class IfConnector @Inject()(
     }
     case Upstream4xxResponse(msg, _, _, _) => {
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, msg)
-      Future.failed(new IllegalArgumentException(s"Integration Framework returned INVALID_REQUEST"))
+      Future.failed(new InternalServerException("Something went wrong."))
     }
     case e: Exception => {
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, e.getMessage)
-      Future.failed(e)
+      Future.failed(new InternalServerException("Something went wrong."))
     }
   }
-
 }

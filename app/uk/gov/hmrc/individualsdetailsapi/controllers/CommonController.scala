@@ -22,6 +22,8 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, TooManyRequestException}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpErrorFunctions, InternalServerException, TooManyRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsdetailsapi.domain._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -38,6 +40,10 @@ abstract class CommonController @Inject()(
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
       ErrorNotFound.toHttpResponse
     }
+    case e: InsufficientEnrolments => {
+      auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
+      ErrorUnauthorized("Insufficient Enrolments").toHttpResponse
+    }
     case e: AuthorisationException   => {
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized(e.getMessage).toHttpResponse
@@ -53,6 +59,14 @@ abstract class CommonController @Inject()(
     case e: IllegalArgumentException => {
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInvalidRequest(e.getMessage).toHttpResponse
+    }
+    case e: InternalServerException => {
+      auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
+      ErrorInternalServer("Something went wrong.").toHttpResponse
+    }
+    case e => {
+      auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
+      ErrorInternalServer("Something went wrong.").toHttpResponse
     }
   }
 }

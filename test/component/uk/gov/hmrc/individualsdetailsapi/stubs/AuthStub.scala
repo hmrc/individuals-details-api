@@ -74,6 +74,17 @@ object AuthStub extends MockHost(22000) {
               HeaderNames.WWW_AUTHENTICATE,
               """MDTP detail="Bearer token is missing or not authorized"""")))
 
+  def willNotAuthorizePrivilegedAuthTokenNoScopes(authBearerToken: String): StubMapping =
+    mock.register(
+      post(urlEqualTo("/auth/authorise"))
+        .withHeader(AUTHORIZATION, equalTo(authBearerToken))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.UNAUTHORIZED)
+            .withHeader(
+              HeaderNames.WWW_AUTHENTICATE,
+              """MDTP detail="InsufficientEnrolments"""")))
+
   def willAuthorizeNinoWithAuthToken(nino: String, authBearerToken: String) =
     mock.register(
       get(urlEqualTo(s"/authorise/read/paye/$nino?confidenceLevel=50"))

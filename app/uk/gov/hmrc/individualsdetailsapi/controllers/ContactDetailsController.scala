@@ -17,11 +17,13 @@
 package uk.gov.hmrc.individualsdetailsapi.controllers
 
 import java.util.UUID
+
 import javax.inject.{Inject, Singleton}
 import play.api.hal.Hal.state
+import play.api.hal.Hal.links
 import play.api.mvc.hal._
 import play.api.hal.HalLink
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
@@ -51,8 +53,8 @@ abstract class ContactDetailsController @Inject()(
           .map { contactDetails =>
             {
               val selfLink = HalLink("self", s"/individuals/details/contact-details?matchId=$matchId")
-              val contactDetailsJsObject = Json.obj("contactDetails" -> Json.toJson(contactDetails))
-              val response = state(contactDetailsJsObject) ++ selfLink
+              val obj = contactDetails.fold(Json.obj().as[JsValue])(cd => Json.toJson(cd))
+              val response = state(Json.obj("contactDetails" -> obj)) ++ selfLink
 
               auditHelper.auditApiResponse(
                 correlationId.toString, matchId.toString, Some(authScopes.mkString(",")),

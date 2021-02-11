@@ -32,10 +32,10 @@ case class ErrorInvalidRequest(errorMessage: String)
     extends ErrorResponse(BAD_REQUEST, "INVALID_REQUEST", errorMessage)
 case class ErrorUnauthorized(errorMessage: String)
     extends ErrorResponse(UNAUTHORIZED, "UNAUTHORIZED", errorMessage)
-case object ErrorInternalServer
+case class ErrorInternalServer(errorMessage: String = "Failed to process request")
     extends ErrorResponse(INTERNAL_SERVER_ERROR,
                           "INTERNAL_SERVER_ERROR",
-                          "Failed to process request")
+                          message = errorMessage)
 case object ErrorNotFound
     extends ErrorResponse(NOT_FOUND,
                           "NOT_FOUND",
