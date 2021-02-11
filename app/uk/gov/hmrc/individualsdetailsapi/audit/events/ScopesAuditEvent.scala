@@ -21,17 +21,17 @@ import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsdetailsapi.audit.HttpExtendedAuditEvent
-import uk.gov.hmrc.individualsdetailsapi.audit.models.ScopesAuditEventModel
+import uk.gov.hmrc.individualsdetailsapi.audit.models.ApiScopesAuditEventModel
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
 import javax.inject.Inject
 
-class ScopesAuditEvent @Inject()(httpAuditEvent: HttpExtendedAuditEvent) {
+class ApiScopesAuditEvent @Inject()(httpAuditEvent: HttpExtendedAuditEvent) {
 
   import httpAuditEvent.extendedDataEvent
 
-  def auditType = "AuthScopesAuditEvent"
+  def auditType = "ApiScopesAuditEvent"
   def transactionName = "AuditCall"
   def apiVersion = "1.0"
 
@@ -45,7 +45,7 @@ class ScopesAuditEvent @Inject()(httpAuditEvent: HttpExtendedAuditEvent) {
       auditType,
       transactionName,
       request,
-      Json.toJson(ScopesAuditEventModel(apiVersion, matchId, scopes)))
+      Json.toJson(ApiScopesAuditEventModel(apiVersion, matchId, scopes)))
 
     Logger.debug(s"$auditType - AuditEvent: $event")
 

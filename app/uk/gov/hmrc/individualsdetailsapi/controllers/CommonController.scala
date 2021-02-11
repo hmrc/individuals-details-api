@@ -78,12 +78,7 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
       f(endpointScopes.toList)
     else {
       authorised(authPredicate(endpointScopes)).retrieve(Retrievals.allEnrolments) {
-        case scopes => {
-
-          auditHelper.auditAuthScopes(matchId, scopes.enrolments.map(e => e.key).mkString(","), request)
-
-          f(scopes.enrolments.map(e => e.key))
-        }
+        case scopes => f(scopes.enrolments.map(e => e.key))
       }
     }
   }

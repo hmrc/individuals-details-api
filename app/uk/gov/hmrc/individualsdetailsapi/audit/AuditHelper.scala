@@ -30,7 +30,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector,
                             apiFailureEvent: ApiFailureEvent,
                             ifApiResponseEvent: IfApiResponseEvent,
                             ifApiFailureEvent: IfApiFailureEvent,
-                            scopesAuditEvent: ScopesAuditEvent)
+                            scopesAuditEvent: ApiScopesAuditEvent)
                            (implicit ec: ExecutionContext) {
 
   def auditApiResponse(correlationId: String,
