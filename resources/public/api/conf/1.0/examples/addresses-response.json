@@ -15,7 +15,7 @@
         "line5": "UK",
         "postcode": "TF3 4ER"
       },
-      "noLongerUsed": "N"
+      "inUse": true
     },
     {
       "type": "BASE",
@@ -26,7 +26,7 @@
         "line4": "Dordogne",
         "line5": "France"
       },
-      "noLongerUsed": "Y"
+      "inUse": false
     }
   ]
 }
