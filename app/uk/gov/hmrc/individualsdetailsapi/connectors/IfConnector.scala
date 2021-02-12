@@ -105,12 +105,8 @@ class IfConnector @Inject()(
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
       
       notFound.message.contains("PERSON_NOT_FOUND") match {
-        case true => {
-          Future.successful(emptyResponse)
-        }
-        case _ => {
-          Future.failed(notFound)
-        }
+        case true => Future.successful(emptyResponse)
+        case _    => Future.failed(notFound)
       }
     }
     case Upstream5xxResponse(msg, _, _, _) => {
