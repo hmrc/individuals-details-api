@@ -103,7 +103,11 @@ class IfConnector @Inject()(
     }
     case notFound: NotFoundException => {
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
-      Future.successful(emptyResponse)
+      
+      notFound.message.contains("PERSON_NOT_FOUND") match {
+        case true => Future.successful(emptyResponse)
+        case _    => Future.failed(notFound)
+      }
     }
     case Upstream5xxResponse(msg, _, _, _) => {
       auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"Internal Server error: $msg")

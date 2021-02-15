@@ -55,8 +55,11 @@ trait TestHelpers {
       ))
   }
 
+  def createEmptyDetailsResponse(): IfDetailsResponse = {
+    IfDetailsResponse(None, None)
+  }
+
   def createValidIFDetailsResponse(): IfDetailsResponse = {
-    val ninoDetails = IfDetails(Some("XH123456A"), None)
     val contactDetail1 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
     val contactDetail2 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987655")
     val residence1 =
