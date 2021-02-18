@@ -38,42 +38,42 @@ abstract class CommonController @Inject()(
                                    (implicit request: RequestHeader,
                                     auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException   => {
-      Logger.warn("Common Controller MatchNotFoundException encountered")
+      Logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
       ErrorNotFound.toHttpResponse
     }
     case e: InsufficientEnrolments => {
-      Logger.warn("Common Controller InsufficientEnrolments encountered")
+      Logger.warn("Controllers InsufficientEnrolments encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized("Insufficient Enrolments").toHttpResponse
     }
     case e: AuthorisationException   => {
-      Logger.warn("Common Controller AuthorisationException encountered")
+      Logger.warn("Controllers AuthorisationException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized(e.getMessage).toHttpResponse
     }
     case tmr: TooManyRequestException  => {
-      Logger.warn("Common Controller TooManyRequestException encountered")
+      Logger.warn("Controllers TooManyRequestException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, tmr.getMessage)
       ErrorTooManyRequests.toHttpResponse
     }
     case br: BadRequestException  => {
-      Logger.warn("Common Controller BadRequestException encountered")
+      Logger.warn("Controllers BadRequestException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, br.getMessage)
       ErrorInvalidRequest(br.getMessage).toHttpResponse
     }
     case e: IllegalArgumentException => {
-      Logger.warn("Common Controller IllegalArgumentException encountered")
+      Logger.warn("Controllers IllegalArgumentException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInvalidRequest(e.getMessage).toHttpResponse
     }
     case e: InternalServerException => {
-      Logger.warn("Common Controller InternalServerException encountered")
+      Logger.warn("Controllers InternalServerException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
     }
     case e: Exception => {
-      Logger.warn("Common Controller Exception encountered")
+      Logger.warn("Controllers Exception encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
     }
