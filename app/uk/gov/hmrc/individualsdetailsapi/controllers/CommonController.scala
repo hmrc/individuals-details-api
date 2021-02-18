@@ -43,12 +43,10 @@ abstract class CommonController @Inject()(
       ErrorNotFound.toHttpResponse
     }
     case e: InsufficientEnrolments => {
-      Logger.warn("Controllers InsufficientEnrolments encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized("Insufficient Enrolments").toHttpResponse
     }
     case e: AuthorisationException   => {
-      Logger.warn("Controllers AuthorisationException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorUnauthorized(e.getMessage).toHttpResponse
     }
@@ -58,7 +56,6 @@ abstract class CommonController @Inject()(
       ErrorTooManyRequests.toHttpResponse
     }
     case br: BadRequestException  => {
-      Logger.warn("Controllers BadRequestException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, br.getMessage)
       ErrorInvalidRequest(br.getMessage).toHttpResponse
     }
