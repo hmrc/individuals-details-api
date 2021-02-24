@@ -56,9 +56,9 @@ abstract class ContactDetailsController @Inject()(
               val obj = contactDetails.fold(Json.obj().as[JsValue])(cd => Json.toJson(cd))
               val response = state(Json.obj("contactDetails" -> obj)) ++ selfLink
 
-              auditHelper.auditApiResponse(
-                correlationId.toString, matchId.toString, Some(authScopes.mkString(",")),
-                request, selfLink.toString, Json.toJson((response)))
+              auditHelper.auditContactDetailsApiResponse(
+                correlationId.toString, matchId.toString, authScopes.mkString(","),
+                request, response.toString, contactDetails)
 
               Ok(response)
             }

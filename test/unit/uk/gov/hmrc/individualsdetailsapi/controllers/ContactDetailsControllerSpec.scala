@@ -108,7 +108,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) shouldBe OK
           verify(liveContactDetailsController.auditHelper, times(1))
-            .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+            .auditContactDetailsApiResponse(any(), any(), any(), any(), any(), any())(any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {
@@ -233,7 +233,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) shouldBe OK
           verify(sandboxContactDetailsController.auditHelper, times(1))
-            .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+            .auditContactDetailsApiResponse(any(), any(), any(), any(), any(), any())(any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {

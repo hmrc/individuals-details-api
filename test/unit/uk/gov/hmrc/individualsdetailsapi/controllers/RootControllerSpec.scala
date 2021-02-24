@@ -125,7 +125,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           status(result) shouldBe OK
 
           verify(liveRootController.auditHelper, times(1)).
-            auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+            auditApiResponse(any(), any(), any(), any(), any())(any())
 
         }
 
@@ -194,7 +194,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) shouldBe OK
           verify(sandboxRootController.auditHelper, times(1))
-            .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+            .auditApiResponse(any(), any(), any(), any(), any())(any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {

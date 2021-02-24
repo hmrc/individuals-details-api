@@ -53,8 +53,8 @@ abstract class RootController @Inject()(
               val response = scopesHelper.getHalLinks(matchId, authScopes) ++ selfLink
 
               auditHelper.auditApiResponse(
-                correlationId.toString, matchId.toString, Some(authScopes.mkString(",")),
-                request, selfLink.toString, Json.toJson((response)))
+                correlationId.toString, matchId.toString, authScopes.mkString(","),
+                request, response.toString)
 
               Ok(response)
             }
