@@ -20,34 +20,34 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.individualsdetailsapi.domain.{ContactDetails, Residence}
 
 case class ContactDetailsApiResponseEventModel(ipAddress: String,
-                                 authorisation: String,
-                                 deviceId: String,
-                                 input: String,
-                                 method: String,
-                                 userAgent: String,
-                                 apiVersion: String,
-                                 matchId: String,
-                                 correlationId: Option[String],
-                                 scopes: String,
-                                 returnLinks: String,
-                                 data: Option[ContactDetails])
+                                               authorisation: String,
+                                               deviceId: String,
+                                               input: String,
+                                               method: String,
+                                               userAgent: String,
+                                               apiVersion: String,
+                                               matchId: String,
+                                               correlationId: Option[String],
+                                               scopes: String,
+                                               returnLinks: String,
+                                               contactDetails: Option[ContactDetails])
 
 object ContactDetailsApiResponseEventModel {
   implicit val formatApiResponseEventModel = Json.format[ContactDetailsApiResponseEventModel]
 }
 
 case class ResidencesApiResponseEventModel(ipAddress: String,
-                                 authorisation: String,
-                                 deviceId: String,
-                                 input: String,
-                                 method: String,
-                                 userAgent: String,
-                                 apiVersion: String,
-                                 matchId: String,
-                                 correlationId: Option[String],
-                                 scopes: String,
-                                 returnLinks: String,
-                                 data: Seq[Residence])
+                                           authorisation: String,
+                                           deviceId: String,
+                                           input: String,
+                                           method: String,
+                                           userAgent: String,
+                                           apiVersion: String,
+                                           matchId: String,
+                                           correlationId: Option[String],
+                                           scopes: String,
+                                           returnLinks: String,
+                                           residences: Seq[Residence])
 
 object ResidencesApiResponseEventModel {
   implicit val formatApiResponseEventModel = Json.format[ResidencesApiResponseEventModel]
