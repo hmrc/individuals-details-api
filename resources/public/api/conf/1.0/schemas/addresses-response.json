@@ -69,7 +69,7 @@
               "postcode": {
                 "type": "string",
                 "description": "The postcode for the address.",
-                "example": "AA1 1AA"
+                "example": "TF3 4ER"
               }
             }
           }
