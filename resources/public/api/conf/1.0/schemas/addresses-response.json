@@ -29,13 +29,11 @@
         "properties": {
           "type": {
             "type": "string",
-            "description": "The type of residence.",
-            "example": "NOMINATED"
+            "description": "The type of residence."
           },
           "inUse": {
             "type": "boolean",
-            "description": "Flags if the residence is currently in use.",
-            "example": "true"
+            "description": "Flags if the residence is currently in use."
           },
           "address": {
             "type": "object",
@@ -43,28 +41,23 @@
             "properties": {
               "line1": {
                 "type": "string",
-                "description": "Address line 1.",
-                "example": "24 Trinity Street"
+                "description": "Address line 1."
               },
               "line2": {
                 "type": "string",
-                "description": "Address line 2.",
-                "example": "Dawley Bank"
+                "description": "Address line 2."
               },
               "line3": {
                 "type": "string",
-                "description": "Address line 3.",
-                "example": "Telford"
+                "description": "Address line 3."
               },
               "line4": {
                 "type": "string",
-                "description": "Address line 4.",
-                "example": "Shropshire"
+                "description": "Address line 4."
               },
               "line5": {
                 "type": "string",
-                "description": "Address line 5.",
-                "example": "UK"
+                "description": "Address line 5."
               },
               "postcode": {
                 "type": "string",

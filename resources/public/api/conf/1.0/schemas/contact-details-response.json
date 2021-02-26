@@ -27,27 +27,21 @@
       "properties": {
         "mobileTelephones": {
           "type": "array",
-          "items": {
-            "type": "string",
-            "description": "The mobile telephone number for the individual.",
-            "example": "07700 900000"
-          }
+          "items": { "type": "string" },
+          "description": "The mobile telephone number for the individual.",
+          "example": "07700 900000"
         },
         "daytimeTelephones": {
           "type": "array",
-          "items": {
-            "type": "string",
-            "description": "The daytime telephone number for the individual.",
-            "example": "01632 960000"
-          }
+          "items": { "type": "string" },
+          "description": "The daytime telephone number for the individual.",
+          "example": "01632 960000"
         },
         "eveningTelephones": {
           "type": "array",
-          "items": {
-            "type": "string",
-            "description": "The evening telephone number for the individual.",
-            "example": "01632 960000"
-          }
+          "items": { "type": "string" },
+          "description": "The evening telephone number for the individual.",
+          "example": "01632 960000"
         }
       }
     }
