@@ -54,9 +54,9 @@ abstract class AddressesController @Inject()(
               val addressesJsObject = Json.obj("residences" -> Json.toJson(addresses))
               val response = state(addressesJsObject) ++ selfLink
 
-              auditHelper.auditApiResponse(
-                correlationId.toString, matchId.toString, Some(authScopes.mkString(",")),
-                request, selfLink.toString, Json.toJson((response)))
+              auditHelper.auditResidencesApiResponse(
+                correlationId.toString, matchId.toString, authScopes.mkString(","),
+                request, response.toString, addresses)
 
               Ok(response)
             }

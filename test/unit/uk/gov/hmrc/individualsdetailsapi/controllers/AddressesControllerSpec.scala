@@ -138,7 +138,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) shouldBe OK
           verify(liveAddressesController.auditHelper, times(1))
-            .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+            .auditResidencesApiResponse(any(), any(), any(), any(), any(), any())(any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {
@@ -261,7 +261,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           status(result) shouldBe OK
           verify(sandboxAddressesController.auditHelper, times(1))
-            .auditApiResponse(any(), any(), any(), any(), any(), any())(any())
+            .auditResidencesApiResponse(any(), any(), any(), any(), any(), any())(any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {

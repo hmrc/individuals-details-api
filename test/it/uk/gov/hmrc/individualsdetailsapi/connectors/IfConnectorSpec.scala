@@ -113,7 +113,7 @@ class IfConnectorSpec
       }
 
       verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
+        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
 
     }
 
@@ -136,7 +136,7 @@ class IfConnectorSpec
       }
 
       verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
+        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "Return an empty dataset for PERSON_NOT_FOUND" in new Setup {
@@ -158,7 +158,7 @@ class IfConnectorSpec
       result shouldBe emptyData
 
       verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
+        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
 
     }
 
@@ -180,7 +180,7 @@ class IfConnectorSpec
         )
       }
       verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
+        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "Audit error when IF returns invalid data" in new Setup {
@@ -210,7 +210,8 @@ class IfConnectorSpec
         )
       }
 
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1))
+        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "for standard response" in new Setup {
@@ -238,7 +239,7 @@ class IfConnectorSpec
       result shouldBe detailsData
 
       verify(underTest.auditHelper,
-        times(1)).auditIfApiResponse(any(), any(), any(), any(), any(), any())(any())
+        times(1)).auditIfApiResponse(any(), any(), any(), any(), any())(any())
 
     }
   }

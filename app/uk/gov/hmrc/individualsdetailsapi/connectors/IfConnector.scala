@@ -16,19 +16,17 @@
 
 package uk.gov.hmrc.individualsdetailsapi.connectors
 
-import java.util.UUID
-
-import javax.inject.Inject
 import play.api.Logger
-import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.util.UUID
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
@@ -60,7 +58,7 @@ class IfConnector @Inject()(
     val detailsUrl =
       s"$baseUrl/individuals/details/contact/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"
 
-    call(detailsUrl, endpoint, matchId)
+    call(detailsUrl, matchId)
 
   }
 
@@ -82,10 +80,10 @@ class IfConnector @Inject()(
       .withExtraHeaders(
         Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
 
-  private def call(url: String, endpoint: String, matchId: String)
+  private def call(url: String, matchId: String)
                       (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
     recover(http.GET[IfDetailsResponse](url)(implicitly, header(), ec) map { response =>
-      auditHelper.auditIfApiResponse(extractCorrelationId(request), None, matchId, request, url, Json.toJson(response))
+      auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response)
       response
     }, extractCorrelationId(request), matchId, request, url)
 
@@ -98,11 +96,11 @@ class IfConnector @Inject()(
 
     case validationError: JsValidationException => {
       Logger.warn("Integration Framework JsValidationException encountered")
-      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"Error parsing IF response: ${validationError.errors}")
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Error parsing IF response: ${validationError.errors}")
       Future.failed(new InternalServerException("Something went wrong."))
     }
     case notFound: NotFoundException => {
-      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, notFound.getMessage)
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, notFound.getMessage)
       
       notFound.message.contains("PERSON_NOT_FOUND") match {
         case true => Future.successful(emptyResponse)
@@ -114,22 +112,22 @@ class IfConnector @Inject()(
     }
     case Upstream5xxResponse(msg, code, _, _) => {
       Logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
-      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"Internal Server error: $msg")
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: $msg")
       Future.failed(new InternalServerException("Something went wrong."))
     }
     case Upstream4xxResponse(msg, 429, _, _) => {
       Logger.warn(s"Integration Framework Rate limited: $msg")
-      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, s"IF Rate limited: $msg")
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"IF Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
     }
     case Upstream4xxResponse(msg, code, _, _) => {
       Logger.warn(s"Integration Framework Upstream4xxResponse encountered: $code")
-      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, msg)
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       Future.failed(new InternalServerException("Something went wrong."))
     }
     case e: Exception => {
       Logger.warn(s"Integration Framework Exception encountered")
-      auditHelper.auditIfApiFailure(correlationId, None, matchId, request, requestUrl, e.getMessage)
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, e.getMessage)
       Future.failed(new InternalServerException("Something went wrong."))
     }
   }
