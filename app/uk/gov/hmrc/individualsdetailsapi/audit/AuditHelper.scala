@@ -37,7 +37,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
                        response: Option[ContactDetails])
                       (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
-      "ContactDetailsApiResponseEventModel",
+      "ApiResponseEvent",
       ContactDetailsApiResponseEventModel(
         ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
         authorisation = hc.authorization.map(_.value).getOrElse("-"),
@@ -62,7 +62,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
                                      response: Seq[Residence])
                                     (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
-      "ResidencesApiResponseEventModel",
+      "ApiResponseEvent",
       ResidencesApiResponseEventModel(
         ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
         authorisation = hc.authorization.map(_.value).getOrElse("-"),
@@ -86,7 +86,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
                                  selfLink: String)
                                 (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
-      "ApiResponseEventModel",
+      "ApiResponseEvent",
       ApiResponseEventModel(
         ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
         authorisation = hc.authorization.map(_.value).getOrElse("-"),
