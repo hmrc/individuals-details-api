@@ -67,6 +67,7 @@ object AuthStub extends MockHost(22000) {
         .withRequestBody(
           equalToJson(privilegedAuthority(List(scope)).toString()))
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
+
         .willReturn(
           aResponse()
             .withStatus(Status.UNAUTHORIZED)

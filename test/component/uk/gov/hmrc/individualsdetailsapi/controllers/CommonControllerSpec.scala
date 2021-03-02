@@ -22,7 +22,7 @@ import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec, If
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{IfAddress, IfContactDetail, IfDetailsResponse, IfResidence}
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 
 trait CommonControllerSpec extends BaseSpec {
 

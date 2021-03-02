@@ -21,15 +21,13 @@ import org.mockito.Mockito.{times, verify}
 import org.mockito.{ArgumentCaptor, Mockito}
 import org.scalatest.{AsyncWordSpec, Matchers}
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsdetailsapi.audit.models.{ApiFailureResponseEventModel, ContactDetailsApiResponseEventModel, IfApiResponseEventModel, ResidencesApiResponseEventModel, ScopesAuditEventModel}
-import uk.gov.hmrc.individualsdetailsapi.audit.{AuditHelper, DefaultHttpExtendedAuditEvent}
+import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.individualsdetailsapi.audit.models._
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.individualsdetailsapi.domain.{ContactDetails, Residence}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 
 class AuditHelperSpec extends AsyncWordSpec with Matchers with MockitoSugar {
 
@@ -48,7 +46,6 @@ class AuditHelperSpec extends AsyncWordSpec with Matchers with MockitoSugar {
   val endpoint = "/test"
 
   val auditConnector = mock[AuditConnector]
-  val httpExtendedAuditEvent = new DefaultHttpExtendedAuditEvent("individuals-details-api")
 
   val auditHelper = new AuditHelper(auditConnector)
 

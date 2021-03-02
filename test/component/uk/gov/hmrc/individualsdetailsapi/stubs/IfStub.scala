@@ -19,7 +19,7 @@ package component.uk.gov.hmrc.individualsdetailsapi.stubs
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{IfDetails, IfDetailsResponse}
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 
 object IfStub extends MockHost(22004) {
 
