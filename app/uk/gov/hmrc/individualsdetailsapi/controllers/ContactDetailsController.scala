@@ -58,7 +58,7 @@ abstract class ContactDetailsController @Inject()(
 
               auditHelper.auditContactDetailsApiResponse(
                 correlationId.toString, matchId.toString, authScopes.mkString(","),
-                request, response.toString, contactDetails)
+                request, selfLink.toString, contactDetails)
 
               Ok(response)
             }

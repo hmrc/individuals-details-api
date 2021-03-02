@@ -56,7 +56,7 @@ abstract class AddressesController @Inject()(
 
               auditHelper.auditResidencesApiResponse(
                 correlationId.toString, matchId.toString, authScopes.mkString(","),
-                request, response.toString, addresses)
+                request, selfLink.toString, addresses)
 
               Ok(response)
             }
