@@ -18,10 +18,7 @@ package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import java.util.UUID
 
-import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec}
 import play.api.libs.json.{JsValue, Json}
-import play.api.test.Helpers._
-import scalaj.http.Http
 import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData
 
 class SandboxRootControllerSpec extends CommonControllerSpec {

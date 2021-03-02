@@ -16,8 +16,9 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsResult, Json}
 import testUtils.TestHelpers
+import uk.gov.hmrc.individualsdetailsapi.domain.Address
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework._
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
@@ -36,6 +37,20 @@ class IfAddressSpec extends UnitSpec with TestHelpers {
     "write to JSON successfully" in {
       val result = Json.toJson(address).validate[IfAddress]
       result.isSuccess shouldBe true
+    }
+
+    "convert to Address successfully when address is empty" in {
+      val result: JsResult[IfAddress] = Json.toJson(IfAddress(None, None, None, None, None, None)).validate[IfAddress]
+      result.isSuccess shouldBe true
+      val convertedAddress: Option[Address] = Address.convert(Some(result.get))
+      convertedAddress.isEmpty shouldBe true
+    }
+
+    "convert to Address successfully when address has data" in {
+      val result = Json.toJson(address).validate[IfAddress]
+      result.isSuccess shouldBe true
+      val convertedAddress: Option[Address] = Address.convert(Some(result.get))
+      convertedAddress.isDefined shouldBe true
     }
 
     "validate successfully" when {

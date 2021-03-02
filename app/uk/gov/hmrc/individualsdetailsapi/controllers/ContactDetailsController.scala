@@ -20,10 +20,9 @@ import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
 import play.api.hal.Hal.state
-import play.api.hal.Hal.links
-import play.api.mvc.hal._
 import play.api.hal.HalLink
 import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.hal._
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper

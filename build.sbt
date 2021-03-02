@@ -12,6 +12,18 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "individuals-details-api"
 
+lazy val scoverageSettings = {
+  import scoverage.ScoverageKeys
+  Seq(
+    // Semicolon-separated list of regexs matching classes to exclude
+    ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;" +
+      ".*BuildInfo.;uk.gov.hmrc.BuildInfo;.*Routes;.*RoutesPrefix*;",
+    ScoverageKeys.coverageMinimum := 80,
+    ScoverageKeys.coverageFailOnMinimum := true,
+    ScoverageKeys.coverageHighlighting := true
+  )
+}
+
 lazy val playSettings: Seq[Setting[_]] = Seq(
   routesImport ++= Seq("uk.gov.hmrc.domain._",
                        "uk.gov.hmrc.individualsdetailsapi.domain._",
@@ -36,6 +48,7 @@ lazy val microservice =
                        SbtArtifactory) ++ plugins: _*)
     .settings(playSettings: _*)
     .settings(scalaSettings: _*)
+    .settings(scoverageSettings: _*)
     .settings(useSuperShell in ThisBuild := false)
     .settings(publishingSettings: _*)
     .settings(scalaVersion := "2.12.11")

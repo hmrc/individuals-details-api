@@ -20,11 +20,9 @@ import play.api.Logger
 import play.api.mvc.{ControllerComponents, RequestHeader, Result}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, TooManyRequestException}
-import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpErrorFunctions, InternalServerException, TooManyRequestException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
+import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 

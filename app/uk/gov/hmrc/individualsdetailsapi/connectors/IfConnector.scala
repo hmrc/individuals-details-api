@@ -20,13 +20,14 @@ import play.api.Logger
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.http._
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-
 import java.util.UUID
+
 import javax.inject.Inject
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
 
@@ -52,8 +53,6 @@ class IfConnector @Inject()(
       implicit hc: HeaderCarrier,
       request: RequestHeader,
       ec: ExecutionContext) = {
-
-    val endpoint = "IfConnector::fetchDetails"
 
     val detailsUrl =
       s"$baseUrl/individuals/details/contact/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"

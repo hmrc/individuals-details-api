@@ -16,10 +16,8 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import java.util.UUID
-
-import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, IndividualsMatchingApiStub}
-import play.api.libs.json.{JsString, JsValue, Json}
+import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, IfStub, IndividualsMatchingApiStub}
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{IfAddress, IfContactDetail, IfDetailsResponse, IfResidence}

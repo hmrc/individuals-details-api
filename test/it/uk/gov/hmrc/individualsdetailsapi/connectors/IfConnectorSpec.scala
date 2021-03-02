@@ -17,7 +17,7 @@
 package it.uk.gov.hmrc.individualsdetailsapi.connectors
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, configureFor, equalTo, get, stubFor, urlPathMatching}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
@@ -26,15 +26,15 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import testUtils.TestHelpers
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, NotFoundException, Upstream5xxResponse}
-import uk.gov.hmrc.individualsdetailsapi.connectors.IfConnector
-import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
-import play.api.test.FakeRequest
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException, NotFoundException}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.individualsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfContactDetail
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.ExecutionContext
 

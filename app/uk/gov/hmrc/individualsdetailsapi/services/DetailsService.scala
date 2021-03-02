@@ -19,32 +19,19 @@ package uk.gov.hmrc.individualsdetailsapi.services
 import java.util.UUID
 
 import javax.inject.{Inject, Named, Singleton}
-import org.joda.time.LocalDate
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsdetailsapi.connectors.{
-  IfConnector,
-  IndividualsMatchingApiConnector
-}
-import uk.gov.hmrc.individualsdetailsapi.domain.{
-  ContactDetails,
-  MatchNotFoundException,
-  MatchedCitizen,
-  Residence,
-  SandboxDetailsData
-}
+import uk.gov.hmrc.individualsdetailsapi.connectors.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData._
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
+import uk.gov.hmrc.individualsdetailsapi.domain._
 import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
 import uk.gov.hmrc.individualsdetailsapi.services.cache.{CacheId, CacheService}
 
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.Future.{failed, successful}
+import scala.concurrent.{ExecutionContext, Future}
 
 trait DetailsService {
-
-  implicit val localDateOrdering: Ordering[LocalDate] =
-    Ordering.fromLessThan(_ isBefore _)
 
   def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen]
 

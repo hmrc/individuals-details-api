@@ -16,13 +16,7 @@
 
 package testUtils
 
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
-  IfAddress,
-  IfContactDetail,
-  IfDetails,
-  IfDetailsResponse,
-  IfResidence
-}
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{IfAddress, IfContactDetail, IfDetailsResponse, IfResidence}
 
 import scala.util.Random
 

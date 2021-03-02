@@ -23,13 +23,9 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{Json, OFormat}
 import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsdetailsapi.services.cache.{
-  CacheIdBase,
-  CacheService
-}
+import uk.gov.hmrc.individualsdetailsapi.services.cache.{CacheIdBase, CacheService}
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class CacheServiceSpec
     extends FreeSpec
