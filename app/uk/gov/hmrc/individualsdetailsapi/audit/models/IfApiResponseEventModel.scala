@@ -19,9 +19,7 @@ package uk.gov.hmrc.individualsdetailsapi.audit.models
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 
-case class IfApiResponseEventModel(ipAddress: String,
-                                   authorisation: String,
-                                   deviceId: String,
+case class IfApiResponseEventModel(deviceId: String,
                                    input: String,
                                    method: String,
                                    userAgent: String,
@@ -29,7 +27,7 @@ case class IfApiResponseEventModel(ipAddress: String,
                                    matchId: String,
                                    correlationId: String,
                                    requestUrl: String,
-                                   ifDetails: IfDetailsResponse)
+                                   integrationFrameworkDetails: IfDetailsResponse)
 
 object IfApiResponseEventModel {
   implicit val formatIfApiResponseEventModel = Json.format[IfApiResponseEventModel]
