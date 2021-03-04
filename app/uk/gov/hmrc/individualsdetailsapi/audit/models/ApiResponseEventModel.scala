@@ -19,9 +19,7 @@ package uk.gov.hmrc.individualsdetailsapi.audit.models
 import play.api.libs.json.Json
 import uk.gov.hmrc.individualsdetailsapi.domain.{ContactDetails, Residence}
 
-case class ContactDetailsApiResponseEventModel(ipAddress: String,
-                                               authorisation: String,
-                                               deviceId: String,
+case class ContactDetailsApiResponseEventModel(deviceId: String,
                                                input: String,
                                                method: String,
                                                userAgent: String,
@@ -36,9 +34,7 @@ object ContactDetailsApiResponseEventModel {
   implicit val formatApiResponseEventModel = Json.format[ContactDetailsApiResponseEventModel]
 }
 
-case class ResidencesApiResponseEventModel(ipAddress: String,
-                                           authorisation: String,
-                                           deviceId: String,
+case class ResidencesApiResponseEventModel(deviceId: String,
                                            input: String,
                                            method: String,
                                            userAgent: String,
@@ -53,17 +49,15 @@ object ResidencesApiResponseEventModel {
   implicit val formatApiResponseEventModel = Json.format[ResidencesApiResponseEventModel]
 }
 
-case class ApiResponseEventModel(ipAddress: String,
-                                           authorisation: String,
-                                           deviceId: String,
-                                           input: String,
-                                           method: String,
-                                           userAgent: String,
-                                           apiVersion: String,
-                                           matchId: String,
-                                           correlationId: Option[String],
-                                           scopes: String,
-                                           returnLinks: String)
+case class ApiResponseEventModel(deviceId: String,
+                                 input: String,
+                                 method: String,
+                                 userAgent: String,
+                                 apiVersion: String,
+                                 matchId: String,
+                                 correlationId: Option[String],
+                                 scopes: String,
+                                 returnLinks: String)
 
 object ApiResponseEventModel {
   implicit val formatApiResponseEventModel = Json.format[ApiResponseEventModel]

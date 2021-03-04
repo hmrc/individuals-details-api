@@ -39,8 +39,6 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     auditConnector.sendExplicitAudit(
       "ApiResponseEvent",
       ContactDetailsApiResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -64,8 +62,6 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     auditConnector.sendExplicitAudit(
       "ApiResponseEvent",
       ResidencesApiResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -77,6 +73,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         returnLinks = selfLink,
         response
       )
+
     )
 
   def auditApiResponse(correlationId: String,
@@ -88,8 +85,6 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     auditConnector.sendExplicitAudit(
       "ApiResponseEvent",
       ApiResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -111,8 +106,6 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     auditConnector.sendExplicitAudit(
       "ApiFailureEvent",
       ApiFailureResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -132,10 +125,8 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
                          ifDetailsResponse: IfDetailsResponse)
                         (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
-      "IfApiResponseEvent",
+      "IntegrationFrameworkApiResponseEvent",
       IfApiResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -144,7 +135,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         matchId = matchId,
         correlationId = correlationId,
         requestUrl = requestUrl,
-        ifDetails = ifDetailsResponse
+        integrationFrameworkDetails = ifDetailsResponse
       )
     )
 
@@ -155,10 +146,8 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
                         msg: String)
                        (implicit hc: HeaderCarrier) =
     auditConnector.sendExplicitAudit(
-      "IfApiFailureEvent",
+      "IntegrationFrameworkApiFailureEvent",
       ApiFailureResponseEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
@@ -178,8 +167,6 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
     auditConnector.sendExplicitAudit(
       "AuthScopesAuditEvent",
       ScopesAuditEventModel(
-        ipAddress = hc.forwarded.map(_.value).getOrElse("-"),
-        authorisation = hc.authorization.map(_.value).getOrElse("-"),
         deviceId = hc.deviceID.getOrElse("-"),
         input = s"Request to ${request.path}",
         method = request.method.toUpperCase,
