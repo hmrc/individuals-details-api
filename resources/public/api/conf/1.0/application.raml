@@ -33,10 +33,9 @@ uses:
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/root.md
         headers:
-          correlationId:
+          CorrelationId:
             description: A UUID, used for traceability purposes.
             type: string
-            pattern: "^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$"
             example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
@@ -78,10 +77,9 @@ uses:
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/contact-details.md
         headers:
-          correlationId:
+          CorrelationId:
             description: A UUID, used for traceability purposes.
             type: string
-            pattern: "^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$"
             example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
@@ -123,10 +121,9 @@ uses:
         securedBy: [ sec.oauth_2_0: { scopes: [ "assigned" ] } ]
         (annotations.sandboxData): !include sandbox/addresses.md
         headers:
-          correlationId:
+          CorrelationId:
             description: A UUID, used for traceability purposes.
             type: string
-            pattern: "^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$"
             example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
         queryParameters:
           matchId:
