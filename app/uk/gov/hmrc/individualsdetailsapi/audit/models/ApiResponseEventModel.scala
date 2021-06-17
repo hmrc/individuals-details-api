@@ -42,7 +42,7 @@ case class ResidencesApiResponseEventModel(deviceId: String,
                                            apiVersion: String,
                                            matchId: String,
                                            correlationId: Option[String],
-                                           clientId: String,
+                                           applicationId: String,
                                            scopes: String,
                                            returnLinks: String,
                                            residences: Seq[Residence])
@@ -58,7 +58,7 @@ case class ApiResponseEventModel(deviceId: String,
                                  apiVersion: String,
                                  matchId: String,
                                  correlationId: Option[String],
-                                 clientId: String,
+                                 applicationId: String,
                                  scopes: String,
                                  returnLinks: String)
 
