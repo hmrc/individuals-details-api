@@ -87,7 +87,6 @@ lazy val microservice =
       parallelExecution in ComponentTest := false
     )
     .settings(resolvers ++= Seq(
-      Resolver.bintrayRepo("hmrc", "releases"),
       Resolver.jcenterRepo
     ))
     .settings(PlayKeys.playDefaultPort := 9655)
