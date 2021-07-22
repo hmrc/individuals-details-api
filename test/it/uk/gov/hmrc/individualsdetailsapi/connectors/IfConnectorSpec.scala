@@ -29,7 +29,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import testUtils.TestHelpers
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, NotFoundException}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.connectors.IfConnector
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfContactDetail
@@ -56,7 +56,7 @@ class IfConnectorSpec
     .bindings(bindModules: _*)
     .configure(
       "cache.enabled"  -> false,
-      "microservice.services.integration-framework.host" -> "localhost",
+      "microservice.services.integration-framework.host" -> "127.0.0.1",
       "microservice.services.integration-framework.port" -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
       "microservice.services.integration-framework.environment" -> integrationFrameworkEnvironment
@@ -221,7 +221,7 @@ class IfConnectorSpec
       stubFor(
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
           .withHeader(
-            "Authorization",
+            HeaderNames.authorisation,
             equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
           .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
           .willReturn(aResponse()

@@ -19,14 +19,13 @@ package uk.gov.hmrc.individualsdetailsapi.connectors
 import play.api.Logger
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.logging.Authorization
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import java.util.UUID
 
+import java.util.UUID
 import javax.inject.Inject
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
@@ -71,17 +70,14 @@ class IfConnector @Inject()(
       case None => throw new BadRequestException("CorrelationId is required")
     }
 
-  private def header(extraHeaders: (String, String)*)(
-      implicit hc: HeaderCarrier) =
-    hc.copy(
-        authorization =
-          Some(Authorization(s"Bearer $integrationFrameworkBearerToken")))
-      .withExtraHeaders(
-        Seq("Environment" -> integrationFrameworkEnvironment) ++ extraHeaders: _*)
+  def setHeaders = Seq(
+    HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
+    "Environment"             -> integrationFrameworkEnvironment
+  )
 
   private def call(url: String, matchId: String)
                       (implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
-    recover(http.GET[IfDetailsResponse](url)(implicitly, header(), ec) map { response =>
+    recover(http.GET[IfDetailsResponse](url, headers = setHeaders) map { response =>
       auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response)
       response
     }, extractCorrelationId(request), matchId, request, url)
