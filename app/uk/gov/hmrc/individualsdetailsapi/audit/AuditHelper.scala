@@ -46,6 +46,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         apiVersion = "1.0",
         matchId = matchId,
         correlationId = Some(correlationId),
+        request.headers.get("X-Application-ID").getOrElse("-"),
         scopes,
         returnLinks = selfLink,
         response
@@ -69,6 +70,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         apiVersion = "1.0",
         matchId = matchId,
         correlationId = Some(correlationId),
+        request.headers.get("X-Application-ID").getOrElse("-"),
         scopes,
         returnLinks = selfLink,
         response
@@ -92,6 +94,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         apiVersion = "1.0",
         matchId = matchId,
         correlationId = Some(correlationId),
+        request.headers.get("X-Application-ID").getOrElse("-"),
         scopes,
         returnLinks = selfLink
       )
@@ -113,6 +116,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         apiVersion = "1.0",
         matchId = matchId,
         correlationId = correlationId,
+        request.headers.get("X-Application-ID").getOrElse("-"),
         requestUrl,
         msg
       )
@@ -134,6 +138,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         apiVersion = "1.0",
         matchId = matchId,
         correlationId = correlationId,
+        request.headers.get("X-Application-ID").getOrElse("-"),
         requestUrl = requestUrl,
         integrationFrameworkDetails = ifDetailsResponse
       )
@@ -155,6 +160,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         apiVersion = "1.0",
         matchId = matchId,
         correlationId = Some(correlationId),
+        request.headers.get("X-Application-ID").getOrElse("-"),
         requestUrl,
         msg
       )
@@ -173,6 +179,7 @@ class AuditHelper @Inject()(auditConnector: AuditConnector)
         userAgent = request.headers.get("User-Agent").getOrElse("-"),
         apiVersion = "1.0",
         matchId = matchId,
+        request.headers.get("X-Application-ID").getOrElse("-"),
         scopes
       )
     )
