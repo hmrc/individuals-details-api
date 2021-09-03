@@ -1,4 +1,3 @@
-import play.core.PlayVersion
 import sbt.Keys.compile
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings.{
