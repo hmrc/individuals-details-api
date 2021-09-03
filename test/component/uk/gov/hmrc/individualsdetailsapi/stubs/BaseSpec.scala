@@ -41,7 +41,6 @@ trait BaseSpec
     with ScopesConfig
     with GivenWhenThen {
 
-  override lazy val port = 9000
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
       "auditing.enabled" -> false,
