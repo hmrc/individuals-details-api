@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.individualsdetailsapi.cache
 
+import akka.stream.impl.io.InputStreamSinkStage
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Updates}
 import play.api.Configuration
@@ -31,7 +32,13 @@ import scala.concurrent.{ExecutionContext, Future, future}
 
 // $COVERAGE-OFF$
 
-case class Entry(cacheId: String, key: String, encryptedValue: JsValue)
+case class Data(individualsDetails: JsValue)
+
+object Data {
+  implicit val format: OFormat[Data] = Json.format[Data]
+}
+
+case class Entry(cacheId: String, data: Data)
 
 object Entry {
   implicit val format: OFormat[Entry] = Json.format[Entry]
@@ -46,7 +53,7 @@ class ShortLivedHmrcMongoCache @Inject()(val cacheConfig: HmrcMongoCacheConfigur
   collectionName = cacheConfig.collName,
   domainFormat   = Entry.format,
   indexes        = Seq(IndexModel(ascending("cacheId"),
-    IndexOptions().name("_id")))
+    IndexOptions().name("_cacheId")))
 ) {
 
   // TODO - how to set the cache TTL?
@@ -60,7 +67,7 @@ class ShortLivedHmrcMongoCache @Inject()(val cacheConfig: HmrcMongoCacheConfigur
 
     val jsonEncryptor           = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
-    val entry                   = new Entry(id, key, encryptedValue)
+    val entry                   = new Entry(id, new Data(encryptedValue))
 
     collection.deleteOne(Filters.equal("cacheId", toBson(id))).toFuture
     collection.insertOne(entry).toFuture
@@ -76,7 +83,7 @@ class ShortLivedHmrcMongoCache @Inject()(val cacheConfig: HmrcMongoCacheConfigur
       .map {
         r =>
           r match {
-            case Some(entry) => decryptor.reads(entry.encryptedValue).asOpt map (_.decryptedValue)
+            case Some(entry) => decryptor.reads(entry.data.individualsDetails).asOpt map (_.decryptedValue)
             case None => None
           }
       }

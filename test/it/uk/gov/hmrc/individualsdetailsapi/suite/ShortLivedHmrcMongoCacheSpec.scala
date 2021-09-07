@@ -102,7 +102,7 @@ class ShortLivedHmrcMongoCacheSpec
       .map {
         r =>
           r match {
-            case Some(entry) => entry.encryptedValue
+            case Some(entry) => entry.data.individualsDetails
             case None => None
           }
       })
