@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.individualsdetailsapi.cache
 
-import akka.stream.impl.io.InputStreamSinkStage
 import org.mongodb.scala.model.Indexes.ascending
-import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Updates}
+import org.mongodb.scala.model.{Filters, FindOneAndReplaceOptions, IndexModel, IndexOptions}
 import play.api.Configuration
 import play.api.libs.json.{Format, JsValue, Json, OFormat}
 import uk.gov.hmrc.crypto._
@@ -69,8 +68,11 @@ class ShortLivedHmrcMongoCache @Inject()(val cacheConfig: HmrcMongoCacheConfigur
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
     val entry                   = new Entry(id, new Data(encryptedValue))
 
-    collection.deleteOne(Filters.equal("cacheId", toBson(id))).toFuture
-    collection.insertOne(entry).toFuture
+    collection.findOneAndReplace(
+      Filters.equal("cacheId", toBson(id)),
+      entry,
+      FindOneAndReplaceOptions().upsert(true)
+    ).toFuture()
   }
 
   def fetchAndGetEntry[T](id: String, key: String)(
