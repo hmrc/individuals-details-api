@@ -17,7 +17,6 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.services.cache
 
 import java.util.UUID
-
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.{verify, verifyNoInteractions}
@@ -25,15 +24,8 @@ import org.scalatest.{BeforeAndAfterEach, Matchers}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsdetailsapi.cache.{
-  CacheConfiguration,
-  ShortLivedCache
-}
-import uk.gov.hmrc.individualsdetailsapi.services.cache.{
-  CacheId,
-  CacheIdBase,
-  CacheService
-}
+import uk.gov.hmrc.individualsdetailsapi.cache.{CacheConfiguration, HmrcMongoCacheConfiguration, ShortLivedCache, ShortLivedHmrcMongoCache}
+import uk.gov.hmrc.individualsdetailsapi.services.cache.{CacheId, CacheIdBase, CacheService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -51,8 +43,8 @@ class CacheServiceSpec
 
   trait Setup {
 
-    val mockClient = mock[ShortLivedCache]
-    val mockCacheConfig = mock[CacheConfiguration]
+    val mockClient = mock[ShortLivedHmrcMongoCache]
+    val mockCacheConfig = mock[HmrcMongoCacheConfiguration]
     val cacheService = new CacheService(mockClient, mockCacheConfig)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()

@@ -16,68 +16,75 @@
 
 package uk.gov.hmrc.individualsdetailsapi.cache
 
-import org.mongodb.scala.model.{IndexModel, IndexOptions}
 import org.mongodb.scala.model.Indexes.ascending
-
-import javax.inject.{Inject, Singleton}
+import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Updates}
 import play.api.Configuration
-import play.api.libs.functional.syntax.{toInvariantFunctorOps, unlift}
-import play.api.libs.json.{Format, JsValue}
-import play.modules.reactivemongo.ReactiveMongoComponent
-import uk.gov.hmrc.cache.TimeToLive
-import uk.gov.hmrc.cache.repository.CacheMongoRepository
+import play.api.libs.json.{Format, JsValue, Json, OFormat}
 import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future, future}
 
 // $COVERAGE-OFF$
 
+case class Entry(cacheId: String, key: String, encryptedValue: JsValue)
+
+object Entry {
+  implicit val format: OFormat[Entry] = Json.format[Entry]
+}
+
 @Singleton
-class ShortLivedCache @Inject()(
-    val cacheConfig: CacheConfiguration,
-    configuration: Configuration,
-    mongo: ReactiveMongoComponent)(implicit ec: ExecutionContext)
-    extends CacheMongoRepository(
-      cacheConfig.collName,
-      cacheConfig.cacheTtl
-    )(
-      mongo.mongoConnector.db,
-      ec
-    )
-    with TimeToLive {
+class ShortLivedHmrcMongoCache @Inject()(val cacheConfig: HmrcMongoCacheConfiguration,
+                                         configuration: Configuration,
+                                         mongo: MongoComponent)(implicit ec: ExecutionContext
+) extends PlayMongoRepository[Entry](
+  mongoComponent = mongo,
+  collectionName = cacheConfig.collName,
+  domainFormat   = Entry.format,
+  indexes        = Seq(IndexModel(ascending("cacheId"),
+    IndexOptions().name("_id")))
+) {
+
+  // TODO - how to set the cache TTL?
+  // TODO - how do we implement an upsert on the collection?
 
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(
     configuration.underlying).JsonCrypto
 
   def cache[T](id: String, key: String, value: T)(
-      implicit formats: Format[T]): Future[Unit] = {
-    val jsonEncryptor = new JsonEncryptor[T]()
+    implicit formats: Format[T]) = {
+
+    val jsonEncryptor           = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
-    createOrUpdate(id, key, encryptedValue).map(_ => ())
+    val entry                   = new Entry(id, key, encryptedValue)
+
+    collection.deleteOne(Filters.equal("cacheId", toBson(id))).toFuture
+    collection.insertOne(entry).toFuture
   }
 
   def fetchAndGetEntry[T](id: String, key: String)(
-      implicit formats: Format[T]): Future[Option[T]] = {
+    implicit formats: Format[T]): Future[Option[T]] = {
     val decryptor = new JsonDecryptor[T]()
 
-    findById(id) map {
-      case Some(cache) =>
-        cache.data flatMap { json =>
-          (json \ key).toOption flatMap { jsValue =>
-            decryptor.reads(jsValue).asOpt map (_.decryptedValue)
+    collection
+      .find(Filters.equal("cacheId", toBson(id)))
+      .headOption
+      .map {
+        r =>
+          r match {
+            case Some(entry) => decryptor.reads(entry.encryptedValue).asOpt map (_.decryptedValue)
+            case None => None
           }
-        }
-      case None => None
-    }
+      }
   }
 }
 
 @Singleton
-class CacheConfiguration @Inject()(configuration: Configuration) {
+class HmrcMongoCacheConfiguration @Inject()(configuration: Configuration) {
 
   lazy val cacheEnabled = configuration
     .getOptional[Boolean](
