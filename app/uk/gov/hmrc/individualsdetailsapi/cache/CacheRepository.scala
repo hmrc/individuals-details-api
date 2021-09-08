@@ -17,9 +17,9 @@
 package uk.gov.hmrc.individualsdetailsapi.cache
 
 import org.mongodb.scala.model.Indexes.ascending
-import org.mongodb.scala.model.{Filters, FindOneAndReplaceOptions, IndexModel, IndexOptions}
+import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions}
 import play.api.Configuration
-import play.api.libs.json.{Format, JsValue, Json, OFormat}
+import play.api.libs.json.{Format, JsValue}
 import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
 import uk.gov.hmrc.individualsdetailsapi.cache.InsertResult.{AlreadyExists, InsertSucceeded}
@@ -32,34 +32,6 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future, future}
-
-// $COVERAGE-OFF$
-
-case class Data(individualsDetails: JsValue)
-
-object Data {
-  implicit val format: OFormat[Data] = Json.format[Data]
-}
-
-case class Entry(cacheId: String, data: Data, createdAt: Instant)
-
-object Entry {
-  implicit val format: OFormat[Entry] = Json.format[Entry]
-}
-
-sealed trait InsertResult
-
-object InsertResult {
-  case object InsertSucceeded extends InsertResult
-  case object AlreadyExists extends InsertResult
-}
-
-object MongoErrors {
-  object Duplicate {
-    def unapply(ex: Exception): Option[Exception] =
-      if (ex.getMessage.contains("E11000")) Some(ex) else None
-  }
-}
 
 @Singleton
 class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
