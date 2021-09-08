@@ -24,7 +24,7 @@ import org.scalatest.{BeforeAndAfterEach, Matchers}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.individualsdetailsapi.cache.{HmrcMongoCacheConfiguration, CacheRespository}
+import uk.gov.hmrc.individualsdetailsapi.cache.{CacheRepositoryConfiguration, CacheRepository}
 import uk.gov.hmrc.individualsdetailsapi.services.cache.{CacheId, CacheIdBase, CacheService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
@@ -43,8 +43,8 @@ class CacheServiceSpec
 
   trait Setup {
 
-    val mockClient = mock[CacheRespository]
-    val mockCacheConfig = mock[HmrcMongoCacheConfiguration]
+    val mockClient = mock[CacheRepository]
+    val mockCacheConfig = mock[CacheRepositoryConfiguration]
     val cacheService = new CacheService(mockClient, mockCacheConfig)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()

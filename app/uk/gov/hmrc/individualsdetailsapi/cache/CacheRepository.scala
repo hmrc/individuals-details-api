@@ -22,10 +22,14 @@ import play.api.Configuration
 import play.api.libs.json.{Format, JsValue, Json, OFormat}
 import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
+import uk.gov.hmrc.individualsdetailsapi.cache.InsertResult.{AlreadyExists, InsertSucceeded}
+import uk.gov.hmrc.individualsdetailsapi.cache.MongoErrors.Duplicate
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
+import java.time.Instant
+import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future, future}
 
@@ -37,25 +41,41 @@ object Data {
   implicit val format: OFormat[Data] = Json.format[Data]
 }
 
-case class Entry(cacheId: String, data: Data)
+case class Entry(cacheId: String, data: Data, createdAt: Instant)
 
 object Entry {
   implicit val format: OFormat[Entry] = Json.format[Entry]
 }
 
+sealed trait InsertResult
+
+object InsertResult {
+  case object InsertSucceeded extends InsertResult
+  case object AlreadyExists extends InsertResult
+}
+
+object MongoErrors {
+  object Duplicate {
+    def unapply(ex: Exception): Option[Exception] =
+      if (ex.getMessage.contains("E11000")) Some(ex) else None
+  }
+}
+
 @Singleton
-class CacheRespository @Inject()(val cacheConfig: HmrcMongoCacheConfiguration,
-                                 configuration: Configuration,
-                                 mongo: MongoComponent)(implicit ec: ExecutionContext
+class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
+                                configuration: Configuration,
+                                mongo: MongoComponent)(implicit ec: ExecutionContext
 ) extends PlayMongoRepository[Entry](
   mongoComponent = mongo,
   collectionName = cacheConfig.collName,
   domainFormat   = Entry.format,
-  indexes        = Seq(IndexModel(ascending("cacheId"),
-    IndexOptions().name("_cacheId")))
-) {
+  indexes        = Seq(IndexModel(ascending("cacheId"), IndexOptions().
+    name("_cacheId").
+    expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS).
+    unique(true)))) {
 
-  // TODO - how to set the cache TTL?
+  // TODO - we only call IF if an entry does not exist in the cache so we can insert rather than replace
+  // TODO - add checks to ensure that the cache key index is unique
 
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(
     configuration.underlying).JsonCrypto
@@ -65,13 +85,21 @@ class CacheRespository @Inject()(val cacheConfig: HmrcMongoCacheConfiguration,
 
     val jsonEncryptor           = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
-    val entry                   = new Entry(id, new Data(encryptedValue))
+    val entry                   = new Entry(id, new Data(encryptedValue), Instant.now)
 
-    collection.findOneAndReplace(
-      Filters.equal("cacheId", toBson(id)),
-      entry,
-      FindOneAndReplaceOptions().upsert(true)
-    ).toFuture()
+//    collection.findOneAndReplace(
+//      Filters.equal("cacheId", toBson(id)),
+//      entry,
+//      FindOneAndReplaceOptions().upsert(true)
+//    ).toFuture()
+
+    collection
+      .insertOne(entry)
+      .toFuture
+      .map(_ => InsertSucceeded)
+      .recover {
+        case Duplicate(_) => AlreadyExists
+      }
   }
 
   def fetchAndGetEntry[T](id: String, key: String)(
@@ -89,7 +117,7 @@ class CacheRespository @Inject()(val cacheConfig: HmrcMongoCacheConfiguration,
 }
 
 @Singleton
-class HmrcMongoCacheConfiguration @Inject()(configuration: Configuration) {
+class CacheRepositoryConfiguration @Inject()(configuration: Configuration) {
 
   lazy val cacheEnabled = configuration
     .getOptional[Boolean](

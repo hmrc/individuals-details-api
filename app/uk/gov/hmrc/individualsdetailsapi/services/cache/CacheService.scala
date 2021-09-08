@@ -17,15 +17,15 @@
 package uk.gov.hmrc.individualsdetailsapi.services.cache
 
 import play.api.libs.json.Format
-import uk.gov.hmrc.individualsdetailsapi.cache.{HmrcMongoCacheConfiguration, CacheRespository}
+import uk.gov.hmrc.individualsdetailsapi.cache.{CacheRepositoryConfiguration, CacheRepository}
 
 import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CacheService @Inject()(
-                              cachingClient: CacheRespository,
-                              conf: HmrcMongoCacheConfiguration)(implicit ec: ExecutionContext) {
+                              cachingClient: CacheRepository,
+                              conf: CacheRepositoryConfiguration)(implicit ec: ExecutionContext) {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 

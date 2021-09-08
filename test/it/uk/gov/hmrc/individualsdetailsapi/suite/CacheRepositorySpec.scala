@@ -20,7 +20,7 @@ import org.mongodb.scala.model.Filters
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
-import uk.gov.hmrc.individualsdetailsapi.cache.CacheRespository
+import uk.gov.hmrc.individualsdetailsapi.cache.CacheRepository
 import uk.gov.hmrc.integration.ServiceSpec
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.TestSupport
@@ -28,7 +28,7 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.TestSupport
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CacheRespositorySpec
+class CacheRepositorySpec
     extends WordSpec
     with Matchers
     with ServiceSpec
@@ -48,7 +48,7 @@ class CacheRespositorySpec
     .bindings(bindModules: _*)
     .build()
 
-  val shortLivedCache = fakeApplication.injector.instanceOf[CacheRespository]
+  val shortLivedCache = fakeApplication.injector.instanceOf[CacheRepository]
 
   def externalServices: Seq[String] = Seq.empty
 
@@ -67,18 +67,6 @@ class CacheRespositorySpec
       await(shortLivedCache.cache(id, cachekey, testValue)(TestClass.format))
       retrieveRawCachedValue(id, cachekey) shouldBe JsString(
         "I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
-    }
-
-    "update a cached value for a given id and key" in {
-      val newValue = TestClass("three", "four")
-
-      await(shortLivedCache.cache(id, cachekey, testValue)(TestClass.format))
-      retrieveRawCachedValue(id, cachekey) shouldBe JsString(
-        "I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
-
-      await(shortLivedCache.cache(id, cachekey, newValue)(TestClass.format))
-      retrieveRawCachedValue(id, cachekey) shouldBe JsString(
-        "6yAvgtwLMcdiqTvdRvLTVKSkY3JwUZ/TzklThFfSqvA=")
     }
   }
 
