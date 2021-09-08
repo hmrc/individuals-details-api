@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package it.uk.gov.hmrc.individualsdetailsapi
+package it.uk.gov.hmrc.individualsdetailsapi.suite
 
-import java.util.UUID
-
+import org.mongodb.scala.model.Filters
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
-import uk.gov.hmrc.individualsdetailsapi.cache.ShortLivedCache
+import uk.gov.hmrc.individualsdetailsapi.cache.CacheRespository
 import uk.gov.hmrc.integration.ServiceSpec
-import uk.gov.hmrc.mongo.MongoSpecSupport
+import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.TestSupport
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ShortLivedCacheSpec
+class CacheRespositorySpec
     extends WordSpec
     with Matchers
-    with MongoSpecSupport
     with ServiceSpec
     with BeforeAndAfterEach
     with TestSupport {
@@ -41,23 +40,26 @@ class ShortLivedCacheSpec
   val cachekey = "test-class-key"
   val testValue = TestClass("one", "two")
 
+  protected def databaseName: String = "test-" + this.getClass.getSimpleName
+  protected def mongoUri: String     = s"mongodb://localhost:27017/$databaseName"
+
   override lazy val fakeApplication = new GuiceApplicationBuilder()
     .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
     .bindings(bindModules: _*)
     .build()
 
-  val shortLivedCache = fakeApplication.injector.instanceOf[ShortLivedCache]
+  val shortLivedCache = fakeApplication.injector.instanceOf[CacheRespository]
 
   def externalServices: Seq[String] = Seq.empty
 
   override def beforeEach() {
     super.beforeEach()
-    await(shortLivedCache.drop)
+    await(shortLivedCache.collection.drop().toFuture())
   }
 
   override def afterEach() {
     super.afterEach()
-    await(shortLivedCache.drop)
+    await(shortLivedCache.collection.drop().toFuture())
   }
 
   "cache" should {
@@ -96,8 +98,12 @@ class ShortLivedCacheSpec
   }
 
   private def retrieveRawCachedValue(id: String, key: String) = {
-    val storedValue = await(shortLivedCache.findById(id)).get
-    (storedValue.data.get \ cachekey).get
+    await(shortLivedCache.collection.find(Filters.equal("cacheId", toBson(id)))
+      .headOption
+      .map {
+        case Some(entry) => entry.data.individualsDetails
+        case None => None
+      })
   }
 
   case class TestClass(one: String, two: String)

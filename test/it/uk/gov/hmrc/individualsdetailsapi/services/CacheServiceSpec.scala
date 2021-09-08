@@ -16,7 +16,6 @@
 
 package it.uk.gov.hmrc.individualsdetailsapi.services
 
-import it.uk.gov.hmrc.individualsdetailsapi.suite.MongoSuite
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.{FreeSpec, MustMatchers, OptionValues}
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -32,7 +31,6 @@ class CacheServiceSpec
     with MustMatchers
     with ScalaFutures
     with OptionValues
-    with MongoSuite
     with IntegrationPatience {
 
   implicit val hc = HeaderCarrier()

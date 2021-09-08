@@ -44,9 +44,9 @@ object Entry {
 }
 
 @Singleton
-class ShortLivedHmrcMongoCache @Inject()(val cacheConfig: HmrcMongoCacheConfiguration,
-                                         configuration: Configuration,
-                                         mongo: MongoComponent)(implicit ec: ExecutionContext
+class CacheRespository @Inject()(val cacheConfig: HmrcMongoCacheConfiguration,
+                                 configuration: Configuration,
+                                 mongo: MongoComponent)(implicit ec: ExecutionContext
 ) extends PlayMongoRepository[Entry](
   mongoComponent = mongo,
   collectionName = cacheConfig.collName,
@@ -56,7 +56,6 @@ class ShortLivedHmrcMongoCache @Inject()(val cacheConfig: HmrcMongoCacheConfigur
 ) {
 
   // TODO - how to set the cache TTL?
-  // TODO - how do we implement an upsert on the collection?
 
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(
     configuration.underlying).JsonCrypto
