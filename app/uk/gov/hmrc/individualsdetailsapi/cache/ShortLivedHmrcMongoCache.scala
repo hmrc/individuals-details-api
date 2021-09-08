@@ -83,11 +83,8 @@ class ShortLivedHmrcMongoCache @Inject()(val cacheConfig: HmrcMongoCacheConfigur
       .find(Filters.equal("cacheId", toBson(id)))
       .headOption
       .map {
-        r =>
-          r match {
-            case Some(entry) => decryptor.reads(entry.data.individualsDetails).asOpt map (_.decryptedValue)
-            case None => None
-          }
+        case Some(entry) => decryptor.reads(entry.data.individualsDetails).asOpt map (_.decryptedValue)
+        case None => None
       }
   }
 }

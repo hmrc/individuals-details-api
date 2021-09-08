@@ -100,11 +100,8 @@ class ShortLivedHmrcMongoCacheSpec
     await(shortLivedCache.collection.find(Filters.equal("cacheId", toBson(id)))
       .headOption
       .map {
-        r =>
-          r match {
-            case Some(entry) => entry.data.individualsDetails
-            case None => None
-          }
+        case Some(entry) => entry.data.individualsDetails
+        case None => None
       })
   }
 

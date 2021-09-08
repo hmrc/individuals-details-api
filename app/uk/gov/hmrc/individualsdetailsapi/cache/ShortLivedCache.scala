@@ -16,21 +16,14 @@
 
 package uk.gov.hmrc.individualsdetailsapi.cache
 
-import org.mongodb.scala.model.{IndexModel, IndexOptions}
-import org.mongodb.scala.model.Indexes.ascending
-
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
-import play.api.libs.functional.syntax.{toInvariantFunctorOps, unlift}
 import play.api.libs.json.{Format, JsValue}
 import play.modules.reactivemongo.ReactiveMongoComponent
 import uk.gov.hmrc.cache.TimeToLive
 import uk.gov.hmrc.cache.repository.CacheMongoRepository
 import uk.gov.hmrc.crypto._
 import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
-import uk.gov.hmrc.mongo.MongoComponent
-import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
