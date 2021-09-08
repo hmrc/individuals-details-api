@@ -27,7 +27,6 @@ object AppDependencies {
     hmrc                %% "play-hmrc-api"              % "6.4.0-play-28",
     hmrc                %% "json-encryption"            % "4.10.0-play-28",
     hmrcMongo           %% "hmrc-mongo-play-27"         % "0.53.0",
-    "com.typesafe.play" %% "play-json-joda"             % "2.9.2",
     hmrc                %% "mongo-caching"              % "7.0.0-play-28"
   )
 
