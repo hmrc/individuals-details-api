@@ -74,24 +74,15 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
     expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS).
     unique(true)))) {
 
-  // TODO - we only call IF if an entry does not exist in the cache so we can insert rather than replace
-  // TODO - add checks to ensure that the cache key index is unique
-
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(
     configuration.underlying).JsonCrypto
 
-  def cache[T](id: String, key: String, value: T)(
+  def cache[T](id: String, value: T)(
     implicit formats: Format[T]) = {
 
     val jsonEncryptor           = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
     val entry                   = new Entry(id, new Data(encryptedValue), Instant.now)
-
-//    collection.findOneAndReplace(
-//      Filters.equal("cacheId", toBson(id)),
-//      entry,
-//      FindOneAndReplaceOptions().upsert(true)
-//    ).toFuture()
 
     collection
       .insertOne(entry)
@@ -102,7 +93,7 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
       }
   }
 
-  def fetchAndGetEntry[T](id: String, key: String)(
+  def fetchAndGetEntry[T](id: String)(
     implicit formats: Format[T]): Future[Option[T]] = {
     val decryptor = new JsonDecryptor[T]()
 
@@ -136,11 +127,5 @@ class CacheRepositoryConfiguration @Inject()(configuration: Configuration) {
       "cache.collName"
     )
     .getOrElse("individuals-details-cache")
-
-  lazy val key = configuration
-    .getOptional[String](
-      "cache.key"
-    )
-    .getOrElse("individuals-details")
 
 }

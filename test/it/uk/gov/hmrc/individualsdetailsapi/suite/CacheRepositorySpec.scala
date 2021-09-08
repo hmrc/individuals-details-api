@@ -64,28 +64,28 @@ class CacheRepositorySpec
 
   "cache" should {
     "store the encrypted version of a value" in {
-      await(shortLivedCache.cache(id, cachekey, testValue)(TestClass.format))
-      retrieveRawCachedValue(id, cachekey) shouldBe JsString(
+      await(shortLivedCache.cache(id, testValue)(TestClass.format))
+      retrieveRawCachedValue(id) shouldBe JsString(
         "I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
     }
   }
 
   "fetch" should {
     "retrieve the unencrypted cached value for a given id and key" in {
-      await(shortLivedCache.cache(id, cachekey, testValue)(TestClass.format))
+      await(shortLivedCache.cache(id, testValue)(TestClass.format))
       await(
-        shortLivedCache.fetchAndGetEntry[TestClass](id, cachekey)(
+        shortLivedCache.fetchAndGetEntry[TestClass](id)(
           TestClass.format)) shouldBe Some(testValue)
     }
 
     "return None if no cached value exists for a given id and key" in {
       await(
-        shortLivedCache.fetchAndGetEntry[TestClass](id, cachekey)(
+        shortLivedCache.fetchAndGetEntry[TestClass](id)(
           TestClass.format)) shouldBe None
     }
   }
 
-  private def retrieveRawCachedValue(id: String, key: String) = {
+  private def retrieveRawCachedValue(id: String) = {
     await(shortLivedCache.collection.find(Filters.equal("cacheId", toBson(id)))
       .headOption
       .map {

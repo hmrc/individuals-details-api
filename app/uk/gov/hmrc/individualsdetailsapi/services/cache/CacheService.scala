@@ -33,12 +33,12 @@ class CacheService @Inject()(
                      fallbackFunction: => Future[T]): Future[T] = {
 
     if (cacheEnabled)
-      cachingClient.fetchAndGetEntry[T](cacheId.id, conf.key) flatMap {
+      cachingClient.fetchAndGetEntry[T](cacheId.id) flatMap {
         case Some(value) =>
           Future.successful(value)
         case None =>
           fallbackFunction map { result =>
-            cachingClient.cache(cacheId.id, conf.key, result)
+            cachingClient.cache(cacheId.id, result)
             result
           }
       } else {

@@ -55,36 +55,6 @@ class CacheServiceSpec
 
   "cacheService.get" should {
 
-    "return the cached value for a given id and key" in new Setup {
-
-      given(mockCacheConfig.key).willReturn("individuals-details")
-
-      given(
-        mockClient.fetchAndGetEntry[TestClass](
-          eqTo(cacheId.id),
-          eqTo("individuals-details"))(any()))
-        .willReturn(Future.successful(Some(cachedValue)))
-      await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe cachedValue
-
-    }
-
-    "cache the result of the fallback function when no cached value exists for a given id and key" in new Setup {
-
-      given(mockCacheConfig.key).willReturn("individuals-details")
-
-      given(
-        mockClient.fetchAndGetEntry[TestClass](
-          eqTo(cacheId.id),
-          eqTo("individuals-details"))(any()))
-        .willReturn(Future.successful(None))
-
-      await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
-      verify(mockClient).cache[TestClass](eqTo(cacheId.id),
-                                          eqTo("individuals-details"),
-                                          eqTo(newValue))(any())
-
-    }
-
     "ignore the cache when caching is not enabled" in new Setup {
 
       given(mockCacheConfig.cacheEnabled).willReturn(false)
