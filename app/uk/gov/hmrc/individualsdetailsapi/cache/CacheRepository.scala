@@ -69,6 +69,7 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
   mongoComponent = mongo,
   collectionName = cacheConfig.collName,
   domainFormat   = Entry.format,
+  replaceIndexes = true,
   indexes        = Seq(IndexModel(ascending("cacheId"), IndexOptions().
     name("_cacheId").
     expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS).
