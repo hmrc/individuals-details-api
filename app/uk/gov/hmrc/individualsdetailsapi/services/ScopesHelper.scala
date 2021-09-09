@@ -17,7 +17,6 @@
 package uk.gov.hmrc.individualsdetailsapi.service
 
 import java.util.UUID
-
 import javax.inject.Inject
 import play.api.hal.Hal.{linksSeq, state}
 import play.api.hal.{HalLink, HalResource}
@@ -27,12 +26,11 @@ import uk.gov.hmrc.individualsdetailsapi.config.EndpointConfig
 class ScopesHelper @Inject()(scopesService: ScopesService) {
 
   /**
-    * @param scopes The list of scopes associated with the user
-    * @param endpoints The endpoints for which to construct the query string
-    * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
-    */
-  def getQueryStringFor(scopes: Iterable[String],
-                        endpoints: List[String]): String = {
+   * @param scopes The list of scopes associated with the user
+   * @param endpoints The endpoint that the user has called
+   * @return A google fields-style query string with the fields determined by the provided endpoint(s) and scopes
+   */
+  def getQueryStringFor(scopes: Iterable[String], endpoints: List[String]): String = {
     val filters = scopesService.getValidFilters(scopes, endpoints)
     s"${PathTree(scopesService.getIfDataPaths(scopes, endpoints)).toString}${if (filters.nonEmpty)
       s"&filter=${filters.mkString("&filter=")}"
@@ -40,11 +38,11 @@ class ScopesHelper @Inject()(scopesService: ScopesService) {
   }
 
   /**
-    * @param endpoint The endpoint that the user has called
-    * @param scopes The list of scopes associated with the user
-    * @param data The data to be returned from the endpoint
-    * @return A HalResource containing data, and a list of valid links determined by the provided scopes
-    */
+   * @param endpoint The endpoint that the user has called
+   * @param scopes The list of scopes associated with the user
+   * @param data The data to be returned from the endpoint
+   * @return A HalResource containing data, and a list of valid links determined by the provided scopes
+   */
   def getHalResponse(endpoint: String, scopes: List[String], data: Option[JsValue]): HalResource = {
 
     val internalEndpoints = scopesService
