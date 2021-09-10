@@ -32,11 +32,13 @@ abstract class CommonController @Inject()(
     cc: ControllerComponents
 ) extends BackendController(cc) {
 
+  val logger: Logger = Logger(getClass)
+
   private[controllers] def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)
                                    (implicit request: RequestHeader,
                                     auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException   => {
-      Logger.warn("Controllers MatchNotFoundException encountered")
+      logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
       ErrorNotFound.toHttpResponse
     }
@@ -49,7 +51,7 @@ abstract class CommonController @Inject()(
       ErrorUnauthorized(e.getMessage).toHttpResponse
     }
     case tmr: TooManyRequestException  => {
-      Logger.warn("Controllers TooManyRequestException encountered")
+      logger.warn("Controllers TooManyRequestException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, tmr.getMessage)
       ErrorTooManyRequests.toHttpResponse
     }
@@ -58,17 +60,17 @@ abstract class CommonController @Inject()(
       ErrorInvalidRequest(br.getMessage).toHttpResponse
     }
     case e: IllegalArgumentException => {
-      Logger.warn("Controllers IllegalArgumentException encountered")
+      logger.warn("Controllers IllegalArgumentException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInvalidRequest(e.getMessage).toHttpResponse
     }
     case e: InternalServerException => {
-      Logger.warn("Controllers InternalServerException encountered")
+      logger.warn("Controllers InternalServerException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
     }
     case e: Exception => {
-      Logger.warn("Controllers Exception encountered")
+      logger.warn("Controllers Exception encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, e.getMessage)
       ErrorInternalServer("Something went wrong.").toHttpResponse
     }
