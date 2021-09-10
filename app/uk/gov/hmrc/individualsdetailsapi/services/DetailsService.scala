@@ -134,7 +134,7 @@ class LiveDetailsService @Inject()(
       cacheId, {
         resolve(matchId).flatMap(ninoMatch => {
           val fieldsQuery =
-            scopesHelper.getQueryStringFor(scopes.toList, endpoint)
+            scopesHelper.getQueryStringFor(scopes.toList, List(endpoint))
           ifConnector.fetchDetails(ninoMatch.nino,
                                    Option(fieldsQuery).filter(_.nonEmpty),
                                    matchId.toString)

@@ -22,100 +22,102 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
 class ScopesServiceSpec
     extends UnitSpec
-    with ScopesConfig
-    with BeforeAndAfterEach {
+    with ScopesConfig {
 
-  "Scopes service" should {
+  val scopesService = new ScopesService(mockConfig)
 
-    val scopesService = new ScopesService(mockConfig)
-
-    "map multiple items correctly" in {
-      val result = scopesService.getScopeItems(mockScope1)
-      result(0) shouldBe "payments"
-      result(1) shouldBe "employer/employerName"
-      result(2) shouldBe "employer/employerDistrictNumber"
+  "Gets correct external endpoints" when {
+    "using first scope" in {
+      val endpoints = scopesService.getExternalEndpoints(Seq(mockScopeOne))
+      endpoints.size shouldBe 2
+      endpoints.map(_.key) shouldBe Seq(endpointKeyOne, endpointKeyTwo)
+      endpoints.map(_.link) shouldBe Seq("/external/1", "/external/2")
+      endpoints.map(_.title) shouldBe Seq("Get the first endpoint", "Get the second endpoint")
     }
 
-    "return empty list if no items found" in {
-      val result = scopesService.getScopeItems("test-scope")
-      result shouldBe List()
+    "using second scope" in {
+      val endpoints = scopesService.getExternalEndpoints(Seq(mockScopeTwo))
+      endpoints.size shouldBe 2
+      endpoints.map(_.key).toSeq.sorted shouldBe Seq(endpointKeyThree, endpointKeyTwo).sorted
+      endpoints.map(_.link).toSeq.sorted shouldBe Seq("/external/3", "/external/2").toSeq.sorted
+      endpoints.map(_.title).toSeq.sorted shouldBe Seq("Get the third endpoint", "Get the second endpoint").toSeq.sorted
     }
 
-    "get data items for endpoint" in {
-      val result = scopesService.getEndpointFieldKeys(mockEndpoint1);
-      result shouldBe List("A",
-                           "B",
-                           "C",
-                           "D",
-                           "E",
-                           "F",
-                           "G",
-                           "H",
-                           "I",
-                           "J",
-                           "K",
-                           "L")
+    "using invalid scope" in {
+      val endpoints = scopesService.getExternalEndpoints(Seq("invalidScope"))
+      endpoints.size shouldBe 0
+    }
+  }
+
+  "Gets correct internal endpoints" when {
+    "using first scope" in {
+      val endpoints = scopesService.getInternalEndpoints(Seq(mockScopeOne))
+      endpoints.size shouldBe 2
+      endpoints.map(_.link) shouldBe Seq("/internal/1", "/internal/2")
+      endpoints.map(_.title) shouldBe Seq("Get the first endpoint", "Get the second endpoint")
     }
 
-    "return empty list if endpoint not found" in {
-      val result = scopesService.getEndpointFieldKeys("test-scope")
-      result shouldBe List()
+    "using second scope" in {
+      val endpoints = scopesService.getInternalEndpoints(Seq(mockScopeTwo))
+      endpoints.map(_.link) shouldBe Seq("/internal/3", "/internal/2")
+      endpoints.map(_.title) shouldBe Seq("Get the third endpoint", "Get the second endpoint")
     }
 
-    "get valid data items for scope and endpoint" in {
-      val result =
-        scopesService.getValidItemsFor(List(mockScope1), mockEndpoint1)
-      result shouldBe List("payments",
-                           "employer/employerName",
-                           "employer/employerDistrictNumber")
+    "using invalid scope" in {
+      val endpoints = scopesService.getInternalEndpoints(Seq("invalidScope"))
+      endpoints.size shouldBe 0
+    }
+  }
+
+  "Get correct filters" when {
+    "using third scope" in {
+      val filters = scopesService.getValidFilters(Seq(mockScopeThree), Seq(endpointThree))
+      filters.size shouldBe 1
+      filters shouldBe Seq("contains(path/to/g,'FILTERED_VALUE_1')")
     }
 
-    "get valid data items keys for single scope" in {
-      val result =
-        scopesService.getValidFieldsForCacheKey(
-          List(mockScope1),
-          List(mockEndpoint1, mockEndpoint2, mockEndpoint3))
-      result shouldBe "ABF"
+    "using fourth scope" in {
+      val filters = scopesService.getValidFilters(Seq(mockScopeFour), Seq(endpointThree))
+      filters.size shouldBe 1
+      filters shouldBe Seq("contains(path/to/g,'FILTERED_VALUE_2')")
     }
 
-    "get valid data items keys for multiple scopes" in {
-      val result =
-        scopesService.getValidFieldsForCacheKey(
-          List(mockScope1, mockScope2),
-          List(mockEndpoint1, mockEndpoint2, mockEndpoint3))
-      result shouldBe "ABFCDEG"
+    "using third and fourth scopes" in {
+      val filters = scopesService.getValidFilters(Seq(mockScopeThree, mockScopeFour), Seq(endpointThree))
+      filters.size shouldBe 2
+      filters shouldBe Seq("contains(path/to/g,'FILTERED_VALUE_1')", "contains(path/to/g,'FILTERED_VALUE_2')")
     }
 
-    "get valid data items keys for multiple scopes including no match" in {
-      val result = scopesService.getValidFieldsForCacheKey(
-        List(mockScope1, mockScope2, "not-exists"),
-        List(mockEndpoint1, mockEndpoint2, mockEndpoint3))
-      result shouldBe "ABFCDEG"
+    "using invalid scope" in {
+      val filters = scopesService.getValidFilters(Seq("invalidScope"), Seq(endpointThree))
+      filters.size shouldBe 0
+    }
+  }
+
+  "Get correct cache key" when {
+    "using first scope and first endpoint" in {
+      val endpoints = scopesService.getValidFieldsForCacheKey(Seq(mockScopeOne), Seq(endpointOne))
+      endpoints shouldBe "ABC"
     }
 
-    "identity accesssible endpoints" in {
-      val result = scopesService.getAccessibleEndpoints(List(mockScope3)).toList
-      result.contains(mockEndpoint1) shouldBe true
-      result.contains(mockEndpoint2) shouldBe false
-      result.contains(mockEndpoint3) shouldBe true
+    "using second scope and first endpoint" in {
+      val endpoints = scopesService.getValidFieldsForCacheKey(Seq(mockScopeTwo), Seq(endpointOne))
+      endpoints shouldBe ""
     }
 
-    "get links for valid endpoints" in {
-      val result = scopesService.getEndpoints(List(mockScope1))
-      result.size shouldBe 1
-      val config1 = result.head
-      config1.name shouldBe mockEndpoint1
-      config1.link shouldBe "/a/b/c?matchId=<matchId>{&fromDate,toDate}"
-
-      val result2 = scopesService.getEndpoints(List(mockScope4))
-      val config2 = result2.head
-      config2.name shouldBe mockEndpoint2
-      config2.link shouldBe "/a/b/d?matchId=<matchId>{&fromDate,toDate}"
+    "using first scope and second endpoint" in {
+      val endpoints = scopesService.getValidFieldsForCacheKey(Seq(mockScopeOne), Seq(endpointTwo))
+      endpoints shouldBe "D"
     }
 
-    "get the scopes associated to an endpoint" in {
-      val result = scopesService.getEndPointScopes(mockEndpoint2)
-      result shouldBe Iterable(mockScope4, mockScope6, mockScope7)
+    "using second scope and second endpoint" in {
+      val endpoints = scopesService.getValidFieldsForCacheKey(Seq(mockScopeTwo), Seq(endpointTwo))
+      endpoints shouldBe "EF"
     }
+  }
+
+  "Gets all scopes correctly" in {
+    val scopes = scopesService.getAllScopes
+    scopes.toSeq shouldBe Seq(mockScopeFour, mockScopeOne, mockScopeThree, mockScopeTwo)
   }
 }

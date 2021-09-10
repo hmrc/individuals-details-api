@@ -50,7 +50,7 @@ abstract class RootController @Inject()(
             detailsService.resolve(matchId) map { _ =>
               val selfLink = HalLink("self", s"/individuals/details/?matchId=$matchId")
 
-              val response = scopesHelper.getHalLinks(matchId, authScopes) ++ selfLink
+              val response = scopesHelper.getHalLinks(matchId, None, authScopes, None) ++ selfLink
 
               auditHelper.auditApiResponse(
                 correlationId.toString, matchId.toString, authScopes.mkString(","),
