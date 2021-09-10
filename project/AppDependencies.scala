@@ -26,7 +26,7 @@ object AppDependencies {
     hmrc                %% "play-hal"                   % "2.1.0-play-27",
     hmrc                %% "play-hmrc-api"              % "6.4.0-play-28",
     hmrc                %% "json-encryption"            % "4.10.0-play-28",
-    hmrcMongo           %% "hmrc-mongo-play-27"         % "0.53.0"
+    hmrcMongo           %% "hmrc-mongo-play-28"         % "0.53.0"
   )
 
   def test(scope: String = "test,it") = Seq(
@@ -37,6 +37,6 @@ object AppDependencies {
     "org.pegdown"            % "pegdown"                   % "1.6.0"             % scope,
     "com.github.tomakehurst" % "wiremock-jre8"             % "2.27.2"            % scope,
     hmrc                     %% "service-integration-test" % "1.1.0-play-28"     % scope,
-    hmrcMongo                %% "hmrc-mongo-test-play-27"   % "0.53.0"           % scope
+    hmrcMongo                %% "hmrc-mongo-test-play-28"   % "0.53.0"           % scope
   )
 }
