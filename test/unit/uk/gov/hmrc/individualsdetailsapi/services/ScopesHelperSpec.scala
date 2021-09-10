@@ -28,16 +28,38 @@ class ScopesHelperSpec
 
   "Scopes helper" should {
 
-    val scopesService = new ScopesService(mockConfig) {
-      override lazy val apiConfig = mockApiConfig
-    }
-
+    val scopesService = new ScopesService(mockConfig)
     val scopesHelper = new ScopesHelper(scopesService)
 
     "return correct query string" in {
-      val result =
-        scopesHelper.getQueryStringFor(List(mockScope2), mockEndpoint1)
-      result shouldBe "employer(employerAddress(line1,line2,line3),employerDistrictNumber,employerName,employerSchemeReference),payments"
+      val scopeOneResult = scopesHelper.getQueryStringFor(List(mockScopeOne), List(endpointOne, endpointTwo, endpointThree))
+      scopeOneResult shouldBe "path(to(a,b,c,d))"
+
+      val scopeOneEndpointOneResult = scopesHelper.getQueryStringFor(List(mockScopeOne), List(endpointOne))
+      scopeOneEndpointOneResult shouldBe "path(to(a,b,c))"
+
+      val scopeOneEndpointTwoResult = scopesHelper.getQueryStringFor(List(mockScopeOne), List(endpointTwo))
+      scopeOneEndpointTwoResult shouldBe "path(to(d))"
+
+      val scopeOneEndpointThreeResult = scopesHelper.getQueryStringFor(List(mockScopeOne), List(endpointThree))
+      scopeOneEndpointThreeResult shouldBe ""
+
+      val scopeTwoResult = scopesHelper.getQueryStringFor(List(mockScopeTwo), List(endpointOne, endpointTwo, endpointThree))
+      scopeTwoResult shouldBe "path(to(e,f,g,h,i))"
+
+      val twoScopesResult = scopesHelper.getQueryStringFor(List(mockScopeOne, mockScopeTwo), List(endpointOne, endpointTwo, endpointThree))
+      twoScopesResult shouldBe "path(to(a,b,c,d,e,f,g,h,i))"
+    }
+
+    "return correct query string with filter" in {
+      val scopeThreeResult = scopesHelper.getQueryStringFor(List(mockScopeThree), List(endpointThree))
+      scopeThreeResult shouldBe "path(to(g,h,i))&filter=contains(path/to/g,'FILTERED_VALUE_1')"
+
+      val scopeFourFirstResult = scopesHelper.getQueryStringFor(List(mockScopeFour), List(endpointThree))
+      scopeFourFirstResult shouldBe "path(to(g,h,i))&filter=contains(path/to/g,'FILTERED_VALUE_2')"
+
+      val scopeFourSecondResult = scopesHelper.getQueryStringFor(List(mockScopeFour), List(endpointFour))
+      scopeFourSecondResult shouldBe "path(to(j))&filter=contains(path/to/j,'<token>')"
     }
 
     "generate Hal response" in {
@@ -50,35 +72,34 @@ class ScopesHelperSpec
       )
 
       val response = scopesHelper.getHalResponse(
-        endpoint = mockEndpoint1,
-        scopes = List(mockScope1),
-        data = Option(mockData)
+        endpoint = endpointOne,
+        scopes = List(mockScopeOne),
+        data = Some(mockData)
       )
 
-      response.links.links.size shouldBe 2
+      response.links.links.size shouldBe 5
 
       response.links.links.exists(halLink =>
-        halLink.rel == mockEndpoint1 && halLink.href == "/a/b/c?matchId=<matchId>{&fromDate,toDate}") shouldBe true
+        halLink.rel == endpointOne && halLink.href == "/internal/1") shouldBe true
 
       response.links.links.exists(halLink =>
-        halLink.rel == "self" && halLink.href == "/a/b/c?matchId=<matchId>{&fromDate,toDate}") shouldBe true
+        halLink.rel == "self" && halLink.href == "/internal/1") shouldBe true
 
       val response2 = scopesHelper.getHalResponse(
-        endpoint = mockEndpoint2,
-        scopes = List(mockScope4, mockScope5),
-        data = Option(mockData)
+        endpoint = endpointTwo,
+        scopes = List(mockScopeOne, mockScopeTwo),
+        data = Some(mockData)
       )
 
-      response2.links.links.size shouldBe 3
+      response2.links.links.size shouldBe 7
 
       response2.links.links.exists(halLink =>
-        halLink.rel == mockEndpoint2 && halLink.href == "/a/b/d?matchId=<matchId>{&fromDate,toDate}") shouldBe true
+        halLink.rel == endpointTwo && halLink.href == "/external/2") shouldBe true
 
       response2.links.links.exists(halLink =>
-        halLink.rel == mockEndpoint3 && halLink.href == "/a/b/e?matchId=<matchId>{&fromDate,toDate}") shouldBe true
+        halLink.rel == endpointThree && halLink.href == "/external/3") shouldBe true
 
-      response2.links.links.exists(halLink =>
-        halLink.rel == "self" && halLink.href == "/a/b/d?matchId=<matchId>{&fromDate,toDate}") shouldBe true
+      response2.links.links.exists(halLink => halLink.rel == "self" && halLink.href == "/internal/2") shouldBe true
 
     }
   }

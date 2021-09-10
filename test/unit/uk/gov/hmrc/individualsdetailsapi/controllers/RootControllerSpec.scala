@@ -16,7 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import java.util.UUID
 import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito
@@ -30,13 +29,14 @@ import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, Insufficient
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.individualsdetailsapi.config.EndpointConfig
+import uk.gov.hmrc.individualsdetailsapi.config.{ExternalEndpointConfig, InternalEndpointConfig}
 import uk.gov.hmrc.individualsdetailsapi.controllers.{LiveRootController, SandboxRootController}
 import uk.gov.hmrc.individualsdetailsapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
 import uk.gov.hmrc.individualsdetailsapi.services.{LiveDetailsService, SandboxDetailsService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class RootControllerSpec extends SpecBase with MockitoSugar {
@@ -90,14 +90,25 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
       )
 
     when(scopeService.getAllScopes).thenReturn(scopes.toList)
-    when(scopeService.getEndpoints(any())).thenReturn(
+    when(scopeService.getInternalEndpoints(any())).thenReturn(
       Seq(
-        EndpointConfig(
+        InternalEndpointConfig(
           name = "endpointName",
           link = "endpoint/link",
           title = "endpointTitle",
           fields = Map("fieldId" -> "data/path"),
           filters = Map()
+        )
+      )
+    )
+
+    when(scopeService.getExternalEndpoints(any())).thenReturn(
+      Seq(
+        ExternalEndpointConfig(
+          name = "endpointName",
+          link = "endpoint/link",
+          title = "endpointTitle",
+          key = "A"
         )
       )
     )
