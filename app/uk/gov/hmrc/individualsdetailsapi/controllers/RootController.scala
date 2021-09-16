@@ -16,9 +16,6 @@
 
 package uk.gov.hmrc.individualsdetailsapi.controllers
 
-import java.util.UUID
-
-import javax.inject.{Inject, Singleton}
 import play.api.hal.HalLink
 import play.api.mvc.hal._
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -26,16 +23,21 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
-import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, LiveDetailsService, SandboxDetailsService}
+import uk.gov.hmrc.individualsdetailsapi.services.DetailsService
 
+import java.util.UUID
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
-abstract class RootController @Inject()(
-    cc: ControllerComponents,
-    scopeService: ScopesService,
-    scopesHelper: ScopesHelper,
-    detailsService: DetailsService,
-    implicit val auditHelper: AuditHelper)(implicit val ec: ExecutionContext)
+@Singleton
+class RootController @Inject()(
+                                val authConnector: AuthConnector,
+                                cc: ControllerComponents,
+                                scopeService: ScopesService,
+                                scopesHelper: ScopesHelper,
+                                detailsService: DetailsService,
+                                implicit val auditHelper: AuditHelper)
+                              (implicit val ec: ExecutionContext)
     extends CommonController(cc)
     with PrivilegedAuthentication {
 
@@ -61,32 +63,4 @@ abstract class RootController @Inject()(
         } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/details/")
       }
   }
-}
-
-@Singleton
-class LiveRootController @Inject()(
-    val authConnector: AuthConnector,
-    cc: ControllerComponents,
-    scopeService: ScopesService,
-    scopesHelper: ScopesHelper,
-    detailsService: LiveDetailsService,
-    auditHelper: AuditHelper
-)(override implicit val ec: ExecutionContext)
-    extends RootController(cc, scopeService, scopesHelper, detailsService, auditHelper) {
-
-  override val environment = Environment.PRODUCTION
-}
-
-@Singleton
-class SandboxRootController @Inject()(
-    val authConnector: AuthConnector,
-    cc: ControllerComponents,
-    scopeService: ScopesService,
-    scopesHelper: ScopesHelper,
-    detailsService: SandboxDetailsService,
-    auditHelper : AuditHelper
-)(override implicit val ec: ExecutionContext)
-    extends RootController(cc, scopeService, scopesHelper, detailsService, auditHelper) {
-
-  override val environment = Environment.SANDBOX
 }
