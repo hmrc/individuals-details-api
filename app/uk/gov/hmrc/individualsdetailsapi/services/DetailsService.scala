@@ -31,24 +31,21 @@ import uk.gov.hmrc.individualsdetailsapi.services.cache.{CacheId, CacheService}
 import scala.concurrent.Future.{failed, successful}
 import scala.concurrent.{ExecutionContext, Future}
 
-trait DetailsService {
-
-  def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen]
-
-  def retrieveAndMap[T](
-      matchId: UUID,
-      endpoint: String,
-      scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)(
-      implicit hc: HeaderCarrier,
-      request: RequestHeader,
-      ec: ExecutionContext): Future[T]
+@Singleton
+class DetailsService @Inject()(
+                                individualsMatchingApiConnector: IndividualsMatchingApiConnector,
+                                ifConnector: IfConnector,
+                                scopesService: ScopesService,
+                                scopesHelper: ScopesHelper,
+                                @Named("retryDelay") retryDelay: Int,
+                                cacheService: CacheService)(implicit val ec: ExecutionContext) {
 
   def getContactDetails(matchId: UUID,
                         endpoint: String,
                         scopes: Iterable[String])(
-      implicit hc: HeaderCarrier,
-      request: RequestHeader,
-      ec: ExecutionContext): Future[Option[ContactDetails]] = {
+                         implicit hc: HeaderCarrier,
+                         request: RequestHeader,
+                         ec: ExecutionContext): Future[Option[ContactDetails]] = {
 
     retrieveAndMap[Option[ContactDetails]](matchId, endpoint, scopes) {
       response =>
@@ -57,74 +54,31 @@ trait DetailsService {
   }
 
   def getResidences(matchId: UUID, endpoint: String, scopes: Iterable[String])(
-      implicit hc: HeaderCarrier,
-      request: RequestHeader,
-      ec: ExecutionContext): Future[Seq[Residence]] = {
+    implicit hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext): Future[Seq[Residence]] = {
 
-    retrieveAndMap[Seq[Residence]](matchId, endpoint, scopes) { response =>
-      {
-        response.residences
-          .getOrElse(Seq())
-          .map(Residence.convert)
-          .filter(_.isDefined)
-          .map(_.get)
-      }
+    retrieveAndMap[Seq[Residence]](matchId, endpoint, scopes) { response => {
+      response.residences
+        .getOrElse(Seq())
+        .map(Residence.convert)
+        .filter(_.isDefined)
+        .map(_.get)
+    }
     }
   }
-}
 
-@Singleton
-class SandboxDetailsService @Inject()(
-    cacheService: CacheService,
-    ifConnector: IfConnector,
-    scopesService: ScopesService,
-    scopesHelper: ScopesHelper,
-    individualsMatchingApiConnector: IndividualsMatchingApiConnector)
-    extends DetailsService {
-
-  override def resolve(matchId: UUID)(
-      implicit hc: HeaderCarrier): Future[MatchedCitizen] =
-    if (matchId.equals(sandboxMatchId))
-      successful(MatchedCitizen(sandboxMatchId, sandboxNino))
-    else failed(new MatchNotFoundException)
-
-  def retrieveAndMap[T](
-      matchId: UUID,
-      endpoint: String,
-      scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)(
-      implicit hc: HeaderCarrier,
-      request: RequestHeader,
-      ec: ExecutionContext): Future[T] = {
-
-    SandboxDetailsData.findByMatchId(matchId) match {
-      case Some(i) =>
-        Future.successful(IfDetailsResponse(i.contactDetails, i.residences)) map responseMapper
-      case None => Future.failed(new MatchNotFoundException)
-    }
-  }
-}
-
-@Singleton
-class LiveDetailsService @Inject()(
-    individualsMatchingApiConnector: IndividualsMatchingApiConnector,
-    ifConnector: IfConnector,
-    scopesService: ScopesService,
-    scopesHelper: ScopesHelper,
-    @Named("retryDelay") retryDelay: Int,
-    cacheService: CacheService)(implicit val ec: ExecutionContext)
-    extends DetailsService {
-
-  override def resolve(matchId: UUID)(
-      implicit hc: HeaderCarrier): Future[MatchedCitizen] =
+  def resolve(matchId: UUID)(
+    implicit hc: HeaderCarrier): Future[MatchedCitizen] =
     individualsMatchingApiConnector.resolve(matchId)
 
   def retrieveAndMap[T](
-      matchId: UUID,
-      endpoint: String,
-      scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)(
-      implicit hc: HeaderCarrier,
-      request: RequestHeader,
-      ec: ExecutionContext): Future[T] = {
+                         matchId: UUID,
+                         endpoint: String,
+                         scopes: Iterable[String])(responseMapper: IfDetailsResponse => T)(
+                         implicit hc: HeaderCarrier,
+                         request: RequestHeader,
+                         ec: ExecutionContext): Future[T] = {
 
     val cacheId = CacheId(
       matchId,
@@ -136,8 +90,8 @@ class LiveDetailsService @Inject()(
           val fieldsQuery =
             scopesHelper.getQueryStringFor(scopes.toList, List(endpoint))
           ifConnector.fetchDetails(ninoMatch.nino,
-                                   Option(fieldsQuery).filter(_.nonEmpty),
-                                   matchId.toString)
+            Option(fieldsQuery).filter(_.nonEmpty),
+            matchId.toString)
         })
       }
     ) map responseMapper

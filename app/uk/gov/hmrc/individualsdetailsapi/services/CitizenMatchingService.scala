@@ -29,26 +29,11 @@ import uk.gov.hmrc.individualsdetailsapi.domain.{
   SandboxDetailsData
 }
 
-trait CitizenMatchingService {
-  def matchCitizen(matchId: UUID)(
-      implicit hc: HeaderCarrier): Future[MatchedCitizen]
-}
-
 @Singleton
-class SandboxCitizenMatchingService extends CitizenMatchingService {
-  override def matchCitizen(matchId: UUID)(
-      implicit hc: HeaderCarrier): Future[MatchedCitizen] =
-    SandboxDetailsData.matchedCitizen(matchId) match {
-      case Some(matchedCitizen) => successful(matchedCitizen)
-      case None                 => failed(new MatchNotFoundException)
-    }
-}
+class CitizenMatchingService @Inject()(
+    individualsMatchingApiConnector: IndividualsMatchingApiConnector) {
 
-@Singleton
-class LiveCitizenMatchingService @Inject()(
-    individualsMatchingApiConnector: IndividualsMatchingApiConnector)
-    extends CitizenMatchingService {
-  override def matchCitizen(matchId: UUID)(
-      implicit hc: HeaderCarrier): Future[MatchedCitizen] =
+  def matchCitizen(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen] =
     individualsMatchingApiConnector.resolve(matchId)
+
 }
