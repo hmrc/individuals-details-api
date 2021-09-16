@@ -22,10 +22,11 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-
 import java.util.UUID
+
 import javax.inject.Inject
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Try}
@@ -62,15 +63,8 @@ class IfConnector @Inject()(
 
   }
 
-  private def extractCorrelationId(requestHeader: RequestHeader) =
-    requestHeader.headers.get("CorrelationId") match {
-      case Some(uuidString) =>
-        Try(UUID.fromString(uuidString)) match {
-          case Success(_) => uuidString
-          case _          => throw new BadRequestException("Malformed CorrelationId")
-        }
-      case None => throw new BadRequestException("CorrelationId is required")
-    }
+  private def extractCorrelationId(requestHeader: RequestHeader) = RequestHeaderUtils.validateCorrelationId(requestHeader).toString
+
 
   def setHeaders(requestHeader: RequestHeader) = Seq(
     HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
