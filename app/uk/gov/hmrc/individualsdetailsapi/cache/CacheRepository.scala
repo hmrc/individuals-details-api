@@ -43,7 +43,7 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
   domainFormat   = Entry.format,
   replaceIndexes = true,
   indexes        = Seq(IndexModel(ascending("cacheId"), IndexOptions().
-    name("_cacheId").
+    name("_id").
     expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS).
     unique(true)))) {
 
