@@ -42,10 +42,12 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
   collectionName = cacheConfig.collName,
   domainFormat   = Entry.format,
   replaceIndexes = true,
-  indexes        = Seq(IndexModel(ascending("cacheId"), IndexOptions().
-    name("_id").
-    expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS).
-    unique(true)))) {
+  indexes        = Seq(IndexModel(ascending("cacheId"),
+    IndexOptions().
+      name("_cacheId").
+      expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS).
+      unique(true).
+      sparse(true)))) {
 
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(
     configuration.underlying).JsonCrypto
