@@ -18,9 +18,9 @@ package uk.gov.hmrc.individualsdetailsapi.cache
 
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.Instant
+import java.time.LocalDateTime
 
-case class Entry(cacheId: String, data: Data, createdAt: Instant)
+case class Entry(cacheId: String, data: Data, createdAt: LocalDateTime)
 
 object Entry {
   implicit val format: OFormat[Entry] = Json.format[Entry]

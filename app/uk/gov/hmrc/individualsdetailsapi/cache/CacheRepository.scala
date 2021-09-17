@@ -28,7 +28,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
-import java.time.Instant
+import java.time.{Instant, LocalDateTime}
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future, future}
@@ -42,12 +42,10 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
   collectionName = cacheConfig.collName,
   domainFormat   = Entry.format,
   replaceIndexes = false,
-  indexes        = Seq(IndexModel(ascending("cacheId"),
-    IndexOptions().
-      name("_cacheId").
-      expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS).
-      unique(true).
-      sparse(true)))) {
+  indexes        = Seq(
+    IndexModel(ascending("cacheId"), IndexOptions().name("_cacheId").unique(true).sparse(true)),
+    IndexModel(ascending("createdAt"), IndexOptions().name("_createdAt").sparse(true).expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS).background(true)))
+) {
 
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(
     configuration.underlying).JsonCrypto
@@ -57,7 +55,7 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
 
     val jsonEncryptor           = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
-    val entry                   = new Entry(id, new Data(encryptedValue), Instant.now)
+    val entry                   = new Entry(id, new Data(encryptedValue), LocalDateTime.now)
 
     collection
       .insertOne(entry)
