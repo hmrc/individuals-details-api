@@ -44,6 +44,12 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
   replaceIndexes = true,
   indexes        = Seq(
     IndexModel(
+      ascending("id"),
+      IndexOptions().name("_id").
+        unique(true).
+        background(false).
+        sparse(true)),
+    IndexModel(
       ascending("modifiedDetails.lastUpdated"),
       IndexOptions().name("lastUpdatedIndex").
         background(false).
