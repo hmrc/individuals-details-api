@@ -44,15 +44,8 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
   replaceIndexes = true,
   indexes        = Seq(
     IndexModel(
-      ascending("cacheId"),
-      IndexOptions().name("_cacheId").
-        unique(true).
-        background(false).
-        sparse(true)),
-    IndexModel(
       ascending("modifiedDetails.lastUpdated"),
       IndexOptions().name("lastUpdatedIndex").
-        //sparse(true).
         background(false).
         expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)))
 ) {
@@ -81,7 +74,7 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
     val decryptor = new JsonDecryptor[T]()
 
     collection
-      .find(Filters.equal("cacheId", toBson(id)))
+      .find(Filters.equal("id", toBson(id)))
       .headOption
       .map {
         case Some(entry) => decryptor.reads(entry.data.individualsDetails).asOpt map (_.decryptedValue)

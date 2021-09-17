@@ -86,7 +86,7 @@ class CacheRepositorySpec
   }
 
   private def retrieveRawCachedValue(id: String) = {
-    await(shortLivedCache.collection.find(Filters.equal("cacheId", toBson(id)))
+    await(shortLivedCache.collection.find(Filters.equal("id", toBson(id)))
       .headOption
       .map {
         case Some(entry) => entry.data.individualsDetails

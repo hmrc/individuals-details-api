@@ -28,11 +28,11 @@ object ModifiedDetails {
   implicit val format: Format[ModifiedDetails] = Format(
     (
       (JsPath \ "createdAt").read[LocalDateTime] and
-        (JsPath \ "lastUpdate").read[LocalDateTime]
+        (JsPath \ "lastUpdated").read[LocalDateTime]
       )(ModifiedDetails.apply _),
     (
       (JsPath \ "createdAt").write[LocalDateTime] and
-        (JsPath \ "lastUpdate").write[LocalDateTime]
+        (JsPath \ "lastUpdated").write[LocalDateTime]
       )(unlift(ModifiedDetails.unapply))
   )
 }

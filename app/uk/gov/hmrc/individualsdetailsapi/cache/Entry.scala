@@ -21,17 +21,17 @@ import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
 import java.time.LocalDateTime
 import play.api.libs.json.{Format, JsPath}
 
-case class Entry(cacheId: String, data: Data, modifiedDetails: ModifiedDetails)
+case class Entry(id: String, data: Data, modifiedDetails: ModifiedDetails)
 
 object Entry {
   implicit val format: Format[Entry] = Format(
     (
-      (JsPath \ "cacheId").read[String] and
+      (JsPath \ "id").read[String] and
         (JsPath \ "data").read[Data] and
         (JsPath \ "modifiedDetails").read[ModifiedDetails]
       )(Entry.apply _),
     (
-      (JsPath \ "cacheId").write[String] and
+      (JsPath \ "id").write[String] and
         (JsPath \ "data").write[Data] and
         (JsPath \ "modifiedDetails").write[ModifiedDetails]
       )(unlift(Entry.unapply))
