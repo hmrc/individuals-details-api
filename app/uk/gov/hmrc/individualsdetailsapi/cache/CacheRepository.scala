@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.individualsdetailsapi.cache
 
+import java.time.LocalDateTime
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions}
 import play.api.Configuration
@@ -28,7 +29,6 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
-import java.time.{Instant, LocalDateTime}
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future, future}
@@ -41,10 +41,20 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
   mongoComponent = mongo,
   collectionName = cacheConfig.collName,
   domainFormat   = Entry.format,
-  replaceIndexes = false,
+  replaceIndexes = true,
   indexes        = Seq(
-    IndexModel(ascending("cacheId"), IndexOptions().name("_cacheId").unique(true).sparse(true)),
-    IndexModel(ascending("createdAt"), IndexOptions().name("_createdAt").sparse(true).expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS).background(true)))
+    IndexModel(
+      ascending("cacheId"),
+      IndexOptions().name("_cacheId").
+        unique(true).
+        background(false).
+        sparse(true)),
+    IndexModel(
+      ascending("createdAt"),
+      IndexOptions().name("_createdAt").
+        sparse(true).
+        background(false).
+        expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)))
 ) {
 
   implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(

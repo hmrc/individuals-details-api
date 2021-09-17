@@ -16,12 +16,25 @@
 
 package uk.gov.hmrc.individualsdetailsapi.cache
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
 
 import java.time.LocalDateTime
+import play.api.libs.json.{Format, JsPath}
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.Implicits._
 
 case class Entry(cacheId: String, data: Data, createdAt: LocalDateTime)
 
 object Entry {
-  implicit val format: OFormat[Entry] = Json.format[Entry]
+  implicit val format: Format[Entry] = Format(
+    (
+      (JsPath \ "cacheId").read[String] and
+        (JsPath \ "data").read[Data] and
+        (JsPath \ "createdAt").read[LocalDateTime]
+      )(Entry.apply _),
+    (
+      (JsPath \ "cacheId").write[String] and
+        (JsPath \ "data").write[Data] and
+        (JsPath \ "createdAt").write[LocalDateTime]
+      )(unlift(Entry.unapply))
+  )
 }
