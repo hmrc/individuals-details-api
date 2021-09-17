@@ -17,23 +17,24 @@
 package uk.gov.hmrc.individualsdetailsapi.cache
 
 import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
-
-import java.time.LocalDateTime
 import play.api.libs.json.{Format, JsPath}
 
-case class Entry(cacheId: String, data: Data, modifiedDetails: ModifiedDetails)
+import java.time.LocalDateTime
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.Implicits._
 
-object Entry {
-  implicit val format: Format[Entry] = Format(
+case class ModifiedDetails(createdAt: LocalDateTime, lastUpdate: LocalDateTime)
+
+object ModifiedDetails {
+  implicit val format: Format[ModifiedDetails] = Format(
     (
-      (JsPath \ "cacheId").read[String] and
-        (JsPath \ "data").read[Data] and
-        (JsPath \ "modifiedDetails").read[ModifiedDetails]
-      )(Entry.apply _),
+      (JsPath \ "createdAt").read[LocalDateTime] and
+        (JsPath \ "lastUpdate").read[LocalDateTime]
+      )(ModifiedDetails.apply _),
     (
-      (JsPath \ "cacheId").write[String] and
-        (JsPath \ "data").write[Data] and
-        (JsPath \ "modifiedDetails").write[ModifiedDetails]
-      )(unlift(Entry.unapply))
+      (JsPath \ "createdAt").write[LocalDateTime] and
+        (JsPath \ "lastUpdate").write[LocalDateTime]
+      )(unlift(ModifiedDetails.unapply))
   )
 }
+
+

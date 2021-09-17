@@ -50,9 +50,9 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
         background(false).
         sparse(true)),
     IndexModel(
-      ascending("createdAt"),
-      IndexOptions().name("_createdAt").
-        sparse(true).
+      ascending("modifiedDetails.lastUpdated"),
+      IndexOptions().name("_lastUpdated").
+        //sparse(true).
         background(false).
         expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)))
 ) {
@@ -65,7 +65,7 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
 
     val jsonEncryptor           = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
-    val entry                   = new Entry(id, new Data(encryptedValue), LocalDateTime.now)
+    val entry                   = new Entry(id, new Data(encryptedValue), new ModifiedDetails(LocalDateTime.now, LocalDateTime.now))
 
     collection
       .insertOne(entry)
