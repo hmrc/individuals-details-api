@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsdetailsapi.cache
 
-import java.time.LocalDateTime
+import java.time.{LocalDateTime, ZoneOffset}
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions}
 import play.api.Configuration
@@ -64,7 +64,15 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
 
     val jsonEncryptor           = new JsonEncryptor[T]()
     val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
-    val entry                   = new Entry(id, new Data(encryptedValue), new ModifiedDetails(LocalDateTime.now, LocalDateTime.now))
+
+    val entry = new Entry(
+      id,
+      new Data(encryptedValue),
+      new ModifiedDetails(
+        LocalDateTime.now(ZoneOffset.UTC),
+        LocalDateTime.now(ZoneOffset.UTC)
+      )
+    )
 
     collection
       .insertOne(entry)
