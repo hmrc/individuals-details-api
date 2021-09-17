@@ -51,7 +51,7 @@ class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
         sparse(true)),
     IndexModel(
       ascending("modifiedDetails.lastUpdated"),
-      IndexOptions().name("_lastUpdated").
+      IndexOptions().name("lastUpdatedIndex").
         //sparse(true).
         background(false).
         expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)))
