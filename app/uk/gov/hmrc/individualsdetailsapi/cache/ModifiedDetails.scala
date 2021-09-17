@@ -22,7 +22,7 @@ import play.api.libs.json.{Format, JsPath}
 import java.time.LocalDateTime
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.Implicits._
 
-case class ModifiedDetails(createdAt: LocalDateTime, lastUpdate: LocalDateTime)
+case class ModifiedDetails(createdAt: LocalDateTime, lastUpdated: LocalDateTime)
 
 object ModifiedDetails {
   implicit val format: Format[ModifiedDetails] = Format(
