@@ -102,8 +102,3 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
     }
   }
 }
-
-object Environment {
-  val SANDBOX = "SANDBOX"
-  val PRODUCTION = "PRODUCTION"
-}

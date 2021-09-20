@@ -28,7 +28,11 @@ class MatchUuidQueryStringBinder extends QueryStringBindable[UUID] {
 
   override def bind(key: String, params: Map[String, Seq[String]]) = {
     Option(Try(params.get(parameterName) flatMap (_.headOption) match {
-      case Some(parameterValue) => Right(UUID.fromString(parameterValue))
+      case Some(parameterValue) =>
+        UuidValidator.validate(parameterValue) match {
+          case true => Right(UUID.fromString(parameterValue))
+          case false => Left(s"$parameterName format is invalid")
+        }
       case None                 => Left(s"$parameterName is required")
     }) getOrElse Left(s"$parameterName format is invalid"))
   }

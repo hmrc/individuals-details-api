@@ -19,8 +19,10 @@ package uk.gov.hmrc.individualsdetailsapi.play
 import play.api.http.HeaderNames.ACCEPT
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.BadRequestException
-
 import java.util.UUID
+
+import uk.gov.hmrc.individualsdetailsapi.utils.UuidValidator
+
 import scala.util.{Success, Try}
 
 object RequestHeaderUtils {
@@ -35,20 +37,35 @@ object RequestHeaderUtils {
     (uriRegex.findFirstMatchIn(requestHeader.uri) map (_.group(1))).get
 
   def validateCorrelationId(requestHeader: RequestHeader): UUID =
+    withCorrelationId(
+      requestHeader,
+      getUuidFromString,
+      () => throw new BadRequestException("CorrelationId is required")
+    )
+
+  def maybeCorrelationId(requestHeader: RequestHeader): Option[String] =
+    withCorrelationId(
+      requestHeader,
+      getUuidStringOption,
+      () => None
+    )
+
+  private def withCorrelationId[A](requestHeader: RequestHeader, onSome: String => A, onNone: () => A) =
     requestHeader.headers.get("CorrelationId") match {
-      case Some(uuidString) =>
-        Try(UUID.fromString(uuidString)) match {
-          case Success(_) => UUID.fromString(uuidString)
-          case _          => throw new BadRequestException("Malformed CorrelationId")
-        }
-      case None => throw new BadRequestException("CorrelationId is required")
+      case Some(uuidString) => onSome(uuidString)
+      case None => onNone()
     }
 
-  def maybeCorrelationId(requestHeader: RequestHeader): Option[String] = {
-    Try(validateCorrelationId(requestHeader)) match {
-      case Success(id) => Some(id.toString)
-      case _ => None
-    }
+  private def getUuidFromString(uuidString: String) =
+    UuidValidator.validate(uuidString) match {
+      case true  => UUID.fromString(uuidString)
+      case false => throw new BadRequestException("Malformed CorrelationId")
+  }
+
+  private def getUuidStringOption(uuidString : String) =
+    UuidValidator.validate(uuidString) match {
+      case true => Some(uuidString)
+      case false          => None
   }
 
   def getVersionedRequest(originalRequest: RequestHeader): RequestHeader = {
