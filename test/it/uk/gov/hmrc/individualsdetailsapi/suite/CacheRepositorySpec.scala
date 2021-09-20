@@ -48,23 +48,23 @@ class CacheRepositorySpec
     .bindings(bindModules: _*)
     .build()
 
-  val shortLivedCache = fakeApplication.injector.instanceOf[CacheRepository]
+  val cacheRepository = fakeApplication.injector.instanceOf[CacheRepository]
 
   def externalServices: Seq[String] = Seq.empty
 
   override def beforeEach() {
     super.beforeEach()
-    await(shortLivedCache.collection.drop().toFuture())
+    await(cacheRepository.collection.drop().toFuture())
   }
 
   override def afterEach() {
     super.afterEach()
-    await(shortLivedCache.collection.drop().toFuture())
+    await(cacheRepository.collection.drop().toFuture())
   }
 
   "cache" should {
     "store the encrypted version of a value" in {
-      await(shortLivedCache.cache(id, testValue)(TestClass.format))
+      await(cacheRepository.cache(id, testValue)(TestClass.format))
       retrieveRawCachedValue(id) shouldBe JsString(
         "I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
     }
@@ -72,21 +72,21 @@ class CacheRepositorySpec
 
   "fetch" should {
     "retrieve the unencrypted cached value for a given id and key" in {
-      await(shortLivedCache.cache(id, testValue)(TestClass.format))
+      await(cacheRepository.cache(id, testValue)(TestClass.format))
       await(
-        shortLivedCache.fetchAndGetEntry[TestClass](id)(
+        cacheRepository.fetchAndGetEntry[TestClass](id)(
           TestClass.format)) shouldBe Some(testValue)
     }
 
     "return None if no cached value exists for a given id and key" in {
       await(
-        shortLivedCache.fetchAndGetEntry[TestClass](id)(
+        cacheRepository.fetchAndGetEntry[TestClass](id)(
           TestClass.format)) shouldBe None
     }
   }
 
   private def retrieveRawCachedValue(id: String) = {
-    await(shortLivedCache.collection.find(Filters.equal("id", toBson(id)))
+    await(cacheRepository.collection.find(Filters.equal("id", toBson(id)))
       .headOption
       .map {
         case Some(entry) => entry.data.individualsDetails
