@@ -16,7 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import akka.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
 import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -40,10 +39,6 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
   val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b");
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
   val validCorrelationHeader = ("CorrelationId", sampleCorrelationId)
-
-  implicit lazy val materializer: Materializer = fakeApplication.materializer
-  implicit lazy val ec: ExecutionContext =
-    fakeApplication.injector.instanceOf[ExecutionContext]
 
   trait Fixture extends ScopesConfigHelper {
 
