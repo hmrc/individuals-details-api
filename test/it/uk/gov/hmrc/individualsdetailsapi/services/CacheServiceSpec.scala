@@ -16,7 +16,6 @@
 
 package it.uk.gov.hmrc.individualsdetailsapi.services
 
-import it.uk.gov.hmrc.individualsdetailsapi.suite.MongoSuite
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -34,7 +33,6 @@ class CacheServiceSpec
     with Matchers
     with ScalaFutures
     with OptionValues
-    with MongoSuite
     with IntegrationPatience {
 
   implicit val hc = HeaderCarrier()
