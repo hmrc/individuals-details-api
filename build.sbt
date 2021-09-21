@@ -1,15 +1,15 @@
 import sbt.Keys.compile
 import sbt.Tests.{Group, SubProcess}
-import uk.gov.hmrc.DefaultBuildSettings.{
-  addTestReportOption,
-  defaultSettings,
-  scalaSettings
-}
+import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
 import uk.gov.hmrc.ExternalService
 import uk.gov.hmrc.ServiceManagerPlugin.Keys.itDependenciesList
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
+import play.sbt.routes.RoutesKeys
 
 val appName = "individuals-details-api"
+
+RoutesKeys.routesImport := Seq.empty
+TwirlKeys.templateImports := Seq.empty
 
 lazy val scoverageSettings = {
   import scoverage.ScoverageKeys

@@ -16,9 +16,11 @@
 
 package it.uk.gov.hmrc.individualsdetailsapi
 
-import java.util.UUID
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import java.util.UUID
+import org.scalatest.BeforeAndAfterEach
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.individualsdetailsapi.cache.ShortLivedCache
@@ -29,7 +31,7 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.TestSupport
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ShortLivedCacheSpec
-    extends WordSpec
+    extends AnyWordSpec
     with Matchers
     with MongoSpecSupport
     with ServiceSpec

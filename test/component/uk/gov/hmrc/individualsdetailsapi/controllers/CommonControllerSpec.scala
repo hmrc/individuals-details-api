@@ -42,9 +42,9 @@ trait CommonControllerSpec extends BaseSpec {
     )
     .get
 
-  feature(s"Common controller") {
+  Feature(s"Common controller") {
 
-    scenario("missing match id") {
+    Scenario("missing match id") {
 
       When("the root entry point to the API is invoked with a missing match id")
       val response = invokeEndpoint(s"$serviceUrl/$endpoint")
@@ -57,7 +57,7 @@ trait CommonControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("malformed match id") {
+    Scenario("malformed match id") {
 
       When(
         "the root entry point to the API is invoked with a malformed match id")
@@ -73,7 +73,7 @@ trait CommonControllerSpec extends BaseSpec {
       )
     }
 
-    scenario("invalid match id") {
+    Scenario("invalid match id") {
 
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
@@ -90,7 +90,7 @@ trait CommonControllerSpec extends BaseSpec {
       )
     }
 
-    scenario(s"valid request and response") {
+    Scenario(s"valid request and response") {
       Given("A valid auth token ")
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 

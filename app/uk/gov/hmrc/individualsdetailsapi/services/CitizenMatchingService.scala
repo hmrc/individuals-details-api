@@ -16,18 +16,13 @@
 
 package uk.gov.hmrc.individualsdetailsapi.services
 
-import java.util.UUID
-
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
-import scala.concurrent.Future.{failed, successful}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsdetailsapi.connectors.IndividualsMatchingApiConnector
-import uk.gov.hmrc.individualsdetailsapi.domain.{
-  MatchNotFoundException,
-  MatchedCitizen,
-  SandboxDetailsData
-}
+import uk.gov.hmrc.individualsdetailsapi.domain.MatchedCitizen
+
+import java.util.UUID
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 @Singleton
 class CitizenMatchingService @Inject()(

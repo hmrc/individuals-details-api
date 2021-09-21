@@ -16,21 +16,20 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.connector
 
-import java.util.UUID
-
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
-import org.scalatest.{BeforeAndAfterEach, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.should.Matchers
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.connectors.IndividualsMatchingApiConnector
-import uk.gov.hmrc.individualsdetailsapi.domain.{
-  MatchNotFoundException,
-  MatchedCitizen
-}
+import uk.gov.hmrc.individualsdetailsapi.domain.{MatchNotFoundException, MatchedCitizen}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
+
+import java.util.UUID
+import scala.concurrent.ExecutionContext
 
 class IndividualsMatchingApiConnectorSpec
     extends SpecBase
@@ -42,9 +41,12 @@ class IndividualsMatchingApiConnectorSpec
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
 
   trait Fixture {
-    implicit val hc = HeaderCarrier()
 
-    val individualsMatchingApiConnector =
+    implicit val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
+
+    implicit val hc: HeaderCarrier = HeaderCarrier()
+
+    val individualsMatchingApiConnector: IndividualsMatchingApiConnector =
       new IndividualsMatchingApiConnector(
         servicesConfig,
         fakeApplication.injector.instanceOf[HttpClient]) {

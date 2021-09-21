@@ -19,11 +19,9 @@ package uk.gov.hmrc.individualsdetailsapi.play
 import play.api.http.HeaderNames.ACCEPT
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.BadRequestException
-import java.util.UUID
-
 import uk.gov.hmrc.individualsdetailsapi.utils.UuidValidator
 
-import scala.util.{Success, Try}
+import java.util.UUID
 
 object RequestHeaderUtils {
 

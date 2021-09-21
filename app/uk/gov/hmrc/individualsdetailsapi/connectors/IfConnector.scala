@@ -19,22 +19,20 @@ package uk.gov.hmrc.individualsdetailsapi.connectors
 import play.api.Logger
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
+import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import java.util.UUID
 
 import javax.inject.Inject
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
-import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils
-
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Success, Try}
 
 class IfConnector @Inject()(
     servicesConfig: ServicesConfig,
     http: HttpClient,
-    val auditHelper: AuditHelper)(implicit ec: ExecutionContext) {
+    val auditHelper: AuditHelper) {
 
   val logger: Logger = Logger(getClass)
 

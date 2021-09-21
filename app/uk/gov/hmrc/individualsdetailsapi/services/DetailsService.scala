@@ -16,19 +16,16 @@
 
 package uk.gov.hmrc.individualsdetailsapi.services
 
-import java.util.UUID
-
-import javax.inject.{Inject, Named, Singleton}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsdetailsapi.connectors.{IfConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData._
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.individualsdetailsapi.domain._
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
 import uk.gov.hmrc.individualsdetailsapi.services.cache.{CacheId, CacheService}
 
-import scala.concurrent.Future.{failed, successful}
+import java.util.UUID
+import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
