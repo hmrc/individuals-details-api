@@ -17,7 +17,9 @@
 package it.uk.gov.hmrc.individualsdetailsapi.suite
 
 import org.mongodb.scala.model.Filters
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.individualsdetailsapi.cache.CacheRepository
@@ -29,7 +31,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class CacheRepositorySpec
-    extends WordSpec
+    extends AnyWordSpec
     with Matchers
     with ServiceSpec
     with BeforeAndAfterEach
