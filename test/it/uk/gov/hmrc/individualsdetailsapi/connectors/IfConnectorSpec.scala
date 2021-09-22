@@ -38,6 +38,7 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.ExecutionContext
 
+
 class IfConnectorSpec
     extends SpecBase
     with BeforeAndAfterEach

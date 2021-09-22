@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.individualsdetailsapi.cache
 
-import java.time.{LocalDateTime, ZoneOffset}
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions}
 import play.api.Configuration
@@ -29,9 +28,10 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 
+import java.time.{LocalDateTime, ZoneOffset}
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future, future}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CacheRepository @Inject()(val cacheConfig: CacheRepositoryConfiguration,
