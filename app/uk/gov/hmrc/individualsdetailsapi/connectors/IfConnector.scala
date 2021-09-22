@@ -19,20 +19,20 @@ package uk.gov.hmrc.individualsdetailsapi.connectors
 import play.api.Logger
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
-import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class IfConnector @Inject()(
     servicesConfig: ServicesConfig,
     http: HttpClient,
-    val auditHelper: AuditHelper) {
+    val auditHelper: AuditHelper)(implicit ec: ExecutionContext) {
 
   val logger: Logger = Logger(getClass)
 
@@ -52,7 +52,7 @@ class IfConnector @Inject()(
   def fetchDetails(nino: Nino, filter: Option[String], matchId: String)(
       implicit hc: HeaderCarrier,
       request: RequestHeader,
-      ec: ExecutionContext) = {
+      ec: ExecutionContext): Future[IfDetailsResponse] = {
 
     val detailsUrl =
       s"$baseUrl/individuals/details/contact/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"
