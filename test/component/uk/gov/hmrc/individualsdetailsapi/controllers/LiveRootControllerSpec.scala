@@ -55,7 +55,7 @@ class LiveRootControllerSpec extends CommonControllerSpec {
    |  }
    |}""".stripMargin)
 
-  scenario(s"user does not have valid scopes") {
+  Scenario(s"user does not have valid scopes") {
     Given("A valid auth token but invalid scopes")
     AuthStub.willNotAuthorizePrivilegedAuthTokenNoScopes(authToken)
 

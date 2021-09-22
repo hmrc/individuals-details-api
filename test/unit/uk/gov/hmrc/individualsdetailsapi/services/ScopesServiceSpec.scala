@@ -16,7 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.services
 
-import org.scalatest.BeforeAndAfterEach
 import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 

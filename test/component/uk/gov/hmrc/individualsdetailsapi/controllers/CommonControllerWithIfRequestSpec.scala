@@ -49,7 +49,7 @@ trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
     data.residences
   )).get
 
-  scenario(s"user does not have valid scopes") {
+  Scenario(s"user does not have valid scopes") {
     Given("A valid auth token but invalid scopes")
     AuthStub.willNotAuthorizePrivilegedAuthTokenNoScopes(authToken)
 
@@ -71,7 +71,7 @@ trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
     )
   }
 
-  scenario(s"valid request but invalid IF response") {
+  Scenario(s"valid request but invalid IF response") {
 
     Given("A valid auth token ")
     AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -93,7 +93,7 @@ trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
       "message" -> "Something went wrong.")
   }
 
-  scenario(s"IF returns an Internal Server Error") {
+  Scenario(s"IF returns an Internal Server Error") {
 
     Given("A valid auth token ")
     AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
@@ -115,7 +115,7 @@ trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
       "message" -> "Something went wrong.")
   }
 
-  scenario(s"IF returns an Bad Request Error") {
+  Scenario(s"IF returns an Bad Request Error") {
 
     Given("A valid auth token ")
     AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)

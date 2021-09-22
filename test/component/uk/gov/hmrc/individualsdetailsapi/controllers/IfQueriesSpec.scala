@@ -21,75 +21,75 @@ import uk.gov.hmrc.individualsdetailsapi.service.ScopesHelper
 
 class IfQueriesSpec extends BaseSpec {
 
-  feature("Query strings for addresses endpoint") {
+  Feature("Query strings for addresses endpoint") {
 
     val endpoint = "addresses"
     val helper: ScopesHelper = app.injector.instanceOf[ScopesHelper]
 
-    scenario("For read:individuals-details-laa-c1") {
+    Scenario("For read:individuals-details-laa-c1") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-laa-c1"),
           List(endpoint))
       queryString shouldBe ""
     }
 
-    scenario("For read:individuals-details-laa-c2") {
+    Scenario("For read:individuals-details-laa-c2") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-laa-c2"),
           List(endpoint))
       queryString shouldBe ""
     }
 
-    scenario("For read:individuals-details-laa-c3") {
+    Scenario("For read:individuals-details-laa-c3") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-laa-c3"),
           List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
-    scenario("For read:individuals-details-laa-c4") {
+    Scenario("For read:individuals-details-laa-c4") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-laa-c4"),
           List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
-    scenario("For read:individuals-details-hmcts-c2") {
+    Scenario("For read:individuals-details-hmcts-c2") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c2"),
           List(endpoint))
       queryString shouldBe ""
     }
 
-    scenario("For read:individuals-details-hmcts-c3") {
+    Scenario("For read:individuals-details-hmcts-c3") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c3"),
           List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
-    scenario("For read:individuals-details-hmcts-c4") {
+    Scenario("For read:individuals-details-hmcts-c4") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c4"),
           List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
-    scenario("For read:individuals-details-lsani-c1") {
+    Scenario("For read:individuals-details-lsani-c1") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-lsani-c1"),
           List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
-    scenario("For read:individuals-details-lsani-c3") {
+    Scenario("For read:individuals-details-lsani-c3") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-lsani-c3"),
           List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
-    scenario("For read:individuals-details-nictsejo-c4") {
+    Scenario("For read:individuals-details-nictsejo-c4") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-nictsejo-c4"),
           List(endpoint))
@@ -97,75 +97,75 @@ class IfQueriesSpec extends BaseSpec {
     }
   }
 
-  feature("Query strings for contact-details endpoint") {
+  Feature("Query strings for contact-details endpoint") {
 
     val helper: ScopesHelper = app.injector.instanceOf[ScopesHelper]
     val endpoint = "contact-details"
 
-    scenario("For read:individuals-details-laa-c1") {
+    Scenario("For read:individuals-details-laa-c1") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-laa-c1"),
           List(endpoint))
       queryString shouldBe ""
     }
 
-    scenario("For read:individuals-details-laa-c2") {
+    Scenario("For read:individuals-details-laa-c2") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-laa-c2"),
           List(endpoint))
       queryString shouldBe ""
     }
 
-    scenario("For read:individuals-details-laa-c3") {
+    Scenario("For read:individuals-details-laa-c3") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-laa-c3"),
           List(endpoint))
       queryString shouldBe ""
     }
 
-    scenario("For read:individuals-details-laa-c4") {
+    Scenario("For read:individuals-details-laa-c4") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-laa-c4"),
           List(endpoint))
       queryString shouldBe "contactDetails(code,detail,type)&filter=contains(contactDetails%5B%5D/type,'TELEPHONE')"
     }
 
-    scenario("For read:individuals-details-hmcts-c2") {
+    Scenario("For read:individuals-details-hmcts-c2") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c2"),
           List(endpoint))
       queryString shouldBe ""
     }
 
-    scenario("For read:individuals-details-hmcts-c3") {
+    Scenario("For read:individuals-details-hmcts-c3") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c3"),
           List(endpoint))
       queryString shouldBe ""
     }
 
-    scenario("For read:individuals-details-hmcts-c4") {
+    Scenario("For read:individuals-details-hmcts-c4") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c4"),
           List(endpoint))
       queryString shouldBe "contactDetails(code,detail,type)&filter=contains(contactDetails%5B%5D/type,'TELEPHONE')"
     }
 
-    scenario("For read:individuals-details-lsani-c1") {
+    Scenario("For read:individuals-details-lsani-c1") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-lsani-c1"),
           List(endpoint))
       queryString shouldBe ""
     }
 
-    scenario("For read:individuals-details-lsani-c3") {
+    Scenario("For read:individuals-details-lsani-c3") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-lsani-c3"),
           List(endpoint))
       queryString shouldBe ""
     }
 
-    scenario("For read:individuals-details-nictsejo-c4") {
+    Scenario("For read:individuals-details-nictsejo-c4") {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-nicts-c4"),
           List(endpoint))

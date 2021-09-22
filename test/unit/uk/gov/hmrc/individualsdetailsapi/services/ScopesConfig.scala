@@ -18,11 +18,6 @@ package unit.uk.gov.hmrc.individualsdetailsapi.services
 
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
-import uk.gov.hmrc.individualsdetailsapi.config.{
-  ApiConfig,
-  EndpointConfig,
-  ScopeConfig
-}
 trait ScopesConfig extends MockitoSugar {
 
   val mockScopeOne: String = "scopeOne"

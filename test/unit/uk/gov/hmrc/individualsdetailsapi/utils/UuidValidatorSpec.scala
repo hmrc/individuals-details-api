@@ -18,7 +18,6 @@ package unit.uk.gov.hmrc.individualsdetailsapi.utils
 
 
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import uk.gov.hmrc.individualsdetailsapi.utils.UuidValidator
 
 class UuidValidatorSpec extends SpecBase with Matchers {
