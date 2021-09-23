@@ -24,7 +24,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.BeforeAndAfterEach
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsdetailsapi.connectors.IndividualsMatchingApiConnector
 import uk.gov.hmrc.individualsdetailsapi.domain.{MatchNotFoundException, MatchedCitizen}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
@@ -67,7 +67,7 @@ class IndividualsMatchingApiConnectorSpec
 
     "fail when upstream service fails" in new Fixture {
       stubWithResponseStatus(INTERNAL_SERVER_ERROR)
-      a[Upstream5xxResponse] should be thrownBy {
+      a[UpstreamErrorResponse] should be thrownBy {
         await(individualsMatchingApiConnector.resolve(matchId))
       }
     }
