@@ -28,6 +28,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerE
 import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 
 class IfConnector @Inject()(
@@ -90,14 +91,14 @@ class IfConnector @Inject()(
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Error parsing IF response: ${validationError.errors}")
       Future.failed(new InternalServerException("Something went wrong."))
     }
-    case notFound: NotFoundException => {
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, notFound.getMessage)
+    case Upstream4xxResponse(msg, 404, _, _) => {
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       
-      notFound.message.contains("PERSON_NOT_FOUND") match {
+      msg.contains("PERSON_NOT_FOUND") match {
         case true => Future.successful(emptyResponse)
         case _    => {
           logger.warn("Integration Framework NotFoundException encountered")
-          Future.failed(notFound)
+          Future.failed(new NotFoundException(msg))
         }
       }
     }
