@@ -22,14 +22,11 @@ import play.api.http.Status.{BAD_REQUEST, NOT_FOUND}
 import play.api.libs.json.Json
 import play.api.mvc.{RequestHeader, Result}
 import play.api.mvc.Results.Status
-import uk.gov.hmrc.individualsdetailsapi.domain.{
-  ErrorInvalidRequest,
-  ErrorNotFound
-}
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.individualsdetailsapi.domain.{ErrorInvalidRequest, ErrorNotFound}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.backend.http.{ErrorResponse, JsonErrorHandler}
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -45,9 +42,7 @@ class CustomErrorHandler @Inject()(auditConnector: AuditConnector,
                              message: String): Future[Result] = {
 
     implicit val headerCarrier =
-      HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers,
-                                                             request =
-                                                               Some(request))
+      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     statusCode match {
       case NOT_FOUND =>

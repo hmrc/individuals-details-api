@@ -22,19 +22,19 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import java.util.UUID
 
 import javax.inject.Inject
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
 import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Success, Try}
+import uk.gov.hmrc.http.HttpReads.Implicits._
+
 
 class IfConnector @Inject()(
     servicesConfig: ServicesConfig,
     http: HttpClient,
-    val auditHelper: AuditHelper)(implicit ec: ExecutionContext) {
+    val auditHelper: AuditHelper){
 
   val logger: Logger = Logger(getClass)
 
@@ -91,14 +91,14 @@ class IfConnector @Inject()(
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Error parsing IF response: ${validationError.errors}")
       Future.failed(new InternalServerException("Something went wrong."))
     }
-    case notFound: NotFoundException => {
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, notFound.getMessage)
+    case Upstream4xxResponse(msg, 404, _, _) => {
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       
-      notFound.message.contains("PERSON_NOT_FOUND") match {
+      msg.contains("PERSON_NOT_FOUND") match {
         case true => Future.successful(emptyResponse)
         case _    => {
           logger.warn("Integration Framework NotFoundException encountered")
-          Future.failed(notFound)
+          Future.failed(new NotFoundException(msg))
         }
       }
     }

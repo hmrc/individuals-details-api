@@ -17,8 +17,7 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.play
 
 import java.util.UUID
-
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{ACCEPT, GET}
 import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils._
