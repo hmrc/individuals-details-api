@@ -70,6 +70,18 @@ class CacheRepositorySpec
       retrieveRawCachedValue(id) shouldBe JsString(
         "I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
     }
+
+    "update a cached value for a given id and key" in {
+      val newValue = TestClass("three", "four")
+
+      await(cacheRepository.cache(id, testValue)(TestClass.format))
+      retrieveRawCachedValue(id) shouldBe JsString(
+        "I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
+
+      await(cacheRepository.cache(id, newValue)(TestClass.format))
+      retrieveRawCachedValue(id) shouldBe JsString(
+        "6yAvgtwLMcdiqTvdRvLTVKSkY3JwUZ/TzklThFfSqvA=")
+    }
   }
 
   "fetch" should {
@@ -91,7 +103,7 @@ class CacheRepositorySpec
     await(cacheRepository.collection.find(Filters.equal("id", toBson(id)))
       .headOption
       .map {
-        case Some(entry) => entry.data.individualsDetails
+        case Some(entry) => entry.data.value
         case None => None
       })
   }
