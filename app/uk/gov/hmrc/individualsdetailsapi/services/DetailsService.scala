@@ -55,13 +55,12 @@ class DetailsService @Inject()(
     request: RequestHeader,
     ec: ExecutionContext): Future[Seq[Residence]] = {
 
-    retrieveAndMap[Seq[Residence]](matchId, endpoint, scopes) { response => {
+    retrieveAndMap[Seq[Residence]](matchId, endpoint, scopes) { response =>
       response.residences
         .getOrElse(Seq())
         .map(Residence.convert)
         .filter(_.isDefined)
         .map(_.get)
-    }
     }
   }
 
