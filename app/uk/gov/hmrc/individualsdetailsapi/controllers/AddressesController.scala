@@ -52,7 +52,6 @@ class AddressesController @Inject()(
         detailsService
           .getResidences(matchId, "addresses", authScopes)
           .map { addresses =>
-            {
               val selfLink = HalLink("self", s"/individuals/details/addresses?matchId=$matchId")
               val addressesJsObject = Json.obj("residences" -> Json.toJson(addresses))
               val response = state(addressesJsObject) ++ selfLink
@@ -62,7 +61,6 @@ class AddressesController @Inject()(
                 request, selfLink.toString, addresses)
 
               Ok(response)
-            }
           }
       } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/details/addresses")
   }
