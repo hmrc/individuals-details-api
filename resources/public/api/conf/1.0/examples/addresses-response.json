@@ -6,7 +6,7 @@
   },
   "residences": [
     {
-      "type": "NOMINATED",
+      "residenceType": "NOMINATED",
       "address": {
         "line1": "24 Trinity Street",
         "line2": "Dawley Bank",
@@ -18,7 +18,7 @@
       "inUse": true
     },
     {
-      "type": "BASE",
+      "residenceType": "BASE",
       "address": {
         "line1": "La Petite Maison",
         "line2": "Rue de Bastille",
