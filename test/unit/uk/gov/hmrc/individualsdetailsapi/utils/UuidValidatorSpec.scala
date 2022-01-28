@@ -19,14 +19,24 @@ package unit.uk.gov.hmrc.individualsdetailsapi.utils
 
 import org.scalatest.matchers.should.Matchers
 import uk.gov.hmrc.individualsdetailsapi.utils.UuidValidator
+import java.util.UUID
+import org.scalacheck.Arbitrary.arbUuid
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class UuidValidatorSpec extends SpecBase with Matchers {
+class UuidValidatorSpec extends SpecBase with Matchers with ScalaCheckPropertyChecks {
 
   private val invalidUuid = "0-0-0-0-0"
-  private val validUuid = "a1c15e8f-b119-4121-bc08-6baf2af45099"
 
-  "Return true on a a valid UUID" in {
-    UuidValidator.validate(validUuid) shouldBe true
+  "Return true on a valid lower-cased UUID" in {
+    forAll { uuid: UUID =>
+      UuidValidator.validate(uuid.toString) shouldBe true
+    }
+  }
+
+  "Return true on a valid upper-cased UUID" in {
+    forAll { uuid: UUID =>
+      UuidValidator.validate(uuid.toString.toUpperCase) shouldBe true
+    }
   }
 
   "Return false on invalid UUID" in {
