@@ -60,8 +60,7 @@ class CustomErrorHandler @Inject()(auditConnector: AuditConnector,
           dataEvent("ClientError",
                     s"A client error occurred, status: $statusCode",
                     request))
-        Future.successful(
-          Status(statusCode)(Json.toJson(ErrorResponse(statusCode, message))))
+        Future.successful(Status(statusCode)(Json.toJson(ErrorResponse(statusCode, message))))
     }
   }
 

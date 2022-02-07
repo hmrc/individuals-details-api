@@ -25,8 +25,9 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, _}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
+import uk.gov.hmrc.auth.core.{AuthConnector, BearerTokenExpired, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.TooManyRequestException
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.config.{ExternalEndpointConfig, InternalEndpointConfig}
 import uk.gov.hmrc.individualsdetailsapi.controllers.RootController
@@ -175,6 +176,51 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
               await(rootController.root(matchId)(fakeRequest))
             }
           assert(result.getMessage == "No scopes defined")
+        }
+
+        "return 401 when bearer token is expired" in new Fixture {
+
+          when(mockAuthConnector.authorise(any(), any())(any(), any()))
+            .thenReturn(Future.failed(BearerTokenExpired()))
+
+          val fakeRequest = FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
+
+          val result = rootController.root(matchId)(fakeRequest)
+
+          status(result) shouldBe UNAUTHORIZED
+          verifyNoInteractions(mockDetailsService)
+          verify(rootController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
+        }
+
+        "return 429 when too many requests received" in new Fixture {
+
+          when(mockAuthConnector.authorise(any(), any())(any(), any()))
+            .thenReturn(Future.failed(new TooManyRequestException("Too many")))
+
+          val fakeRequest = FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
+
+          val result = rootController.root(matchId)(fakeRequest)
+
+          status(result) shouldBe TOO_MANY_REQUESTS
+          verifyNoInteractions(mockDetailsService)
+          verify(rootController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
+        }
+
+        "return 500 when an unspecified Exception is thrown" in new Fixture {
+
+          when(mockAuthConnector.authorise(any(), any())(any(), any()))
+            .thenReturn(Future.failed(new Exception()))
+
+          val fakeRequest = FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
+
+          val result = rootController.root(matchId)(fakeRequest)
+
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+          verifyNoInteractions(mockDetailsService)
+          verify(rootController.auditHelper, times(1))
+            .auditApiFailure(any(), any(), any(), any(), any())(any())
         }
       }
     }

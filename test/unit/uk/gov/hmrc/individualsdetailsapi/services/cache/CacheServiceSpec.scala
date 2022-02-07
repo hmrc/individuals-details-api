@@ -17,7 +17,7 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.services.cache
 
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verifyNoInteractions
+import org.mockito.Mockito.{times, verify, verifyNoInteractions, verifyNoMoreInteractions}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
@@ -61,6 +61,14 @@ class CacheServiceSpec
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
       verifyNoInteractions(mockClient)
 
+    }
+
+    "execute the fallback function and cache the result if the cached value is a None" in new Setup {
+      given(mockClient.fetchAndGetEntry[TestClass](cacheId.id)).willReturn(Future.successful(None))
+      await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
+      verify(mockClient, times(1)).fetchAndGetEntry[TestClass](cacheId.id)
+      verify(mockClient, times(1)).cache(cacheId.id, newValue)
+      verifyNoMoreInteractions(mockClient)
     }
   }
 
