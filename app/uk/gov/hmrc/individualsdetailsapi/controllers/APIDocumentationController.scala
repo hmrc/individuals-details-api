@@ -16,17 +16,23 @@
 
 package uk.gov.hmrc.individualsdetailsapi.controllers
 
+import akka.stream.Materializer
 import controllers.Assets
+
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.filters.cors.CORSActionBuilder
 import uk.gov.hmrc.individualsdetailsapi.views._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class APIDocumentationController @Inject()(cc: ControllerComponents,
                                            assets: Assets,
                                            config: Configuration)
+                                          (implicit materializer:         Materializer, executionContext: ExecutionContext)
     extends BackendController(cc) {
 
   private lazy val privilegedWhitelistedApplicationIds =
@@ -60,7 +66,9 @@ class APIDocumentationController @Inject()(cc: ControllerComponents,
     assets.at(s"/public/api/documentation/$version",
               s"${endpointName.replaceAll(" ", "-")}.xml")
 
-  def raml(version: String, file: String) =
-    assets.at(s"/public/api/conf/$version", file)
+  def yaml(version: String, file: String): Action[AnyContent] =
+    CORSActionBuilder(config).async { implicit request =>
+      assets.at(s"/public/api/conf/$version", file)(request)
+    }
 
 }

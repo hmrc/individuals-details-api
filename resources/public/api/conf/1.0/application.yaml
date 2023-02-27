@@ -1,0 +1,524 @@
+openapi: 3.0.3
+info:
+  title: Individuals Details
+  description: "Overview: 
+                \nThis API allows government departments to get an individual’s details from HM Revenue and Customs (HMRC), including contact details. \n\nData will be filtered using scopes so that only relevant data is shared. We’ll assign scopes \nbased on your data requirements. \n\nThe responses exclude fields when they do not have a value. \n\nThis API is a HAL HATEOAS RESTful API. It has been designed to promote discoverability and to be self documenting. \n\nA HATEOAS API makes it clear to client software what further actions are available when an action is completed. Responses from an endpoint include URLs to further endpoints you can call. New functionality can be added without breaking your client software. \n\nThis API is still under development and further enhancements are planned. We recommend following the HATEOAS approach from the start, so that your work is not affected by future changes. \n\nFollow URLs as they are presented to you in the API at runtime. This will prevent you from building state into your client, and will decouple you from changes to the API. \n\nThe default Media Type for responses is hal+json.
+      
+                \nData is only available for the current and previous 6 tax years.\nWhen an API changes in a way that is backwards-incompatible, we increase the version number of the API. \nSee our [reference guide](/api-documentation/docs/reference-guide#versioning) for more on\nversioning.\nWe use standard HTTP status codes to show whether an API request succeeded or not. They are usually in the range:\n* 200 to 299 if it succeeded, including code 202 if it was accepted by an API that needs to wait for further action\n* 400 to 499 if it failed because of a client error by your application\n* 500 to 599 if it failed because of an error on our server\n\nErrors specific to each API are shown in the Endpoints section, under Response. \nSee our [reference guide](/api-documentation/docs/reference-guide#errors) for more on errors.\nYou can use the sandbox environment to [test this API](https://developer.service.hmrc.gov.uk/api-documentation/docs/testing).\n\nIt supports [stateful behaviour](https://developer.service.hmrc.gov.uk/api-documentation/docs/testing/stateful-behaviour).\n\nYou can set up a test user which is an individual using the [Create Test User API](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/api-platform-test-user/1.0).\n\nYou can also set up test data for this API using the [Integration Framework Test Support API](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/individuals-if-api-stub/1.0)."
+  contact: {}
+  version: '1.0'
+servers:
+  - url: https://api.service.hmrc.gov.uk/
+    description: Production
+    variables: {}
+paths:
+  /individuals/details/:
+    get:
+      tags:
+        - individuals
+      summary: Get a list of all available endpoints
+      description: Use this endpoint to get a list of all available endpoints for Individuals Details.
+      operationId: get '/individuals/details'
+      security:
+        - userRestricted: [ "assigned" ]
+      parameters:
+        - name: matchId
+          in: query
+          description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        - name: CorrelationId
+          in: header
+          description: >-
+            <p>A UUID, used for traceability purposes.</p>
+  
+            <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+        - $ref: '#/components/parameters/acceptHeader'
+      responses:
+        '200':
+          description: list of all available endpoints are retrieved successfully
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsDetailsResponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                      contactDetails:
+                        href: /individuals/details/contact-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                      addresses:
+                        href: /individuals/details/addresses?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+              example:
+                _links:
+                  self:
+                    href: /individuals/details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                  contactDetails:
+                    href: /individuals/details/contact-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                  addresses:
+                    href: /individuals/details/addresses?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        '400':
+          description: Bad Request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorResponse'
+                  - description: Invalid request
+                    example:
+                      code: INVALID_REQUEST
+              example:
+                code: INVALID_REQUEST
+        '404':
+          description: Not found
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorResponse'
+                  - description: Not found
+                    example:
+                      code: NOT_FOUND
+              example:
+                code: NOT_FOUND
+      deprecated: false
+  /individuals/details/contact-details:
+    get:
+      tags:
+        - individuals
+      summary: Get contact details
+      description: "\nUse this endpoint to get an individual’s contact details.
+      
+                    \nData is only available for the current and previous 6 tax years.
+       
+                     \nYou will get a subset of the JSON response shown below based on your assigned scopes."
+      operationId: get '/individuals/details/contact-details'
+      security:
+        - userRestricted: [ "assigned" ]
+      parameters:
+        - name: matchId
+          in: query
+          description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        - name: CorrelationId
+          in: header
+          description: >-
+            <p>A UUID, used for traceability purposes.</p>
+  
+            <p>Must conform to the regular expression <code class="code--slim">^[0-9a-fA-F]{8}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{4}[-][0-9a-fA-F]{12}$</code></p>
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+        - $ref: '#/components/parameters/acceptHeader'
+      responses:
+        '200':
+          description: Use this endpoint to get an individual’s contact details
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsDetailsContactDetailsResponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/details/contact-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                    contactDetails:
+                      mobileTelephones:
+                      - 07123 987654
+                      daytimeTelephones:
+                      - 07123 987654
+                      eveningTelephones:
+                      - 07123 987654
+              example:
+                _links:
+                  self:
+                    href: /individuals/details/contact-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                contactDetails:
+                  mobileTelephones:
+                  - 07123 987654
+                  daytimeTelephones:
+                  - 07123 987654
+                  eveningTelephones:
+                  - 07123 987654
+        '400':
+          description: Bad Request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorResponse'
+                  - description: Invalid request
+                    example:
+                      code: INVALID_REQUEST
+              example:
+                code: INVALID_REQUEST
+        '404':
+          description: Not found
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorResponse'
+                  - description: Not found
+                    example:
+                      code: NOT_FOUND
+              example:
+                code: NOT_FOUND
+      deprecated: false
+  /individuals/details/addresses:
+    get:
+      tags:
+        - individuals
+      summary: Get address details
+      description: "\nUse this endpoint to get an individual’s address details.
+                    
+                    \nData is only available for the current and previous 6 tax years.
+                    
+                    \nYou will get a subset of the JSON response shown below based on your assigned scopes."
+      operationId: get '/individuals/details/addresses'
+      security:
+        - userRestricted: [ "assigned" ]
+      parameters:
+        - name: matchId
+          in: query
+          description: A short-lived universally unique identifier (UUID), typically valid for several hours. Generated through the Individuals Matching API.
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+            example: 57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        - name: CorrelationId
+          in: header
+          description: "
+            \nA UUID, used for traceability purposes.
+  
+            Must conform to the regular expression "
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: 58072660-1df9-4deb-b4ca-cd2d7f96e480
+        - $ref: '#/components/parameters/acceptHeader'
+      responses:
+        '200':
+          description: Use this endpoint to get an individual’s addresses
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/IndividualsDetailsAddressesResponse'
+                - example:
+                    _links:
+                      self:
+                        href: /individuals/details/addresses/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                    residences:
+                    - residenceType: NOMINATED
+                      address:
+                        line1: 24 Trinity Street
+                        line2: Dawley Bank
+                        line3: Telford
+                        line4: Shropshire
+                        line5: UK
+                        postcode: TF3 4ER
+                      inUse: true
+                    - residenceType: BASE
+                      address:
+                        line1: La Petite Maison
+                        line2: Rue de Bastille
+                        line3: Vieux Ville
+                        line4: Dordogne
+                        line5: France
+                      inUse: false
+              example:
+                _links:
+                  self:
+                    href: /individuals/details/addresses/?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+                residences:
+                - residenceType: NOMINATED
+                  address:
+                    line1: 24 Trinity Street
+                    line2: Dawley Bank
+                    line3: Telford
+                    line4: Shropshire
+                    line5: UK
+                    postcode: TF3 4ER
+                  inUse: true
+                - residenceType: BASE
+                  address:
+                    line1: La Petite Maison
+                    line2: Rue de Bastille
+                    line3: Vieux Ville
+                    line4: Dordogne
+                    line5: France
+                  inUse: false
+        '400':
+          description: Bad Request
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorResponse'
+                  - description: Invalid request
+                    example:
+                      code: INVALID_REQUEST
+              example:
+                code: INVALID_REQUEST
+        '404':
+          description: Not found
+          headers: {}
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorResponse'
+                    description: Not found
+                    example:
+                      code: NOT_FOUND
+              example:
+                code: NOT_FOUND
+      deprecated: false
+components:
+  parameters:
+    acceptHeader:
+      name: Accept
+      in: header
+      description: >-
+        Specifies the response format and the
+        [version](/api-documentation/docs/reference-guide#versioning) of the API
+        to be used.
+      required: true
+      schema:
+        type: string
+        enum: [
+          "application/vnd.hmrc.2.0+json"
+        ]
+  securitySchemes:
+    userRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating user restricted API requests using an OAuth 2.0 Bearer Token in the AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints for details.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            "assigned" : "Grants read access"
+  schemas:
+    errorResponse:
+      title: errorResponse
+      required:
+       - code
+      type: object
+      properties:
+        code:
+          type: string
+    IndividualsDetailsResponse:
+      title: IndividualsDetailsResponse
+      required:
+        - _links
+      type: object
+      properties:
+        _links:
+          allOf:
+            - $ref: '#/components/schemas/Links'
+            - description: A list of links for possible actions related to this endpoint.
+      description: Individuals Details
+    Links:
+      title: Links
+      required:
+        - addresses
+        - contactDetails
+        - self
+      type: object
+      properties:
+        addresses:
+          allOf:
+            - $ref: '#/components/schemas/Addresses'
+            - description: The Uniform Resource Identifier (URI) for the endpoint to get addresses for the requested match ID.
+        contactDetails:
+          allOf:
+            - $ref: '#/components/schemas/ContactDetails'
+            - description: The URI for the endpoint to get contact details for the requested match ID.
+        self:
+          allOf:
+            - $ref: '#/components/schemas/Self'
+            - description: The Uniform Resource Identifier (URI) for this endpoint.
+      description: A list of links for possible actions related to this endpoint.
+    Addresses:
+      title: Addresses
+      required:
+        - href
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/details/addresses?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        title:
+          type: string
+          description: Get addresses
+      description: The Uniform Resource Identifier (URI) for the endpoint to get addresses for the requested match ID.
+    ContactDetails:
+      title: ContactDetails
+      required:
+        - href
+      type: object
+      properties:
+        href:
+          type: string
+          description: The URL of the endpoint.
+          example: /individuals/details/contact-details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+        title:
+          type: string
+          description: Get contact details
+      description: The URI for the endpoint to get contact details for the requested match ID.
+    Self:
+      title: Self
+      required:
+        - href
+      type: object
+      properties:
+        href:
+          type: string
+          example: /individuals/details?matchId=57072660-1df9-4aeb-b4ea-cd2d7f96e430
+      description: The Uniform Resource Identifier (URI) for this endpoint.
+    IndividualsDetailsContactDetailsResponse:
+      title: IndividualsDetailsContactDetailsResponse
+      required:
+      - _links
+      - contactDetails
+      type: object
+      properties:
+        _links:
+          allOf:
+          - $ref: '#/components/schemas/Links1'
+          - description: A list of links for possible actions related to this endpoint.
+        contactDetails:
+          allOf:
+          - $ref: '#/components/schemas/ContactDetails1'
+          - description: Telephone numbers for the individual.
+      description: Contact Details
+    ContactDetails1:
+      title: ContactDetails1
+      type: object
+      properties:
+        mobileTelephones:
+          type: array
+          items:
+            type: string
+          description: ''
+        daytimeTelephones:
+          type: array
+          items:
+            type: string
+          description: ''
+        eveningTelephones:
+          type: array
+          items:
+            type: string
+          description: ''
+      description: Telephone numbers for the individual.
+    Links1:
+      title: Links1
+      required:
+        - self
+      type: object
+      properties:
+        self:
+          allOf:
+          - $ref: '#/components/schemas/Self'
+          - description: The Uniform Resource Identifier (URI) for this endpoint.
+      description: A list of links for possible actions related to this endpoint.
+    IndividualsDetailsAddressesResponse:
+      title: IndividualsDetailsAddressesResponse
+      required:
+        - _links
+        - residences
+      type: object
+      properties:
+        _links:
+          allOf:
+            - $ref: '#/components/schemas/Links1'
+            - description: A list of links for possible actions related to this endpoint.
+        residences:
+          type: array
+          items:
+            $ref: '#/components/schemas/Residence'
+          description: The list of the individual's residences.
+      description: Addresses
+    Residence:
+      title: Residence
+      type: object
+      properties:
+        residenceType:
+          type: string
+          description: The type of residence.
+          example: NOMINATED
+        inUse:
+          type: boolean
+          description: Flags if the residence is currently in use.
+          example: true
+        address:
+          allOf:
+            - $ref: '#/components/schemas/Address'
+            - description: An address for the individual.
+    Address:
+      title: Address
+      type: object
+      properties:
+        line1:
+          type: string
+          description: Address line 1.
+          example: 24 Trinity Street
+        line2:
+          type: string
+          description: Address line 2.
+          example: Dawley Bank
+        line3:
+          type: string
+          description: Address line 3.
+          example: Telford
+        line4:
+          type: string
+          description: Address line 4.
+          example: Shropshire
+        line5:
+          type: string
+          description: Address line 5.
+          example: UK
+        postcode:
+          type: string
+          description: The postcode for the address.
+          example: TF3 4ER
+      description: An address for the individual.
+tags:
+- name: individuals
+  description: ''
