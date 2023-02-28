@@ -65,6 +65,9 @@ class APIDocumentationController @Inject()(cc: ControllerComponents,
     assets.at(s"/public/api/documentation/$version",
               s"${endpointName.replaceAll(" ", "-")}.xml")
 
+  def raml(version: String, file: String) =
+    assets.at(s"/public/api/conf/$version", file)
+
   def yaml(version: String, file: String): Action[AnyContent] =
     CORSActionBuilder(config).async { implicit request =>
       assets.at(s"/public/api/conf/$version", file)(request)

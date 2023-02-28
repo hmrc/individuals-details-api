@@ -1,3 +1,4 @@
 GET    /api/definition                              uk.gov.hmrc.individualsdetailsapi.controllers.APIDocumentationController.definition()
 GET    /api/documentation/:version/:endpointName    uk.gov.hmrc.individualsdetailsapi.controllers.APIDocumentationController.documentation(version,endpointName)
+GET    /api/conf/:version/*file                     uk.gov.hmrc.individualsdetailsapi.controllers.APIDocumentationController.raml(version, file)
 GET    /api/conf/:version/*file                     uk.gov.hmrc.individualsdetailsapi.controllers.APIDocumentationController.yaml(version, file)
