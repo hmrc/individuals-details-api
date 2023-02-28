@@ -32,8 +32,7 @@ import scala.concurrent.ExecutionContext
 class APIDocumentationController @Inject()(cc: ControllerComponents,
                                            assets: Assets,
                                            config: Configuration)
-                                          (implicit materializer:         Materializer, executionContext: ExecutionContext)
-    extends BackendController(cc) {
+(implicit materializer: Materializer, executionContext: ExecutionContext) extends BackendController(cc) {
 
   private lazy val privilegedWhitelistedApplicationIds =
     config
