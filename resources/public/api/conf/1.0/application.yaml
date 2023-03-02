@@ -1,10 +1,20 @@
 openapi: 3.0.3
 info:
   title: Individuals Details
-  description: "Overview: 
+  description: "#### Overview 
                 \nThis API allows government departments to get an individual’s details from HM Revenue and Customs (HMRC), including contact details. \n\nData will be filtered using scopes so that only relevant data is shared. We’ll assign scopes \nbased on your data requirements. \n\nThe responses exclude fields when they do not have a value. \n\nThis API is a HAL HATEOAS RESTful API. It has been designed to promote discoverability and to be self documenting. \n\nA HATEOAS API makes it clear to client software what further actions are available when an action is completed. Responses from an endpoint include URLs to further endpoints you can call. New functionality can be added without breaking your client software. \n\nThis API is still under development and further enhancements are planned. We recommend following the HATEOAS approach from the start, so that your work is not affected by future changes. \n\nFollow URLs as they are presented to you in the API at runtime. This will prevent you from building state into your client, and will decouple you from changes to the API. \n\nThe default Media Type for responses is hal+json.
       
-                \nData is only available for the current and previous 6 tax years.\nWhen an API changes in a way that is backwards-incompatible, we increase the version number of the API. \nSee our [reference guide](/api-documentation/docs/reference-guide#versioning) for more on\nversioning.\nWe use standard HTTP status codes to show whether an API request succeeded or not. They are usually in the range:\n* 200 to 299 if it succeeded, including code 202 if it was accepted by an API that needs to wait for further action\n* 400 to 499 if it failed because of a client error by your application\n* 500 to 599 if it failed because of an error on our server\n\nErrors specific to each API are shown in the Endpoints section, under Response. \nSee our [reference guide](/api-documentation/docs/reference-guide#errors) for more on errors.\nYou can use the sandbox environment to [test this API](https://developer.service.hmrc.gov.uk/api-documentation/docs/testing).\n\nIt supports [stateful behaviour](https://developer.service.hmrc.gov.uk/api-documentation/docs/testing/stateful-behaviour).\n\nYou can set up a test user which is an individual using the [Create Test User API](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/api-platform-test-user/1.0).\n\nYou can also set up test data for this API using the [Integration Framework Test Support API](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/individuals-if-api-stub/1.0)."
+                \n#### Data availability
+                \nData is only available for the current and previous 6 tax years.
+                
+                \n#### Versioning
+                \nWhen an API changes in a way that is backwards-incompatible, we increase the version number of the API. \nSee our [reference guide](/api-documentation/docs/reference-guide#versioning) for more on\nversioning.
+                
+                \n#### Errors
+                \nWe use standard HTTP status codes to show whether an API request succeeded or not. They are usually in the range:\n* 200 to 299 if it succeeded, including code 202 if it was accepted by an API that needs to wait for further action\n* 400 to 499 if it failed because of a client error by your application\n* 500 to 599 if it failed because of an error on our server\n\nErrors specific to each API are shown in the Endpoints section, under Response. \nSee our [reference guide](/api-documentation/docs/reference-guide#errors) for more on errors.
+                
+                \n#### Testing
+                \nYou can use the sandbox environment to [test this API](https://developer.service.hmrc.gov.uk/api-documentation/docs/testing).\n\nIt supports [stateful behaviour](https://developer.service.hmrc.gov.uk/api-documentation/docs/testing/stateful-behaviour).\n\nYou can set up a test user which is an individual using the [Create Test User API](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/api-platform-test-user/1.0).\n\nYou can also set up test data for this API using the [Integration Framework Test Support API](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/individuals-if-api-stub/1.0)."
   contact: {}
   version: '1.0'
 servers:
@@ -17,7 +27,13 @@ paths:
       tags:
         - individuals
       summary: Get a list of all available endpoints
-      description: Use this endpoint to get a list of all available endpoints for Individuals Details.
+      description: "Use this endpoint to get a list of all available endpoints for Individuals Details.
+      
+        \n#### Authorisation
+        
+        \nThis endpoint is [user-restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints) and requires `Authorization` header containing an OAUTH 2.0 Bearer Token with the `assigned` scope.
+        
+        \nSee also [fraud prevention](https://developer.service.hmrc.gov.uk/guides/fraud-prevention/)."
       operationId: get '/individuals/details'
       security:
         - userRestricted: [ "assigned" ]
@@ -104,7 +120,13 @@ paths:
       
                     \nData is only available for the current and previous 6 tax years.
        
-                     \nYou will get a subset of the JSON response shown below based on your assigned scopes."
+                     \nYou will get a subset of the JSON response shown below based on your assigned scopes.
+                     
+                     \n#### Authorisation
+        
+                     \nThis endpoint is [user-restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints) and requires `Authorization` header containing an OAUTH 2.0 Bearer Token with the `assigned` scope.
+        
+                     \nSee also [fraud prevention](https://developer.service.hmrc.gov.uk/guides/fraud-prevention/)."
       operationId: get '/individuals/details/contact-details'
       security:
         - userRestricted: [ "assigned" ]
@@ -197,7 +219,13 @@ paths:
                     
                     \nData is only available for the current and previous 6 tax years.
                     
-                    \nYou will get a subset of the JSON response shown below based on your assigned scopes."
+                    \nYou will get a subset of the JSON response shown below based on your assigned scopes.
+                    
+                    \n#### Authorisation
+        
+                    \nThis endpoint is [user-restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints) and requires `Authorization` header containing an OAUTH 2.0 Bearer Token with the `assigned` scope.
+                    
+                    \nSee also [fraud prevention](https://developer.service.hmrc.gov.uk/guides/fraud-prevention/)."
       operationId: get '/individuals/details/addresses'
       security:
         - userRestricted: [ "assigned" ]
