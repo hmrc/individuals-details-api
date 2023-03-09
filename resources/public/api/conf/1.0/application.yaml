@@ -91,8 +91,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
-                  - description: Invalid request
+                  - $ref: '#/components/schemas/IndividualsDetailsResponse400'
                     example:
                       code: INVALID_REQUEST
               example:
@@ -104,8 +103,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
-                  - description: Not found
+                  - $ref: '#/components/schemas/IndividualsDetailsResponse404'
                     example:
                       code: NOT_FOUND
               example:
@@ -190,8 +188,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
-                  - description: Invalid request
+                  - $ref: '#/components/schemas/IndividualsDetailsResponse400'
                     example:
                       code: INVALID_REQUEST
               example:
@@ -203,8 +200,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
-                  - description: Not found
+                  - $ref: '#/components/schemas/IndividualsDetailsResponse404'
                     example:
                       code: NOT_FOUND
               example:
@@ -311,8 +307,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
-                  - description: Invalid request
+                  - $ref: '#/components/schemas/IndividualsDetailsResponse400'
                     example:
                       code: INVALID_REQUEST
               example:
@@ -324,8 +319,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/errorResponse'
-                    description: Not found
+                  - $ref: '#/components/schemas/IndividualsDetailsResponse404'
                     example:
                       code: NOT_FOUND
               example:
@@ -360,14 +354,24 @@ components:
           scopes:
             "assigned" : "Grants read access"
   schemas:
-    errorResponse:
-      title: errorResponse
+    IndividualsDetailsResponse400:
+      title: IndividualsDetailsResponse400
       required:
        - code
       type: object
       properties:
         code:
           type: string
+          description: INVALID_REQUEST
+    IndividualsDetailsResponse404:
+      title: IndividualsDetailsResponse404
+      required:
+        - code
+      type: object
+      properties:
+        code:
+          type: string
+          description: NOT_FOUND
     IndividualsDetailsResponse:
       title: IndividualsDetailsResponse
       required:
