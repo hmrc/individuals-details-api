@@ -17,19 +17,23 @@
 package uk.gov.hmrc.individualsdetailsapi.handlers
 
 import javax.inject.Inject
-import play.api.Configuration
+import play.api.{Configuration, OptionalDevContext}
 import play.api.http.{HttpConfiguration, HttpErrorHandler, HttpFilters}
 import play.api.mvc.{Handler, RequestHeader}
 import play.api.routing.Router
+import play.core.WebCommands
 import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils._
 import uk.gov.hmrc.play.bootstrap.http.RequestHandler
 
-class VersioningRequestHandler @Inject()(config: Configuration,
-                                         router: Router,
-                                         errorHandler: HttpErrorHandler,
-                                         httpConfiguration: HttpConfiguration,
-                                         filters: HttpFilters)
-    extends RequestHandler(router, errorHandler, httpConfiguration, filters) {
+class VersioningRequestHandler @Inject()(
+                                          config: Configuration,
+                                          webCommands: WebCommands,
+                                          optDevContext: OptionalDevContext,
+                                          router: Router,
+                                          errorHandler: HttpErrorHandler,
+                                          httpConfiguration: HttpConfiguration,
+                                          filters: HttpFilters)
+  extends RequestHandler(webCommands, optDevContext, router, errorHandler, httpConfiguration, filters) {
 
   private lazy val unversionedContexts = config
     .getOptional[Seq[String]]("versioning.unversionedContexts")
