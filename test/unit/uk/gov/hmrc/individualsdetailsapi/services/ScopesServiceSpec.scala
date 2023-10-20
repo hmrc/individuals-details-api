@@ -29,17 +29,17 @@ class ScopesServiceSpec
     "using first scope" in {
       val endpoints = scopesService.getExternalEndpoints(Seq(mockScopeOne))
       endpoints.size shouldBe 2
-      endpoints.map(_.key) shouldBe Seq(endpointKeyOne, endpointKeyTwo)
-      endpoints.map(_.link) shouldBe Seq("/external/1", "/external/2")
-      endpoints.map(_.title) shouldBe Seq("Get the first endpoint", "Get the second endpoint")
+      endpoints.map(_.key) should contain theSameElementsAs Seq(endpointKeyOne, endpointKeyTwo)
+      endpoints.map(_.link) should contain theSameElementsAs Seq("/external/1", "/external/2")
+      endpoints.map(_.title) should contain theSameElementsAs Seq("Get the first endpoint", "Get the second endpoint")
     }
 
     "using second scope" in {
       val endpoints = scopesService.getExternalEndpoints(Seq(mockScopeTwo))
       endpoints.size shouldBe 2
-      endpoints.map(_.key).toSeq.sorted shouldBe Seq(endpointKeyThree, endpointKeyTwo).sorted
-      endpoints.map(_.link).toSeq.sorted shouldBe Seq("/external/3", "/external/2").toSeq.sorted
-      endpoints.map(_.title).toSeq.sorted shouldBe Seq("Get the third endpoint", "Get the second endpoint").toSeq.sorted
+      endpoints.map(_.key) should contain theSameElementsAs Seq(endpointKeyThree, endpointKeyTwo).sorted
+      endpoints.map(_.link) should contain theSameElementsAs Seq("/external/3", "/external/2").toSeq.sorted
+      endpoints.map(_.title) should contain theSameElementsAs Seq("Get the third endpoint", "Get the second endpoint").toSeq.sorted
     }
 
     "using invalid scope" in {
@@ -52,14 +52,14 @@ class ScopesServiceSpec
     "using first scope" in {
       val endpoints = scopesService.getInternalEndpoints(Seq(mockScopeOne))
       endpoints.size shouldBe 2
-      endpoints.map(_.link) shouldBe Seq("/internal/1", "/internal/2")
-      endpoints.map(_.title) shouldBe Seq("Get the first endpoint", "Get the second endpoint")
+      endpoints.map(_.link) should contain theSameElementsAs Seq("/internal/1", "/internal/2")
+      endpoints.map(_.title) should contain theSameElementsAs Seq("Get the first endpoint", "Get the second endpoint")
     }
 
     "using second scope" in {
       val endpoints = scopesService.getInternalEndpoints(Seq(mockScopeTwo))
-      endpoints.map(_.link) shouldBe Seq("/internal/3", "/internal/2")
-      endpoints.map(_.title) shouldBe Seq("Get the third endpoint", "Get the second endpoint")
+      endpoints.map(_.link) should contain theSameElementsAs Seq("/internal/3", "/internal/2")
+      endpoints.map(_.title) should contain theSameElementsAs Seq("Get the third endpoint", "Get the second endpoint")
     }
 
     "using invalid scope" in {
