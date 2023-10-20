@@ -80,12 +80,12 @@ class IfConnectorSpec
     val underTest = new IfConnector(config, httpClient, auditHelper)
   }
 
-  override def beforeEach() {
+  override def beforeEach() : Unit = {
     wireMockServer.start()
     configureFor(stubHost, stubPort)
   }
 
-  override def afterEach() {
+  override def afterEach() : Unit = {
     wireMockServer.stop()
   }
 

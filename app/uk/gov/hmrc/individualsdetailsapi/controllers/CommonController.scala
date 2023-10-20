@@ -15,17 +15,17 @@
  */
 
 package uk.gov.hmrc.individualsdetailsapi.controllers
-import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc.{ControllerComponents, RequestHeader, Result}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthorisationException, AuthorisedFunctions, Enrolment, InsufficientEnrolments}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, InternalServerException, TooManyRequestException}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, TooManyRequestException}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 abstract class CommonController @Inject()(

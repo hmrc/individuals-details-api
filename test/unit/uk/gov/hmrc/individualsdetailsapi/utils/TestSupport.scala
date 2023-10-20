@@ -29,6 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 trait TestSupport extends AnyWordSpec with Matchers {
 
