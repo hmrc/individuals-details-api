@@ -102,6 +102,17 @@ class IfConnector @Inject()(
         }
       }
     }
+    case Upstream4xxResponse(msg, 404, _, _) => {
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
+
+      msg.contains("PERSON_NOT_FOUND") match {
+        case true => Future.successful(emptyResponse)
+        case _ => {
+          logger.warn("Integration Framework NotFoundException encountered")
+          Future.failed(new NotFoundException(msg))
+        }
+      }
+    }
     case Upstream5xxResponse(msg, code, _, _) => {
       logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: $msg")
@@ -117,10 +128,6 @@ class IfConnector @Inject()(
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       Future.failed(new InternalServerException("Something went wrong."))
     }
-    case e: Exception => {
-      logger.error(s"Integration Framework Exception encountered", e)
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, e.getMessage)
-      Future.failed(new InternalServerException("Something went wrong."))
-    }
+
   }
 }

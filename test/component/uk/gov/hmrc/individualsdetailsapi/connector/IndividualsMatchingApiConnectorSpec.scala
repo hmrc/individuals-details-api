@@ -51,7 +51,7 @@ class IndividualsMatchingApiConnectorSpec
 
   def externalServices: Seq[String] = Seq("Stub")
 
-  override def beforeEach() {
+  override def beforeEach() : Unit = {
     wireMockServer.start()
     configureFor(stubHost, stubPort)
   }
@@ -94,7 +94,7 @@ class IndividualsMatchingApiConnectorSpec
 
   }
 
-  override def afterEach() {
+  override def afterEach() : Unit = {
     wireMockServer.stop()
   }
 

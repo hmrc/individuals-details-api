@@ -23,7 +23,6 @@ import org.scalatest.BeforeAndAfterEach
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.individualsdetailsapi.cache.CacheRepository
-import uk.gov.hmrc.integration.ServiceSpec
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.TestSupport
 
@@ -33,7 +32,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class CacheRepositorySpec
     extends AnyWordSpec
     with Matchers
-    with ServiceSpec
     with BeforeAndAfterEach
     with TestSupport {
 
@@ -45,7 +43,7 @@ class CacheRepositorySpec
   protected def databaseName: String = "test-" + this.getClass.getSimpleName
   protected def mongoUri: String     = s"mongodb://localhost:27017/$databaseName"
 
-  override lazy val fakeApplication = new GuiceApplicationBuilder()
+  lazy val fakeApplication = new GuiceApplicationBuilder()
     .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
     .bindings(bindModules: _*)
     .build()
@@ -54,12 +52,12 @@ class CacheRepositorySpec
 
   def externalServices: Seq[String] = Seq.empty
 
-  override def beforeEach() {
+  override def beforeEach() : Unit = {
     super.beforeEach()
     await(cacheRepository.collection.drop().toFuture())
   }
 
-  override def afterEach() {
+  override def afterEach() : Unit = {
     super.afterEach()
     await(cacheRepository.collection.drop().toFuture())
   }
@@ -101,7 +99,7 @@ class CacheRepositorySpec
 
   private def retrieveRawCachedValue(id: String) = {
     await(cacheRepository.collection.find(Filters.equal("id", toBson(id)))
-      .headOption
+      .headOption()
       .map {
         case Some(entry) => entry.data.value
         case None => None
