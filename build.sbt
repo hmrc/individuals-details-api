@@ -1,13 +1,6 @@
 import sbt.Keys.compile
 import sbt.Tests.{Group, SubProcess}
-import uk.gov.hmrc.DefaultBuildSettings.{
-  addTestReportOption,
-  defaultSettings,
-  scalaSettings
-}
-import uk.gov.hmrc.ExternalService
-import uk.gov.hmrc.ServiceManagerPlugin.Keys.itDependenciesList
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
+import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
 import play.sbt.routes.RoutesKeys
 
 val appName = "individuals-details-api"
@@ -21,17 +14,11 @@ lazy val scoverageSettings = {
     // Semicolon-separated list of regexs matching classes to exclude
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;uk.gov.hmrc.individualsdetailsapi.views.*;" +
       ".*BuildInfo.;uk.gov.hmrc.BuildInfo;.*Routes;.*RoutesPrefix*;",
-    ScoverageKeys.coverageMinimum := 80,
+    ScoverageKeys.coverageMinimumStmtTotal := 80,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
   )
 }
-
-lazy val plugins: Seq[Plugins] = Seq.empty
-lazy val externalServices =
-  List(ExternalService("AUTH"),
-       ExternalService("INDIVIDUALS_MATCHING_API"),
-       ExternalService("DES"))
 
 def intTestFilter(name: String): Boolean = name startsWith "it"
 def unitFilter(name: String): Boolean = name startsWith "unit"
@@ -39,22 +26,17 @@ def componentFilter(name: String): Boolean = name startsWith "component"
 
 lazy val microservice =
   Project(appName, file("."))
-    .enablePlugins(Seq(play.sbt.PlayScala,
-                       SbtAutoBuildPlugin,
-                       SbtGitVersioning,
-                       SbtDistributablesPlugin,
-                       SbtArtifactory) ++ plugins: _*)
+    .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
     .settings(scalaSettings: _*)
     .settings(scoverageSettings: _*)
     .settings(useSuperShell in ThisBuild := false)
-    .settings(publishingSettings: _*)
-    .settings(scalaVersion := "2.12.11")
+    .settings(scalaVersion := "2.13.8")
     .settings(defaultSettings(): _*)
+    .settings(onLoadMessage := "")
     .settings(
-      dependencyOverrides ++= AppDependencies.overrides,
       libraryDependencies ++= (AppDependencies.compile ++ AppDependencies
         .test()),
-      testOptions in Test := Seq(Tests.Filter(unitFilter)),
+      Test / testOptions := Seq(Tests.Filter(unitFilter)),
       retrieveManaged := true,
       evictionWarningOptions in update := EvictionWarningOptions.default
         .withWarnScalaVersionEviction(false)
@@ -62,7 +44,6 @@ lazy val microservice =
     .settings(unmanagedResourceDirectories in Compile += baseDirectory.value / "resources")
     .configs(IntegrationTest)
     .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
-    .settings(itDependenciesList := externalServices)
     .settings(
       Keys.fork in IntegrationTest := false,
       unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(
@@ -76,8 +57,10 @@ lazy val microservice =
     .configs(ComponentTest)
     .settings(inConfig(ComponentTest)(Defaults.testSettings): _*)
     .settings(
-      testOptions in ComponentTest := Seq(Tests.Filter(componentFilter)),
-      unmanagedSourceDirectories in ComponentTest := (baseDirectory in ComponentTest)(
+      scalacOptions += "-Wconf:src=routes/.*:s",
+      scalacOptions += "-Wconf:cat=unused-imports&src=txt/.*:s",
+      ComponentTest / testOptions := Seq(Tests.Filter(componentFilter)),
+      ComponentTest / unmanagedSourceDirectories := (baseDirectory in ComponentTest)(
         base => Seq(base / "test")).value,
       testGrouping in ComponentTest := oneForkedJvmPerTest(
         (definedTests in ComponentTest).value),
