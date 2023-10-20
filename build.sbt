@@ -29,30 +29,27 @@ lazy val microservice =
     .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
     .settings(scalaSettings: _*)
     .settings(scoverageSettings: _*)
-    .settings(useSuperShell in ThisBuild := false)
+    .settings(ThisBuild / useSuperShell := false)
     .settings(scalaVersion := "2.13.8")
     .settings(defaultSettings(): _*)
     .settings(onLoadMessage := "")
     .settings(
-      libraryDependencies ++= (AppDependencies.compile ++ AppDependencies
-        .test()),
+      libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test(),
       Test / testOptions := Seq(Tests.Filter(unitFilter)),
       retrieveManaged := true,
-      evictionWarningOptions in update := EvictionWarningOptions.default
-        .withWarnScalaVersionEviction(false)
     )
-    .settings(unmanagedResourceDirectories in Compile += baseDirectory.value / "resources")
+    .settings(Compile / unmanagedResourceDirectories += baseDirectory.value / "resources")
     .configs(IntegrationTest)
     .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
     .settings(
-      Keys.fork in IntegrationTest := false,
-      unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(
+      IntegrationTest / Keys.fork := false,
+      IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(
         base => Seq(base / "test")).value,
-      testOptions in IntegrationTest := Seq(Tests.Filter(intTestFilter)),
+      IntegrationTest / testOptions := Seq(Tests.Filter(intTestFilter)),
       addTestReportOption(IntegrationTest, "int-test-reports"),
-      testGrouping in IntegrationTest := oneForkedJvmPerTest(
-        (definedTests in IntegrationTest).value),
-      parallelExecution in IntegrationTest := false
+      IntegrationTest / testGrouping := oneForkedJvmPerTest(
+        (IntegrationTest / definedTests).value),
+      IntegrationTest / parallelExecution := false
     )
     .configs(ComponentTest)
     .settings(inConfig(ComponentTest)(Defaults.testSettings): _*)
@@ -60,11 +57,11 @@ lazy val microservice =
       scalacOptions += "-Wconf:src=routes/.*:s",
       scalacOptions += "-Wconf:cat=unused-imports&src=txt/.*:s",
       ComponentTest / testOptions := Seq(Tests.Filter(componentFilter)),
-      ComponentTest / unmanagedSourceDirectories := (baseDirectory in ComponentTest)(
+      ComponentTest / unmanagedSourceDirectories := (ComponentTest / baseDirectory)(
         base => Seq(base / "test")).value,
-      testGrouping in ComponentTest := oneForkedJvmPerTest(
-        (definedTests in ComponentTest).value),
-      parallelExecution in ComponentTest := false
+      ComponentTest / testGrouping := oneForkedJvmPerTest(
+        (ComponentTest / definedTests).value),
+      ComponentTest / parallelExecution := false
     )
     .settings(resolvers ++= Seq(
       Resolver.jcenterRepo
@@ -86,7 +83,7 @@ def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
 lazy val compileAll = taskKey[Unit]("Compiles sources in all configurations.")
 
 compileAll := {
-  val a = (compile in Test).value
-  val b = (compile in IntegrationTest).value
+  val a = (Test / compile).value
+  val b = (IntegrationTest / compile).value
   ()
 }
