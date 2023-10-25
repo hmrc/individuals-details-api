@@ -28,8 +28,7 @@ import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, Insufficient
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.controllers.ContactDetailsController
 import uk.gov.hmrc.individualsdetailsapi.domain.{ContactDetails, MatchNotFoundException}
-import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
-import uk.gov.hmrc.individualsdetailsapi.services.DetailsService
+import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, ScopesService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import java.util.UUID

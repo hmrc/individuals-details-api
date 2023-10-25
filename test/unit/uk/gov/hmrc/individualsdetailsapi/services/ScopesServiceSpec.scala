@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.services
 
-import uk.gov.hmrc.individualsdetailsapi.service.ScopesService
+import uk.gov.hmrc.individualsdetailsapi.services.ScopesService
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
 class ScopesServiceSpec
@@ -24,29 +24,6 @@ class ScopesServiceSpec
     with ScopesConfig {
 
   val scopesService = new ScopesService(mockConfig)
-
-  "Gets correct external endpoints" when {
-    "using first scope" in {
-      val endpoints = scopesService.getExternalEndpoints(Seq(mockScopeOne))
-      endpoints.size shouldBe 2
-      endpoints.map(_.key) should contain theSameElementsAs Seq(endpointKeyOne, endpointKeyTwo)
-      endpoints.map(_.link) should contain theSameElementsAs Seq("/external/1", "/external/2")
-      endpoints.map(_.title) should contain theSameElementsAs Seq("Get the first endpoint", "Get the second endpoint")
-    }
-
-    "using second scope" in {
-      val endpoints = scopesService.getExternalEndpoints(Seq(mockScopeTwo))
-      endpoints.size shouldBe 2
-      endpoints.map(_.key) should contain theSameElementsAs Seq(endpointKeyThree, endpointKeyTwo).sorted
-      endpoints.map(_.link) should contain theSameElementsAs Seq("/external/3", "/external/2").toSeq.sorted
-      endpoints.map(_.title) should contain theSameElementsAs Seq("Get the third endpoint", "Get the second endpoint").toSeq.sorted
-    }
-
-    "using invalid scope" in {
-      val endpoints = scopesService.getExternalEndpoints(Seq("invalidScope"))
-      endpoints.size shouldBe 0
-    }
-  }
 
   "Gets correct internal endpoints" when {
     "using first scope" in {
@@ -117,6 +94,6 @@ class ScopesServiceSpec
 
   "Gets all scopes correctly" in {
     val scopes = scopesService.getAllScopes
-    scopes.toSeq shouldBe Seq(mockScopeFour, mockScopeOne, mockScopeThree, mockScopeTwo)
+    scopes shouldBe Seq(mockScopeFour, mockScopeOne, mockScopeThree, mockScopeTwo)
   }
 }
