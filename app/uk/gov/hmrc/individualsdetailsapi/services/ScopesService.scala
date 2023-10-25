@@ -72,15 +72,8 @@ class ScopesService @Inject()(configuration: Configuration) {
     val uniqueDataFields = scopes.flatMap(getScopeFieldKeys).toList.distinct
     val endpointDataItems = endpoints.flatMap(e => getEndpointFieldKeys(e).toSet).toList
     val keys = uniqueDataFields.filter(endpointDataItems.contains)
-    if (keys.nonEmpty) {
-      keys.reduce(_ + _)
-    } else {
-      ""
-    }
+    keys.mkString("")
   }
-
-  def getEndpointLink(endpoint: String): Option[String] =
-    apiConfig.getInternalEndpoint(endpoint).map(c => c.link)
 
   def getInternalEndpoints(scopes: Iterable[String]): Iterable[InternalEndpointConfig] = {
     val scopeKeys = scopes.flatMap(s => getScopeFieldKeys(s)).toSeq

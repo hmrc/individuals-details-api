@@ -16,27 +16,24 @@
 
 package uk.gov.hmrc.individualsdetailsapi.connectors
 
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.UpstreamErrorResponse.Upstream5xxResponse
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
+import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, Upstream4xxResponse, Upstream5xxResponse}
-import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils
-
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.HttpReads.Implicits._
-
 
 class IfConnector @Inject()(
     servicesConfig: ServicesConfig,
     http: HttpClient,
-    val auditHelper: AuditHelper){
-
-  val logger: Logger = Logger(getClass)
+    val auditHelper: AuditHelper) extends Logging {
 
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
 
@@ -54,19 +51,17 @@ class IfConnector @Inject()(
   def fetchDetails(nino: Nino, filter: Option[String], matchId: String)(
       implicit hc: HeaderCarrier,
       request: RequestHeader,
-      ec: ExecutionContext) = {
+      ec: ExecutionContext): Future[IfDetailsResponse] = {
 
     val detailsUrl =
       s"$baseUrl/individuals/details/contact/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"
 
     call(detailsUrl, matchId)
-
   }
 
   private def extractCorrelationId(requestHeader: RequestHeader) = RequestHeaderUtils.validateCorrelationId(requestHeader).toString
 
-
-  def setHeaders(requestHeader: RequestHeader) = Seq(
+  private def setHeaders(requestHeader: RequestHeader) = Seq(
     HeaderNames.authorisation -> s"Bearer $integrationFrameworkBearerToken",
     "Environment"             -> integrationFrameworkEnvironment,
     "CorrelationId"           -> extractCorrelationId(requestHeader)
@@ -86,48 +81,39 @@ class IfConnector @Inject()(
                          requestUrl: String)
                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IfDetailsResponse] = x.recoverWith {
 
-    case validationError: JsValidationException => {
+    case validationError: JsValidationException =>
       logger.warn("Integration Framework JsValidationException encountered")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Error parsing IF response: ${validationError.errors}")
       Future.failed(new InternalServerException("Something went wrong."))
-    }
-    case Upstream4xxResponse(msg, 404, _, _) => {
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
-      
-      msg.contains("PERSON_NOT_FOUND") match {
-        case true => Future.successful(emptyResponse)
-        case _    => {
-          logger.warn("Integration Framework NotFoundException encountered")
-          Future.failed(new NotFoundException(msg))
-        }
-      }
-    }
-    case Upstream4xxResponse(msg, 404, _, _) => {
+    case UpstreamErrorResponse(msg, 404, _, _) =>
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
 
-      msg.contains("PERSON_NOT_FOUND") match {
-        case true => Future.successful(emptyResponse)
-        case _ => {
-          logger.warn("Integration Framework NotFoundException encountered")
-          Future.failed(new NotFoundException(msg))
-        }
+      if (msg.contains("PERSON_NOT_FOUND")) {
+        Future.successful(emptyResponse)
+      } else {
+        logger.warn("Integration Framework NotFoundException encountered")
+        Future.failed(new NotFoundException(msg))
       }
-    }
-    case Upstream5xxResponse(msg, code, _, _) => {
+    case UpstreamErrorResponse(msg, 404, _, _) =>
+      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
+
+      if (msg.contains("PERSON_NOT_FOUND")) {
+        Future.successful(emptyResponse)
+      } else {
+        logger.warn("Integration Framework NotFoundException encountered")
+        Future.failed(new NotFoundException(msg))
+      }
+    case Upstream5xxResponse(UpstreamErrorResponse(msg, code, _, _)) =>
       logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: $msg")
       Future.failed(new InternalServerException("Something went wrong."))
-    }
-    case Upstream4xxResponse(msg, 429, _, _) => {
+    case UpstreamErrorResponse(msg, 429, _, _) =>
       logger.warn(s"Integration Framework Rate limited: $msg")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"IF Rate limited: $msg")
       Future.failed(new TooManyRequestException(msg))
-    }
-    case Upstream4xxResponse(msg, code, _, _) => {
+    case UpstreamErrorResponse(msg, code, _, _) =>
       logger.warn(s"Integration Framework Upstream4xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
       Future.failed(new InternalServerException("Something went wrong."))
-    }
-
   }
 }
