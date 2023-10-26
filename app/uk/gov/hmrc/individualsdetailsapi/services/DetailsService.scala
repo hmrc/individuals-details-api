@@ -21,7 +21,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsdetailsapi.connectors.{IfConnector, IndividualsMatchingApiConnector}
 import uk.gov.hmrc.individualsdetailsapi.domain._
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
-import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
 import uk.gov.hmrc.individualsdetailsapi.services.cache.{CacheId, CacheService}
 
 import java.util.UUID

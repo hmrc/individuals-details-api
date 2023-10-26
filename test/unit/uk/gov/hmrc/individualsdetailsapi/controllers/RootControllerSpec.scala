@@ -25,15 +25,14 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, _}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthConnector, BearerTokenExpired, Enrolment, Enrolments, InsufficientEnrolments}
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.TooManyRequestException
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.individualsdetailsapi.config.{ExternalEndpointConfig, InternalEndpointConfig}
+import uk.gov.hmrc.individualsdetailsapi.config.InternalEndpointConfig
 import uk.gov.hmrc.individualsdetailsapi.controllers.RootController
 import uk.gov.hmrc.individualsdetailsapi.domain.{MatchNotFoundException, MatchedCitizen}
-import uk.gov.hmrc.individualsdetailsapi.service.{ScopesHelper, ScopesService}
-import uk.gov.hmrc.individualsdetailsapi.services.DetailsService
+import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, ScopesHelper, ScopesService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import java.util.UUID
@@ -87,17 +86,6 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           title = "endpointTitle",
           fields = Map("fieldId" -> "data/path"),
           filters = Map()
-        )
-      )
-    )
-
-    when(scopeService.getExternalEndpoints(any())).thenReturn(
-      Seq(
-        ExternalEndpointConfig(
-          name = "endpointName",
-          link = "endpoint/link",
-          title = "endpointTitle",
-          key = "A"
         )
       )
     )

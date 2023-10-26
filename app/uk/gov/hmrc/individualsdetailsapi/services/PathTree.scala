@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.service
+package uk.gov.hmrc.individualsdetailsapi.services
 
 class PathTree(node: B) {
 
   def listChildren: Iterable[String] = node.listChildren
 
-  def children: Iterable[Node] = node.children
+  private def children: Iterable[Node] = node.children
 
   def hasChild(key: String): Boolean = node.hasChild(key)
 
@@ -60,18 +60,18 @@ sealed abstract class Node {
 
   def getChild(key: String): Option[Node] = None
 
-  private[service] def +(node: Node): B
+  private[services] def +(node: Node): B
 
-  private[service] def ++(nodes: Iterable[Node]): B
+  private[services] def ++(nodes: Iterable[Node]): B
 }
 
 case class L(value: String) extends Node {
 
   def get: String = this.value
 
-  private[service] def +(node: Node): B = B(value, Seq(node))
+  private[services] def +(node: Node): B = B(value, Seq(node))
 
-  private[service] def ++(nodes: Iterable[Node]): B =
+  private[services] def ++(nodes: Iterable[Node]): B =
     this + nodes.head ++ nodes.tail
 
   override def toString: String = value
@@ -81,14 +81,14 @@ case class B(value: String, children: Iterable[Node]) extends Node {
 
   def get: String = this.value
 
-  private[service] def +(node: Node): B =
+  private[services] def +(node: Node): B =
     getChild(node.get)
       .map(child =>
         B(value,
           children.filter(n => n.get != child.get) ++ Seq(merge(child, node))))
       .getOrElse(B(value, children ++ Seq(node)))
 
-  private[service] def ++(nodes: Iterable[Node]): B =
+  private[services] def ++(nodes: Iterable[Node]): B =
     nodes.foldLeft(this)((a: Node, b: Node) => a + b)
 
   override def hasChild(key: String): Boolean =
@@ -112,7 +112,7 @@ case class B(value: String, children: Iterable[Node]) extends Node {
             } else {
               n1
           }) ++ b.children.filter(n1 => !a.hasChild(n1.get)))
-      case (a: L, b: B) => b
+      case (_: L, b: B) => b
       case _            => a1
     }
 }
