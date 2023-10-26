@@ -17,9 +17,9 @@
 package it.uk.gov.hmrc.individualsdetailsapi.suite
 
 import org.mongodb.scala.model.Filters
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.BeforeAndAfterEach
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.individualsdetailsapi.cache.CacheRepository

@@ -16,12 +16,13 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.play
 
-import java.util.UUID
 import org.scalatest.matchers.should.Matchers
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{ACCEPT, GET}
 import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils._
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.TestSupport
+
+import java.util.UUID
 
 class RequestHeaderUtilsSpec extends TestSupport with Matchers {
 

@@ -32,9 +32,9 @@ package uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
  * limitations under the License.
  */
 
-import play.api.libs.json._
-import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json._
 
 case class IfContactDetail(code: Int, detailType: String, detail: String)
 

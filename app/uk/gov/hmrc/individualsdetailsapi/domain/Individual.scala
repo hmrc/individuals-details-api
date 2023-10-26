@@ -16,13 +16,10 @@
 
 package uk.gov.hmrc.individualsdetailsapi.domain
 
-import java.util.UUID
 import uk.gov.hmrc.domain.{EmpRef, Nino, SaUtr}
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
-  IfAddress,
-  IfContactDetail,
-  IfResidence
-}
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{IfAddress, IfContactDetail, IfResidence}
+
+import java.util.UUID
 
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 

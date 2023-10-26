@@ -18,14 +18,13 @@ package uk.gov.hmrc.individualsdetailsapi.controllers
 
 import akka.stream.Materializer
 import controllers.Assets
-
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import play.filters.cors.CORSActionBuilder
 import uk.gov.hmrc.individualsdetailsapi.views._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton

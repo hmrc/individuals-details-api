@@ -18,12 +18,7 @@ package unit.uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
 import play.api.libs.json.Json
 import testUtils.TestHelpers
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{
-  IfContactDetail,
-  IfDetailsResponse,
-  IfDetails,
-  IfResidence
-}
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{IfContactDetail, IfDetails, IfDetailsResponse, IfResidence}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
 class IfDetailResponseSpec extends UnitSpec with TestHelpers {

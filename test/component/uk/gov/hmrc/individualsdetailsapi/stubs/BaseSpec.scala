@@ -16,7 +16,6 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.stubs
 
-import java.util.concurrent.TimeUnit
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
@@ -31,6 +30,7 @@ import play.mvc.Http.MimeTypes.JSON
 import scalaj.http.Http
 import unit.uk.gov.hmrc.individualsdetailsapi.services.ScopesConfig
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
 
 trait BaseSpec

@@ -16,9 +16,8 @@
 
 package uk.gov.hmrc.individualsdetailsapi.domain
 
-import play.api.libs.functional.syntax.unlift
-import play.api.libs.json.{Format, JsPath}
 import play.api.libs.functional.syntax._
+import play.api.libs.json.{Format, JsPath}
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfResidence
 
 case class Residence(residenceType: Option[String],

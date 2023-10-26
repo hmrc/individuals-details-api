@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsdetailsapi.services.cache
 
 import play.api.libs.json.Format
-import uk.gov.hmrc.individualsdetailsapi.cache.{CacheRepositoryConfiguration, CacheRepository}
+import uk.gov.hmrc.individualsdetailsapi.cache.{CacheRepository, CacheRepositoryConfiguration}
 
 import java.util.UUID
 import javax.inject.Inject

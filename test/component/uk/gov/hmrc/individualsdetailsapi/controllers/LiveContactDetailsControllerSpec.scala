@@ -16,9 +16,9 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import java.util.UUID
-
 import play.api.libs.json.{JsValue, Json}
+
+import java.util.UUID
 
 class LiveContactDetailsControllerSpec extends CommonControllerWithIfRequestSpec {
 

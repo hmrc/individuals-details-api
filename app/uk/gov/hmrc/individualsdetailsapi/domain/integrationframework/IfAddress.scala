@@ -17,8 +17,8 @@
 package uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{Format, JsPath}
 import play.api.libs.json.Reads.{maxLength, minLength}
+import play.api.libs.json.{Format, JsPath}
 
 case class IfAddress(
     line1: Option[String],

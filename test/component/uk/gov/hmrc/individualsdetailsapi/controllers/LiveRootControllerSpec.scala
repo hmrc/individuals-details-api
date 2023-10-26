@@ -16,11 +16,11 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import java.util.UUID
-
 import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
+
+import java.util.UUID
 
 class LiveRootControllerSpec extends CommonControllerSpec {
 

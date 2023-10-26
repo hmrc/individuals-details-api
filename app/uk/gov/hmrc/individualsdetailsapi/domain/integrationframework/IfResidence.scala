@@ -17,8 +17,8 @@
 package uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{Format, JsPath}
 import play.api.libs.json.Reads.{max, maxLength, min, minLength, pattern}
+import play.api.libs.json.{Format, JsPath}
 
 import scala.util.matching.Regex
 
