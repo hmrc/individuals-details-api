@@ -58,10 +58,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
     val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
-    when(
-      mockAuthConnector.authorise(
-        eqTo(Enrolment("test-scope")),
-        refEq(Retrievals.allEnrolments))(any(), any()))
+    when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
       .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
     val scopes: Iterable[String] =
@@ -105,15 +102,13 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
             .withHeaders(validCorrelationHeader)
 
           when(mockDetailsService.resolve(eqTo(matchId))(any()))
-            .thenReturn(Future.successful(
-              MatchedCitizen(matchId, nino = Nino("AB123456C"))))
+            .thenReturn(Future.successful(MatchedCitizen(matchId, nino = Nino("AB123456C"))))
 
           val result = rootController.root(matchId)(fakeRequest)
 
           status(result) shouldBe OK
 
-          verify(rootController.auditHelper, times(1)).
-            auditApiResponse(any(), any(), any(), any(), any())(any())
+          verify(rootController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any())(any())
 
         }
 
@@ -130,7 +125,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           status(result) shouldBe NOT_FOUND
 
           contentAsJson(result) shouldBe Json.obj(
-            "code" -> "NOT_FOUND",
+            "code"    -> "NOT_FOUND",
             "message" -> "The resource can not be found"
           )
           verify(rootController.auditHelper, times(1))
@@ -171,7 +166,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           when(mockAuthConnector.authorise(any(), any())(any(), any()))
             .thenReturn(Future.failed(BearerTokenExpired()))
 
-          val fakeRequest = FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
+          val fakeRequest =
+            FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
 
           val result = rootController.root(matchId)(fakeRequest)
 
@@ -186,7 +182,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           when(mockAuthConnector.authorise(any(), any())(any(), any()))
             .thenReturn(Future.failed(new TooManyRequestException("Too many")))
 
-          val fakeRequest = FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
+          val fakeRequest =
+            FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
 
           val result = rootController.root(matchId)(fakeRequest)
 
@@ -201,7 +198,8 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           when(mockAuthConnector.authorise(any(), any())(any(), any()))
             .thenReturn(Future.failed(new Exception()))
 
-          val fakeRequest = FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
+          val fakeRequest =
+            FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
 
           val result = rootController.root(matchId)(fakeRequest)
 

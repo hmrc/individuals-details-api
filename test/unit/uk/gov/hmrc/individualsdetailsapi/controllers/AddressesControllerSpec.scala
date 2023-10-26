@@ -48,10 +48,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
     val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
-    when(
-      mockAuthConnector.authorise(
-        eqTo(Enrolment("test-scope")),
-        refEq(Retrievals.allEnrolments))(any(), any()))
+    when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
       .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
     val scopes: Iterable[String] =
@@ -111,10 +108,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             .withHeaders(validCorrelationHeader)
 
           when(
-            mockDetailsService.getResidences(
-              eqTo(matchId),
-              eqTo("addresses"),
-              eqTo(Set("test-scope")))(any(), any(), any()))
+            mockDetailsService
+              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(Set("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
           val result = addressesController.addresses(matchId)(fakeRequest)
@@ -130,10 +125,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             .withHeaders(validCorrelationHeader)
 
           when(
-            mockDetailsService.getResidences(
-              eqTo(matchId),
-              eqTo("addresses"),
-              eqTo(Set("test-scope")))(any(), any(), any()))
+            mockDetailsService
+              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(Set("test-scope")))(any(), any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result = addressesController.addresses(matchId)(fakeRequest)
@@ -141,7 +134,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
           status(result) shouldBe NOT_FOUND
 
           contentAsJson(result) shouldBe Json.obj(
-            "code" -> "NOT_FOUND",
+            "code"    -> "NOT_FOUND",
             "message" -> "The resource can not be found"
           )
 
@@ -180,10 +173,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/addresses/")
 
           when(
-            mockDetailsService.getResidences(
-              eqTo(matchId),
-              eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any(), any()))
+            mockDetailsService
+              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
           val result = addressesController.addresses(matchId)(fakeRequest)
@@ -204,10 +195,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             .withHeaders("CorrelationId" -> "invalidId")
 
           when(
-            mockDetailsService.getResidences(
-              eqTo(matchId),
-              eqTo("addresses"),
-              eqTo(List("test-scope")))(any(), any(), any()))
+            mockDetailsService
+              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(List("test-scope")))(any(), any(), any()))
             .thenReturn(Future.successful(residences))
 
           val result = addressesController.addresses(matchId)(fakeRequest)

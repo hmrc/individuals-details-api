@@ -28,71 +28,61 @@ class IfQueriesSpec extends BaseSpec {
 
     Scenario("For read:individuals-details-laa-c1") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-laa-c1"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-laa-c1"), List(endpoint))
       queryString shouldBe ""
     }
 
     Scenario("For read:individuals-details-laa-c2") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-laa-c2"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-laa-c2"), List(endpoint))
       queryString shouldBe ""
     }
 
     Scenario("For read:individuals-details-laa-c3") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-laa-c3"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-laa-c3"), List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
     Scenario("For read:individuals-details-laa-c4") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-laa-c4"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-laa-c4"), List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
     Scenario("For read:individuals-details-hmcts-c2") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c2"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c2"), List(endpoint))
       queryString shouldBe ""
     }
 
     Scenario("For read:individuals-details-hmcts-c3") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c3"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c3"), List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
     Scenario("For read:individuals-details-hmcts-c4") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c4"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c4"), List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
     Scenario("For read:individuals-details-lsani-c1") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-lsani-c1"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-lsani-c1"), List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
     Scenario("For read:individuals-details-lsani-c3") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-lsani-c3"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-lsani-c3"), List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
 
     Scenario("For read:individuals-details-nictsejo-c4") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-nictsejo-c4"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-nictsejo-c4"), List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
   }
@@ -104,71 +94,61 @@ class IfQueriesSpec extends BaseSpec {
 
     Scenario("For read:individuals-details-laa-c1") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-laa-c1"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-laa-c1"), List(endpoint))
       queryString shouldBe ""
     }
 
     Scenario("For read:individuals-details-laa-c2") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-laa-c2"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-laa-c2"), List(endpoint))
       queryString shouldBe ""
     }
 
     Scenario("For read:individuals-details-laa-c3") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-laa-c3"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-laa-c3"), List(endpoint))
       queryString shouldBe ""
     }
 
     Scenario("For read:individuals-details-laa-c4") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-laa-c4"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-laa-c4"), List(endpoint))
       queryString shouldBe "contactDetails(code,detail,type)&filter=contains(contactDetails%5B%5D/type,'TELEPHONE')"
     }
 
     Scenario("For read:individuals-details-hmcts-c2") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c2"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c2"), List(endpoint))
       queryString shouldBe ""
     }
 
     Scenario("For read:individuals-details-hmcts-c3") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c3"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c3"), List(endpoint))
       queryString shouldBe ""
     }
 
     Scenario("For read:individuals-details-hmcts-c4") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c4"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-hmcts-c4"), List(endpoint))
       queryString shouldBe "contactDetails(code,detail,type)&filter=contains(contactDetails%5B%5D/type,'TELEPHONE')"
     }
 
     Scenario("For read:individuals-details-lsani-c1") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-lsani-c1"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-lsani-c1"), List(endpoint))
       queryString shouldBe ""
     }
 
     Scenario("For read:individuals-details-lsani-c3") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-lsani-c3"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-lsani-c3"), List(endpoint))
       queryString shouldBe ""
     }
 
     Scenario("For read:individuals-details-nictsejo-c4") {
       val queryString =
-        helper.getQueryStringFor(Seq("read:individuals-details-nicts-c4"),
-          List(endpoint))
+        helper.getQueryStringFor(Seq("read:individuals-details-nicts-c4"), List(endpoint))
       queryString shouldBe ""
     }
 

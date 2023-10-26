@@ -23,10 +23,11 @@ import java.util.UUID
 
 case class MatchedCitizen(matchId: UUID, nino: Nino)
 
-case class Individual(matchId: UUID,
-                      nino: String,
-                      contactDetails: Option[Seq[IfContactDetail]],
-                      residences: Option[Seq[IfResidence]])
+case class Individual(
+  matchId: UUID,
+  nino: String,
+  contactDetails: Option[Seq[IfContactDetail]],
+  residences: Option[Seq[IfResidence]])
 
 object SandboxDetailsData {
 

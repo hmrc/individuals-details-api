@@ -34,23 +34,18 @@ import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
 
 trait BaseSpec
-    extends AnyFeatureSpec
-    with BeforeAndAfterAll
-    with BeforeAndAfterEach
-    with Matchers
-    with GuiceOneServerPerSuite
-    with ScopesConfig
-    with GivenWhenThen {
+    extends AnyFeatureSpec with BeforeAndAfterAll with BeforeAndAfterEach with Matchers with GuiceOneServerPerSuite
+    with ScopesConfig with GivenWhenThen {
 
   implicit override lazy val app: Application = GuiceApplicationBuilder()
     .configure(
-      "auditing.enabled" -> false,
-      "auditing.traceRequests" -> false,
-      "microservice.services.auth.port" -> AuthStub.port,
+      "auditing.enabled"                                    -> false,
+      "auditing.traceRequests"                              -> false,
+      "microservice.services.auth.port"                     -> AuthStub.port,
       "microservice.services.individuals-matching-api.port" -> IndividualsMatchingApiStub.port,
-      "microservice.services.integration-framework.port" -> IfStub.port,
-      "run.mode" -> "It",
-      "cache.enabled" -> false
+      "microservice.services.integration-framework.port"    -> IfStub.port,
+      "run.mode"                                            -> "It",
+      "cache.enabled"                                       -> false
     )
     .build()
 
@@ -63,12 +58,8 @@ trait BaseSpec
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
   val validCorrelationHeader = ("CorrelationId", sampleCorrelationId)
 
-  protected def requestHeaders(
-      acceptHeader: (String, String) = acceptHeaderP1) =
-    Map(CONTENT_TYPE -> JSON,
-        AUTHORIZATION -> authToken,
-        acceptHeader,
-        validCorrelationHeader)
+  protected def requestHeaders(acceptHeader: (String, String) = acceptHeaderP1) =
+    Map(CONTENT_TYPE -> JSON, AUTHORIZATION -> authToken, acceptHeader, validCorrelationHeader)
 
   protected def errorResponse(message: String) =
     s"""{"code":"INVALID_REQUEST","message":"$message"}"""
@@ -90,8 +81,7 @@ trait BaseSpec
 }
 
 case class MockHost(port: Int) {
-  val server = new WireMockServer(
-    WireMockConfiguration.wireMockConfig().port(port))
+  val server = new WireMockServer(WireMockConfiguration.wireMockConfig().port(port))
   val mock = new WireMock("localhost", port)
   val url = s"http://localhost:$port"
 }

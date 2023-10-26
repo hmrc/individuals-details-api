@@ -32,17 +32,17 @@ class IfResidenceSpec extends UnitSpec with TestHelpers {
     "Write to JSON" in {
       val result = Json.toJson(residence)
       val expectedJson = Json.parse("""
-          |{
-          |  "type" : "BASE",
-          |  "address" : {
-          |      "line1" : "line1-2",
-          |      "line2" : "line2-2",
-          |      "line3" : "line3-2",
-          |      "line4" : "line4-2",
-          |      "line5" : "line5-2",
-          |      "postcode" : "QW122QW"
-          |  }
-          |}
+                                      |{
+                                      |  "type" : "BASE",
+                                      |  "address" : {
+                                      |      "line1" : "line1-2",
+                                      |      "line2" : "line2-2",
+                                      |      "line3" : "line3-2",
+                                      |      "line4" : "line4-2",
+                                      |      "line5" : "line5-2",
+                                      |      "postcode" : "QW122QW"
+                                      |  }
+                                      |}
         """.stripMargin)
 
       result shouldBe expectedJson

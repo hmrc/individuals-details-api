@@ -30,19 +30,15 @@ class RequestHeaderUtilsSpec extends TestSupport with Matchers {
     "return the versioned request when the Accept header is set" in {
       val fooRequest = FakeRequest(GET, "/foo")
 
-      getVersionedRequest(fooRequest.withHeaders(
-        ACCEPT -> "application/vnd.hmrc.2.0+json")).uri shouldBe "/v2.0/foo"
-      getVersionedRequest(fooRequest.withHeaders(
-        ACCEPT -> "application/vnd.hmrc.2.0+json")).path shouldBe "/v2.0/foo"
+      getVersionedRequest(fooRequest.withHeaders(ACCEPT -> "application/vnd.hmrc.2.0+json")).uri shouldBe "/v2.0/foo"
+      getVersionedRequest(fooRequest.withHeaders(ACCEPT -> "application/vnd.hmrc.2.0+json")).path shouldBe "/v2.0/foo"
     }
 
     "return the versioned request for the root endpoint when the Accept header is set" in {
       val fooRequest = FakeRequest(GET, "/")
 
-      getVersionedRequest(fooRequest.withHeaders(
-        ACCEPT -> "application/vnd.hmrc.2.0+json")).uri shouldBe "/v2.0"
-      getVersionedRequest(fooRequest.withHeaders(
-        ACCEPT -> "application/vnd.hmrc.2.0+json")).path shouldBe "/v2.0"
+      getVersionedRequest(fooRequest.withHeaders(ACCEPT -> "application/vnd.hmrc.2.0+json")).uri shouldBe "/v2.0"
+      getVersionedRequest(fooRequest.withHeaders(ACCEPT -> "application/vnd.hmrc.2.0+json")).path shouldBe "/v2.0"
     }
 
     "Default to v1.0 when the Accept header is not set" in {

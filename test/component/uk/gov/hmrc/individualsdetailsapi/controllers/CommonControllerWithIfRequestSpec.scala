@@ -25,29 +25,36 @@ import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{IfAddress,
 trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
 
   val invalidIfDetailsResponse: IfDetailsResponse = SandboxDetailsData
-    .findByMatchId(SandboxDetailsData.sandboxMatchId).map(_.copy(
-    contactDetails = Option(Seq(
-      IfContactDetail(
-        code = 7,
-        detailType = "DAYTIME TELEPHONE",
-        detail = ""
-      ))),
-    residences = Option(Seq(
-      IfResidence(
-        address = Option(IfAddress(
-          line1 = Option(""),
-          line2 = Option("Dawley Bank"),
-          line3 = Option("Telford"),
-          line4 = Option("Shropshire"),
-          postcode = Option("TF3 4ER")
-        )),
-        noLongerUsed = Option("N")
-      )
+    .findByMatchId(SandboxDetailsData.sandboxMatchId)
+    .map(_.copy(
+      contactDetails = Option(
+        Seq(
+          IfContactDetail(
+            code = 7,
+            detailType = "DAYTIME TELEPHONE",
+            detail = ""
+          ))),
+      residences = Option(Seq(
+        IfResidence(
+          address = Option(
+            IfAddress(
+              line1 = Option(""),
+              line2 = Option("Dawley Bank"),
+              line3 = Option("Telford"),
+              line4 = Option("Shropshire"),
+              postcode = Option("TF3 4ER")
+            )),
+          noLongerUsed = Option("N")
+        )
+      ))
     ))
-  )).map(data => IfDetailsResponse(
-    data.contactDetails,
-    data.residences
-  )).get
+    .map(
+      data =>
+        IfDetailsResponse(
+          data.contactDetails,
+          data.residences
+      ))
+    .get
 
   Scenario(s"user does not have valid scopes") {
     Given("A valid auth token but invalid scopes")
@@ -59,15 +66,14 @@ trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
     And("IF will return response")
     IfStub.searchDetails(nino, ifDetailsResponse)
 
-    When(
-      s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
-    val response = invokeEndpoint(s"$serviceUrl/${endpoint}?matchId=$matchId")
+    When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+    val response = invokeEndpoint(s"$serviceUrl/$endpoint?matchId=$matchId")
 
     Then("The response status should be 401")
     response.code shouldBe UNAUTHORIZED
     Json.parse(response.body) shouldBe Json.obj(
-      "code" -> "UNAUTHORIZED",
-      "message" ->"Insufficient Enrolments"
+      "code"    -> "UNAUTHORIZED",
+      "message" -> "Insufficient Enrolments"
     )
   }
 
@@ -82,15 +88,12 @@ trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
     And("IF will return invalid response")
     IfStub.searchDetails(nino, invalidIfDetailsResponse)
 
-    When(
-      s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
-    val response = invokeEndpoint(s"$serviceUrl/${endpoint}?matchId=$matchId")
+    When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+    val response = invokeEndpoint(s"$serviceUrl/$endpoint?matchId=$matchId")
 
     Then("The response status should be 500 with a generic error message")
     response.code shouldBe INTERNAL_SERVER_ERROR
-    Json.parse(response.body) shouldBe Json.obj(
-      "code" -> "INTERNAL_SERVER_ERROR",
-      "message" -> "Something went wrong.")
+    Json.parse(response.body) shouldBe Json.obj("code" -> "INTERNAL_SERVER_ERROR", "message" -> "Something went wrong.")
   }
 
   Scenario(s"IF returns an Internal Server Error") {
@@ -104,15 +107,12 @@ trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
     And("IF will return Internal Server Error")
     IfStub.customResponse(nino, INTERNAL_SERVER_ERROR, Json.obj("reason" -> "Server error"))
 
-    When(
-      s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
-    val response = invokeEndpoint(s"$serviceUrl/${endpoint}?matchId=$matchId")
+    When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+    val response = invokeEndpoint(s"$serviceUrl/$endpoint?matchId=$matchId")
 
     Then("The response status should be 500 with a generic error message")
     response.code shouldBe INTERNAL_SERVER_ERROR
-    Json.parse(response.body) shouldBe Json.obj(
-      "code" -> "INTERNAL_SERVER_ERROR",
-      "message" -> "Something went wrong.")
+    Json.parse(response.body) shouldBe Json.obj("code" -> "INTERNAL_SERVER_ERROR", "message" -> "Something went wrong.")
   }
 
   Scenario(s"IF returns an Bad Request Error") {
@@ -124,17 +124,18 @@ trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
     IndividualsMatchingApiStub.hasMatchFor(matchId.toString, nino)
 
     And("IF will return Internal Server Error")
-    IfStub.customResponse(nino, UNPROCESSABLE_ENTITY, Json.obj("reason" ->
-      "There are 1 or more unknown data items in the 'fields' query string"))
+    IfStub.customResponse(
+      nino,
+      UNPROCESSABLE_ENTITY,
+      Json.obj(
+        "reason" ->
+          "There are 1 or more unknown data items in the 'fields' query string"))
 
-    When(
-      s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
-    val response = invokeEndpoint(s"$serviceUrl/${endpoint}?matchId=$matchId")
+    When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+    val response = invokeEndpoint(s"$serviceUrl/$endpoint?matchId=$matchId")
 
     Then("The response status should be 500 with a generic error message")
     response.code shouldBe INTERNAL_SERVER_ERROR
-    Json.parse(response.body) shouldBe Json.obj(
-      "code" -> "INTERNAL_SERVER_ERROR",
-      "message" -> "Something went wrong.")
+    Json.parse(response.body) shouldBe Json.obj("code" -> "INTERNAL_SERVER_ERROR", "message" -> "Something went wrong.")
   }
 }

@@ -83,9 +83,7 @@ case class B(value: String, children: Iterable[Node]) extends Node {
 
   private[services] def +(node: Node): B =
     getChild(node.get)
-      .map(child =>
-        B(value,
-          children.filter(n => n.get != child.get) ++ Seq(merge(child, node))))
+      .map(child => B(value, children.filter(n => n.get != child.get) ++ Seq(merge(child, node))))
       .getOrElse(B(value, children ++ Seq(node)))
 
   private[services] def ++(nodes: Iterable[Node]): B =
@@ -105,7 +103,8 @@ case class B(value: String, children: Iterable[Node]) extends Node {
   private def merge(a1: Node, b1: Node): Node =
     (a1, b1) match {
       case (a: B, b: B) =>
-        B(a.get,
+        B(
+          a.get,
           a.children.map(n1 =>
             if (b.hasChild(n1.get)) {
               merge(n1, b.getChild(n1.get).get)

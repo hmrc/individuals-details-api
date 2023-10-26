@@ -52,25 +52,30 @@ class ScopesService @Inject()(configuration: Configuration) {
 
   def getAllScopes: List[String] = apiConfig.scopes.map(_.name).sorted
 
-  def getValidFilters(scopes: Iterable[String],
-                      endpoints: Iterable[String]): Iterable[String] = {
+  def getValidFilters(scopes: Iterable[String], endpoints: Iterable[String]): Iterable[String] = {
     val filterKeys = scopes.flatMap(getScopeFilterKeys).toList
-    endpoints.flatMap(apiConfig.getInternalEndpoint).flatMap(endpoint =>
-      endpoint.filters.filter(filterMap =>
-        filterKeys.contains(filterMap._1))
-        .values)
+    endpoints
+      .flatMap(apiConfig.getInternalEndpoint)
+      .flatMap(
+        endpoint =>
+          endpoint.filters
+            .filter(filterMap => filterKeys.contains(filterMap._1))
+            .values)
   }
 
   def getIfDataPaths(scopes: Iterable[String], endpoints: List[String]): Set[String] = {
     val uniqueDataFields = scopes.flatMap(getScopeFieldKeys).toList.distinct
-    val endpointDataItems = endpoints.flatMap(e => getEndpointFieldKeys(e).toSet)
-    val authorizedDataItemsOnEndpoint = uniqueDataFields.filter(endpointDataItems.contains)
+    val endpointDataItems =
+      endpoints.flatMap(e => getEndpointFieldKeys(e).toSet)
+    val authorizedDataItemsOnEndpoint =
+      uniqueDataFields.filter(endpointDataItems.contains)
     getFieldPaths(authorizedDataItemsOnEndpoint).toSet
   }
 
   def getValidFieldsForCacheKey(scopes: Iterable[String], endpoints: Iterable[String]): String = {
     val uniqueDataFields = scopes.flatMap(getScopeFieldKeys).toList.distinct
-    val endpointDataItems = endpoints.flatMap(e => getEndpointFieldKeys(e).toSet).toList
+    val endpointDataItems =
+      endpoints.flatMap(e => getEndpointFieldKeys(e).toSet).toList
     val keys = uniqueDataFields.filter(endpointDataItems.contains)
     keys.mkString("")
   }
@@ -91,6 +96,7 @@ class ScopesService @Inject()(configuration: Configuration) {
 
     apiConfig.scopes
       .filter(_.fields.toSet.intersect(keys.toSet).nonEmpty)
-      .map(_.name).sorted
+      .map(_.name)
+      .sorted
   }
 }

@@ -26,13 +26,9 @@ class IfDetailResponseSpec extends UnitSpec with TestHelpers {
   val contactDetail1 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
   val contactDetail2 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987655")
   val residence1 =
-    IfResidence(residenceType = Some("BASE"),
-                address = generateAddress(2),
-                noLongerUsed = Option("Y"))
+    IfResidence(residenceType = Some("BASE"), address = generateAddress(2), noLongerUsed = Option("Y"))
   val residence2 =
-    IfResidence(residenceType = Some("NOMINATED"),
-                address = generateAddress(1),
-                noLongerUsed = Option("N"))
+    IfResidence(residenceType = Some("NOMINATED"), address = generateAddress(1), noLongerUsed = Option("N"))
   val response = IfDetailsResponse(
     Some(Seq(contactDetail1, contactDetail1)),
     Some(Seq(residence1, residence2))
@@ -52,45 +48,45 @@ class IfDetailResponseSpec extends UnitSpec with TestHelpers {
     "Write to JSON" in {
       val result = Json.toJson(response)
       val expectedJson = Json.parse("""
-          |  {
-          |     "contactDetails" : [
-          |       {
-          |         "code" : 9,
-          |         "type" : "MOBILE TELEPHONE",
-          |         "detail" : "07123 987654"
-          |       },
-          |       {
-          |         "code" : 9,
-          |         "type" : "MOBILE TELEPHONE",
-          |         "detail" : "07123 987654"
-          |       }
-          |     ],
-          |     "residences" : [
-          |       {
-          |         "type" : "BASE",
-          |         "address" : {
-          |           "line1" : "line1-2",
-          |           "line2" : "line2-2",
-          |           "line3" : "line3-2",
-          |           "line4" : "line4-2",
-          |           "line5" : "line5-2",
-          |           "postcode" : "QW122QW"
-          |          },
-          |          "noLongerUsed": "Y"
-          |        },
-          |        {
-          |          "type" : "NOMINATED",
-          |          "address" : {
-          |            "line1" : "line1-1",
-          |            "line2" : "line2-1",
-          |            "line3" : "line3-1",
-          |            "line4" : "line4-1",
-          |            "line5" : "line5-1",
-          |            "postcode" : "QW121QW"
-          |          },
-          |          "noLongerUsed": "N"
-          |        } ]
-          |      }""".stripMargin)
+                                      |  {
+                                      |     "contactDetails" : [
+                                      |       {
+                                      |         "code" : 9,
+                                      |         "type" : "MOBILE TELEPHONE",
+                                      |         "detail" : "07123 987654"
+                                      |       },
+                                      |       {
+                                      |         "code" : 9,
+                                      |         "type" : "MOBILE TELEPHONE",
+                                      |         "detail" : "07123 987654"
+                                      |       }
+                                      |     ],
+                                      |     "residences" : [
+                                      |       {
+                                      |         "type" : "BASE",
+                                      |         "address" : {
+                                      |           "line1" : "line1-2",
+                                      |           "line2" : "line2-2",
+                                      |           "line3" : "line3-2",
+                                      |           "line4" : "line4-2",
+                                      |           "line5" : "line5-2",
+                                      |           "postcode" : "QW122QW"
+                                      |          },
+                                      |          "noLongerUsed": "Y"
+                                      |        },
+                                      |        {
+                                      |          "type" : "NOMINATED",
+                                      |          "address" : {
+                                      |            "line1" : "line1-1",
+                                      |            "line2" : "line2-1",
+                                      |            "line3" : "line3-1",
+                                      |            "line4" : "line4-1",
+                                      |            "line5" : "line5-1",
+                                      |            "postcode" : "QW121QW"
+                                      |          },
+                                      |          "noLongerUsed": "N"
+                                      |        } ]
+                                      |      }""".stripMargin)
 
       result shouldBe expectedJson
     }

@@ -19,9 +19,7 @@ package unit.uk.gov.hmrc.individualsdetailsapi.services
 import uk.gov.hmrc.individualsdetailsapi.services.ScopesService
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
-class ScopesServiceSpec
-    extends UnitSpec
-    with ScopesConfig {
+class ScopesServiceSpec extends UnitSpec with ScopesConfig {
 
   val scopesService = new ScopesService(mockConfig)
 
@@ -47,25 +45,29 @@ class ScopesServiceSpec
 
   "Get correct filters" when {
     "using third scope" in {
-      val filters = scopesService.getValidFilters(Seq(mockScopeThree), Seq(endpointThree))
+      val filters =
+        scopesService.getValidFilters(Seq(mockScopeThree), Seq(endpointThree))
       filters.size shouldBe 1
       filters shouldBe Seq("contains(path/to/g,'FILTERED_VALUE_1')")
     }
 
     "using fourth scope" in {
-      val filters = scopesService.getValidFilters(Seq(mockScopeFour), Seq(endpointThree))
+      val filters =
+        scopesService.getValidFilters(Seq(mockScopeFour), Seq(endpointThree))
       filters.size shouldBe 1
       filters shouldBe Seq("contains(path/to/g,'FILTERED_VALUE_2')")
     }
 
     "using third and fourth scopes" in {
-      val filters = scopesService.getValidFilters(Seq(mockScopeThree, mockScopeFour), Seq(endpointThree))
+      val filters =
+        scopesService.getValidFilters(Seq(mockScopeThree, mockScopeFour), Seq(endpointThree))
       filters.size shouldBe 2
       filters shouldBe Seq("contains(path/to/g,'FILTERED_VALUE_1')", "contains(path/to/g,'FILTERED_VALUE_2')")
     }
 
     "using invalid scope" in {
-      val filters = scopesService.getValidFilters(Seq("invalidScope"), Seq(endpointThree))
+      val filters =
+        scopesService.getValidFilters(Seq("invalidScope"), Seq(endpointThree))
       filters.size shouldBe 0
     }
   }

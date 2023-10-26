@@ -20,9 +20,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.{Format, JsPath}
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfResidence
 
-case class Residence(residenceType: Option[String],
-                     address: Option[Address],
-                     inUse: Option[Boolean])
+case class Residence(residenceType: Option[String], address: Option[Address], inUse: Option[Boolean])
 
 case class Residences(residences: Seq[Residence])
 
@@ -46,9 +44,10 @@ object Residence {
     (JsPath \ "residence").write[Seq[Residence]].contramap(x => x.residences)
   )
 
-  def create(residenceType: Option[String],
-             address: Option[Address],
-             noLongerUsed: Option[Boolean]): Option[Residence] =
+  def create(
+    residenceType: Option[String],
+    address: Option[Address],
+    noLongerUsed: Option[Boolean]): Option[Residence] =
     (residenceType, address, noLongerUsed) match {
       case (None, None, None) => None
       case _                  => Some(new Residence(residenceType, address, noLongerUsed))

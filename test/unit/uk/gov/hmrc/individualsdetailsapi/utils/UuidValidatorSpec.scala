@@ -16,7 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.utils
 
-
 import org.scalacheck.Arbitrary.arbUuid
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks

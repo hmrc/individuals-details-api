@@ -23,8 +23,6 @@ import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsRe
 
 object IfStub extends MockHost(22004) {
 
-
-
   def searchDetails(nino: String, ifDetailsResponse: IfDetailsResponse) =
     mock.register(
       get(urlPathEqualTo(s"/individuals/details/contact/nino/$nino"))

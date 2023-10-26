@@ -11,6 +11,7 @@ lazy val microservice =
     .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
     .settings(CodeCoverageSettings.settings *)
     .settings(scalaVersion := "2.13.8")
+    .settings(scalafmtOnCompile := true)
     .settings(onLoadMessage := "")
     .settings(
       libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test(),
@@ -22,12 +23,10 @@ lazy val microservice =
     .settings(inConfig(IntegrationTest)(Defaults.itSettings) *)
     .settings(
       IntegrationTest / Keys.fork := false,
-      IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(
-        base => Seq(base / "test")).value,
+      IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "test")).value,
       IntegrationTest / testOptions := Seq(Tests.Filter((name: String) => name startsWith "it")),
       addTestReportOption(IntegrationTest, "int-test-reports"),
-      IntegrationTest / testGrouping := oneForkedJvmPerTest(
-        (IntegrationTest / definedTests).value),
+      IntegrationTest / testGrouping := oneForkedJvmPerTest((IntegrationTest / definedTests).value),
       IntegrationTest / parallelExecution := false,
       // Disable default sbt Test options (might change with new versions of bootstrap)
       IntegrationTest / testOptions -= Tests
@@ -46,10 +45,8 @@ lazy val microservice =
       scalacOptions += "-Wconf:src=routes/.*:s",
       scalacOptions += "-Wconf:cat=unused-imports&src=txt/.*:s",
       ComponentTest / testOptions := Seq(Tests.Filter((name: String) => name startsWith "component")),
-      ComponentTest / unmanagedSourceDirectories := (ComponentTest / baseDirectory)(
-        base => Seq(base / "test")).value,
-      ComponentTest / testGrouping := oneForkedJvmPerTest(
-        (ComponentTest / definedTests).value),
+      ComponentTest / unmanagedSourceDirectories := (ComponentTest / baseDirectory)(base => Seq(base / "test")).value,
+      ComponentTest / testGrouping := oneForkedJvmPerTest((ComponentTest / definedTests).value),
       ComponentTest / parallelExecution := false,
       // Disable default sbt Test options (might change with new versions of bootstrap)
       ComponentTest / testOptions -= Tests
@@ -79,9 +76,5 @@ lazy val microservice =
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
   tests.map { test =>
-    new Group(
-      test.name,
-      Seq(test),
-      SubProcess(
-        ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
+    new Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
   }

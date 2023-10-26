@@ -30,17 +30,16 @@ class LiveContactDetailsControllerSpec extends CommonControllerWithIfRequestSpec
     List("read:individuals-details-hmcts-c4", "read:individuals-details-laa-c4")
 
   override val expectedJson: JsValue = Json.parse(s"""{
-     |  "_links" : {
-     |    "self" : {
-     |      "href" : "/individuals/details/contact-details?matchId=$matchId"
-     |    }
-     |  },
-     |  "contactDetails" : {
-     |    "daytimeTelephones" : [ "01234 567890" ],
-     |    "eveningTelephones" : [ "01234 567890" ],
-     |    "mobileTelephones" : [ "01234 567890" ]
-     |  }
-     |}""".stripMargin)
-
+                                                     |  "_links" : {
+                                                     |    "self" : {
+                                                     |      "href" : "/individuals/details/contact-details?matchId=$matchId"
+                                                     |    }
+                                                     |  },
+                                                     |  "contactDetails" : {
+                                                     |    "daytimeTelephones" : [ "01234 567890" ],
+                                                     |    "eveningTelephones" : [ "01234 567890" ],
+                                                     |    "mobileTelephones" : [ "01234 567890" ]
+                                                     |  }
+                                                     |}""".stripMargin)
 
 }

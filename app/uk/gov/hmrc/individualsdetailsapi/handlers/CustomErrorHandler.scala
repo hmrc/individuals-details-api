@@ -31,35 +31,27 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CustomErrorHandler @Inject()(auditConnector: AuditConnector,
-                                   httpAuditEvent: HttpAuditEvent,
-                                   configuration: Configuration)
+class CustomErrorHandler @Inject()(
+  auditConnector: AuditConnector,
+  httpAuditEvent: HttpAuditEvent,
+  configuration: Configuration)
     extends JsonErrorHandler(auditConnector, httpAuditEvent, configuration) {
   import httpAuditEvent.dataEvent
 
-  override def onClientError(request: RequestHeader,
-                             statusCode: Int,
-                             message: String): Future[Result] = {
+  override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
 
     implicit val headerCarrier =
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     statusCode match {
       case NOT_FOUND =>
-        auditConnector.sendEvent(
-          dataEvent("ResourceNotFound", "Resource Endpoint Not Found", request))
+        auditConnector.sendEvent(dataEvent("ResourceNotFound", "Resource Endpoint Not Found", request))
         Future.successful(ErrorNotFound.toHttpResponse)
       case BAD_REQUEST =>
-        auditConnector.sendEvent(
-          dataEvent("ServerValidationError",
-                    "Request bad format exception",
-                    request))
+        auditConnector.sendEvent(dataEvent("ServerValidationError", "Request bad format exception", request))
         Future.successful(ErrorInvalidRequest(message).toHttpResponse)
       case _ =>
-        auditConnector.sendEvent(
-          dataEvent("ClientError",
-                    s"A client error occurred, status: $statusCode",
-                    request))
+        auditConnector.sendEvent(dataEvent("ClientError", s"A client error occurred, status: $statusCode", request))
         Future.successful(Status(statusCode)(Json.toJson(ErrorResponse(statusCode, message))))
     }
   }

@@ -28,16 +28,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class IndividualsMatchingApiConnector @Inject()(servicesConfig: ServicesConfig,
-                                                http: HttpClient) {
+class IndividualsMatchingApiConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient) {
 
   private[connectors] val serviceUrl =
     servicesConfig.baseUrl("individuals-matching-api")
 
-  def resolve(matchId: UUID)(
-      implicit hc: HeaderCarrier): Future[MatchedCitizen] =
+  def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen] =
     http.GET[MatchedCitizen](s"$serviceUrl/match-record/$matchId") recover {
-      case UpstreamErrorResponse(_, 404, _, _) => throw new MatchNotFoundException
+      case UpstreamErrorResponse(_, 404, _, _) =>
+        throw new MatchNotFoundException
     }
 
 }

@@ -37,33 +37,33 @@ class LiveAddressesControllerSpec extends CommonControllerWithIfRequestSpec {
   )
 
   override val expectedJson: JsValue = Json.parse(s"""{
-     |  "_links" : {
-     |    "self" : {
-     |      "href" : "/individuals/details/addresses?matchId=$matchId"
-     |    }
-     |  },
-     |  "residences" : [ {
-     |    "residenceType" : "NOMINATED",
-     |    "address" : {
-     |      "line1" : "24 Trinity Street",
-     |      "line2" : "Dawley Bank",
-     |      "line3" : "Telford",
-     |      "line4" : "Shropshire",
-     |      "line5" : "UK",
-     |      "postcode" : "TF3 4ER"
-     |    },
-     |    "inUse" : true
-     |  }, {
-     |    "residenceType" : "BASE",
-     |    "address" : {
-     |      "line1" : "La Petite Maison",
-     |      "line2" : "Rue de Bastille",
-     |      "line3" : "Vieux Ville",
-     |      "line4" : "Dordogne",
-     |      "line5" : "France"
-     |    },
-     |    "inUse" : false
-     |  } ]
-     |}""".stripMargin)
+                                                     |  "_links" : {
+                                                     |    "self" : {
+                                                     |      "href" : "/individuals/details/addresses?matchId=$matchId"
+                                                     |    }
+                                                     |  },
+                                                     |  "residences" : [ {
+                                                     |    "residenceType" : "NOMINATED",
+                                                     |    "address" : {
+                                                     |      "line1" : "24 Trinity Street",
+                                                     |      "line2" : "Dawley Bank",
+                                                     |      "line3" : "Telford",
+                                                     |      "line4" : "Shropshire",
+                                                     |      "line5" : "UK",
+                                                     |      "postcode" : "TF3 4ER"
+                                                     |    },
+                                                     |    "inUse" : true
+                                                     |  }, {
+                                                     |    "residenceType" : "BASE",
+                                                     |    "address" : {
+                                                     |      "line1" : "La Petite Maison",
+                                                     |      "line2" : "Rue de Bastille",
+                                                     |      "line3" : "Vieux Ville",
+                                                     |      "line4" : "Dordogne",
+                                                     |      "line5" : "France"
+                                                     |    },
+                                                     |    "inUse" : false
+                                                     |  } ]
+                                                     |}""".stripMargin)
 
 }

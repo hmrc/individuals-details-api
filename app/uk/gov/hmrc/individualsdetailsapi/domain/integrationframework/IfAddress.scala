@@ -21,30 +21,24 @@ import play.api.libs.json.Reads.{maxLength, minLength}
 import play.api.libs.json.{Format, JsPath}
 
 case class IfAddress(
-    line1: Option[String],
-    line2: Option[String],
-    line3: Option[String],
-    line4: Option[String],
-    line5: Option[String] = None,
-    postcode: Option[String]
+  line1: Option[String],
+  line2: Option[String],
+  line3: Option[String],
+  line4: Option[String],
+  line5: Option[String] = None,
+  postcode: Option[String]
 )
 
 object IfAddress {
 
   implicit val addressFormat: Format[IfAddress] = Format(
     (
-      (JsPath \ "line1").readNullable[String](
-        minLength[String](1).keepAnd(maxLength[String](35))) and
-        (JsPath \ "line2").readNullable[String](
-          minLength[String](1).keepAnd(maxLength[String](35))) and
-        (JsPath \ "line3").readNullable[String](
-          minLength[String](1).keepAnd(maxLength[String](35))) and
-        (JsPath \ "line4").readNullable[String](
-          minLength[String](1).keepAnd(maxLength[String](35))) and
-        (JsPath \ "line5").readNullable[String](
-          minLength[String](1).keepAnd(maxLength[String](35))) and
-        (JsPath \ "postcode").readNullable[String](
-          minLength[String](1).keepAnd(maxLength[String](10)))
+      (JsPath \ "line1").readNullable[String](minLength[String](1).keepAnd(maxLength[String](35))) and
+        (JsPath \ "line2").readNullable[String](minLength[String](1).keepAnd(maxLength[String](35))) and
+        (JsPath \ "line3").readNullable[String](minLength[String](1).keepAnd(maxLength[String](35))) and
+        (JsPath \ "line4").readNullable[String](minLength[String](1).keepAnd(maxLength[String](35))) and
+        (JsPath \ "line5").readNullable[String](minLength[String](1).keepAnd(maxLength[String](35))) and
+        (JsPath \ "postcode").readNullable[String](minLength[String](1).keepAnd(maxLength[String](10)))
     )(IfAddress.apply _),
     (
       (JsPath \ "line1").writeNullable[String] and

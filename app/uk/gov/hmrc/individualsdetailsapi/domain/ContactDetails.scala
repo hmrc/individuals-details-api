@@ -19,9 +19,10 @@ package uk.gov.hmrc.individualsdetailsapi.domain
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfContactDetail
 
-case class ContactDetails(daytimeTelephones: List[String],
-                          eveningTelephones: List[String],
-                          mobileTelephones: List[String])
+case class ContactDetails(
+  daytimeTelephones: List[String],
+  eveningTelephones: List[String],
+  mobileTelephones: List[String])
 
 object ContactDetails {
 
@@ -31,21 +32,18 @@ object ContactDetails {
   private val EveningTelephone: Int = 8
   private val MobileTelephone: Int = 9
 
-  def create(daytimeTelephones: List[String],
-             eveningTelephones: List[String],
-             mobileTelephones: List[String]): Option[ContactDetails] =
+  def create(
+    daytimeTelephones: List[String],
+    eveningTelephones: List[String],
+    mobileTelephones: List[String]): Option[ContactDetails] =
     (daytimeTelephones, eveningTelephones, mobileTelephones) match {
       case (a, b, c) if a.isEmpty && b.isEmpty && c.isEmpty => None
       case _ =>
-        Option(
-          new ContactDetails(daytimeTelephones,
-                             eveningTelephones,
-                             mobileTelephones))
+        Option(new ContactDetails(daytimeTelephones, eveningTelephones, mobileTelephones))
     }
 
   def convert(contactDetails: Seq[IfContactDetail]): Option[ContactDetails] =
-    (create _).tupled apply contactDetails.foldRight(
-      (List.empty[String], List.empty[String], List.empty[String]))(
+    (create _).tupled apply contactDetails.foldRight((List.empty[String], List.empty[String], List.empty[String]))(
       (detail, tuple) =>
         detail.code match {
           case DaytimeTelephone => tuple.copy(_1 = tuple._1.+:(detail.detail))
