@@ -16,13 +16,13 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import java.util.UUID
-
 import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, BaseSpec, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.individualsdetailsapi.domain.SandboxDetailsData
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
+
+import java.util.UUID
 
 trait CommonControllerSpec extends BaseSpec {
 
@@ -52,23 +52,21 @@ trait CommonControllerSpec extends BaseSpec {
       Then("the response status should be 400 (bad request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "INVALID_REQUEST",
+        "code"    -> "INVALID_REQUEST",
         "message" -> "matchId is required"
       )
     }
 
     Scenario("malformed match id") {
 
-      When(
-        "the root entry point to the API is invoked with a malformed match id")
+      When("the root entry point to the API is invoked with a malformed match id")
       val response =
-        invokeEndpoint(
-          s"$serviceUrl/${endpoint}?matchId=malformed-match-id-value")
+        invokeEndpoint(s"$serviceUrl/$endpoint?matchId=malformed-match-id-value")
 
       Then("the response status should be 400 (bad request)")
       response.code shouldBe BAD_REQUEST
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "INVALID_REQUEST",
+        "code"    -> "INVALID_REQUEST",
         "message" -> "matchId format is invalid"
       )
     }
@@ -77,15 +75,13 @@ trait CommonControllerSpec extends BaseSpec {
 
       AuthStub.willAuthorizePrivilegedAuthToken(authToken, rootScope)
 
-      When(
-        "the root entry point to the API is invoked with an invalid match id")
-      val response = invokeEndpoint(
-        s"$serviceUrl/${endpoint}?matchId=0a184ef3-fd75-4d4d-b6a3-f886cc39a366")
+      When("the root entry point to the API is invoked with an invalid match id")
+      val response = invokeEndpoint(s"$serviceUrl/$endpoint?matchId=0a184ef3-fd75-4d4d-b6a3-f886cc39a366")
 
       Then("the response status should be 404 (not found)")
       response.code shouldBe NOT_FOUND
       Json.parse(response.body) shouldBe Json.obj(
-        "code" -> "NOT_FOUND",
+        "code"    -> "NOT_FOUND",
         "message" -> "The resource can not be found"
       )
     }
@@ -100,9 +96,8 @@ trait CommonControllerSpec extends BaseSpec {
       And("IF will return response")
       IfStub.searchDetails(nino, ifDetailsResponse)
 
-      When(
-        s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
-      val response = invokeEndpoint(s"$serviceUrl/${endpoint}?matchId=$matchId")
+      When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+      val response = invokeEndpoint(s"$serviceUrl/$endpoint?matchId=$matchId")
 
       Then("The response status should be 200")
       response.code shouldBe OK

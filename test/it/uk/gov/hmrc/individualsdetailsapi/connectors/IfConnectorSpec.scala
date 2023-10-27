@@ -38,12 +38,7 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
 import scala.concurrent.ExecutionContext
 
-
-class IfConnectorSpec
-    extends SpecBase
-    with BeforeAndAfterEach
-    with TestHelpers
-    with MockitoSugar {
+class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers with MockitoSugar {
   val stubPort = sys.env.getOrElse("WIREMOCK", "11122").toInt
   val stubHost = "localhost"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
@@ -56,11 +51,11 @@ class IfConnectorSpec
   override lazy val fakeApplication = new GuiceApplicationBuilder()
     .bindings(bindModules: _*)
     .configure(
-      "cache.enabled"  -> false,
-      "microservice.services.integration-framework.host" -> "127.0.0.1",
-      "microservice.services.integration-framework.port" -> "11122",
+      "cache.enabled"                                                   -> false,
+      "microservice.services.integration-framework.host"                -> "127.0.0.1",
+      "microservice.services.integration-framework.port"                -> "11122",
       "microservice.services.integration-framework.authorization-token" -> integrationFrameworkAuthorizationToken,
-      "microservice.services.integration-framework.environment" -> integrationFrameworkEnvironment
+      "microservice.services.integration-framework.environment"         -> integrationFrameworkEnvironment
     )
     .build()
 
@@ -80,14 +75,13 @@ class IfConnectorSpec
     val underTest = new IfConnector(config, httpClient, auditHelper)
   }
 
-  override def beforeEach() : Unit = {
+  override def beforeEach(): Unit = {
     wireMockServer.start()
     configureFor(stubHost, stubPort)
   }
 
-  override def afterEach() : Unit = {
+  override def afterEach(): Unit =
     wireMockServer.stop()
-  }
 
   val detailsData = createValidIFDetailsResponse()
   val emptyData = createEmptyDetailsResponse()
@@ -113,8 +107,7 @@ class IfConnectorSpec
         )
       }
 
-      verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
 
     }
 
@@ -136,8 +129,7 @@ class IfConnectorSpec
         )
       }
 
-      verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "Return an empty dataset for PERSON_NOT_FOUND" in new Setup {
@@ -148,18 +140,17 @@ class IfConnectorSpec
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
           .willReturn(aResponse().withStatus(404).withBody("PERSON_NOT_FOUND")))
 
-        val result = await(
-          underTest.fetchDetails(nino, None, matchId)(
-            hc,
-            FakeRequest().withHeaders(sampleCorrelationIdHeader),
-            ec
-          )
+      val result = await(
+        underTest.fetchDetails(nino, None, matchId)(
+          hc,
+          FakeRequest().withHeaders(sampleCorrelationIdHeader),
+          ec
         )
+      )
 
       result shouldBe emptyData
 
-      verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
 
     }
 
@@ -180,26 +171,28 @@ class IfConnectorSpec
           )
         )
       }
-      verify(underTest.auditHelper,
-        times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
     }
 
     "Audit error when IF returns invalid data" in new Setup {
 
       Mockito.reset(underTest.auditHelper)
 
-      val invalidData = detailsData.copy(contactDetails = Option(Seq(
-        IfContactDetail(
-          code = 7,
-          detailType = "DAYTIME TELEPHONE",
-          detail = ""
-        ))))
+      val invalidData = detailsData.copy(
+        contactDetails = Option(
+          Seq(
+            IfContactDetail(
+              code = 7,
+              detailType = "DAYTIME TELEPHONE",
+              detail = ""
+            ))))
 
       stubFor(
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
-          .willReturn(aResponse()
-            .withStatus(200)
-            .withBody(Json.toJson(invalidData).toString())))
+          .willReturn(
+            aResponse()
+              .withStatus(200)
+              .withBody(Json.toJson(invalidData).toString())))
 
       intercept[InternalServerException] {
         await(
@@ -221,9 +214,7 @@ class IfConnectorSpec
 
       stubFor(
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
-          .withHeader(
-            HeaderNames.authorisation,
-            equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
+          .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
           .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
           .withHeader("CorrelationId", equalTo(sampleCorrelationId))
           .willReturn(aResponse()
@@ -240,8 +231,7 @@ class IfConnectorSpec
 
       result shouldBe detailsData
 
-      verify(underTest.auditHelper,
-        times(1)).auditIfApiResponse(any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1)).auditIfApiResponse(any(), any(), any(), any(), any())(any())
 
     }
   }

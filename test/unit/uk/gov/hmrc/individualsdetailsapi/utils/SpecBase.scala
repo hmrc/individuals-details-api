@@ -38,8 +38,7 @@ trait SpecBase extends TestSupport with GuiceOneAppPerSuite {
         ) withFallback extraConfig)
       .build()
 
-  override lazy val fakeApplication: Application = buildFakeApplication(
-    additionalConfig)
+  override lazy val fakeApplication: Application = buildFakeApplication(additionalConfig)
 
   lazy val servicesConfig: ServicesConfig =
     fakeApplication.injector.instanceOf[ServicesConfig]

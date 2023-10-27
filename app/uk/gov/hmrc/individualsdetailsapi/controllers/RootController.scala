@@ -30,36 +30,35 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class RootController @Inject()(
-                                val authConnector: AuthConnector,
-                                cc: ControllerComponents,
-                                scopeService: ScopesService,
-                                scopesHelper: ScopesHelper,
-                                detailsService: DetailsService,
-                                implicit val auditHelper: AuditHelper)
-                              (implicit val ec: ExecutionContext)
-    extends CommonController(cc)
-    with PrivilegedAuthentication {
+  val authConnector: AuthConnector,
+  cc: ControllerComponents,
+  scopeService: ScopesService,
+  scopesHelper: ScopesHelper,
+  detailsService: DetailsService,
+  implicit val auditHelper: AuditHelper)(implicit val ec: ExecutionContext)
+    extends CommonController(cc) with PrivilegedAuthentication {
 
-  def root(matchId: UUID): Action[AnyContent] = Action.async {
-    implicit request =>
-      {
-        authenticate(scopeService.getAllScopes, matchId.toString) {
-          authScopes =>
+  def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
+    {
+      authenticate(scopeService.getAllScopes, matchId.toString) { authScopes =>
+        val correlationId = validateCorrelationId(request)
 
-            val correlationId = validateCorrelationId(request)
+        detailsService.resolve(matchId) map { _ =>
+          val selfLink =
+            HalLink("self", s"/individuals/details/?matchId=$matchId")
 
-            detailsService.resolve(matchId) map { _ =>
-              val selfLink = HalLink("self", s"/individuals/details/?matchId=$matchId")
+          val response = scopesHelper.getHalLinks(matchId, None, authScopes, None) ++ selfLink
 
-              val response = scopesHelper.getHalLinks(matchId, None, authScopes, None) ++ selfLink
+          auditHelper.auditApiResponse(
+            correlationId.toString,
+            matchId.toString,
+            authScopes.mkString(","),
+            request,
+            response.toString)
 
-              auditHelper.auditApiResponse(
-                correlationId.toString, matchId.toString, authScopes.mkString(","),
-                request, response.toString)
-
-              Ok(response)
-            }
-        } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/details/")
-      }
+          Ok(response)
+        }
+      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/details/")
+    }
   }
 }

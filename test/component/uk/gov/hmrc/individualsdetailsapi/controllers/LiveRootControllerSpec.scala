@@ -16,11 +16,11 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import java.util.UUID
-
 import component.uk.gov.hmrc.individualsdetailsapi.stubs.{AuthStub, IfStub, IndividualsMatchingApiStub}
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
+
+import java.util.UUID
 
 class LiveRootControllerSpec extends CommonControllerSpec {
 
@@ -40,20 +40,20 @@ class LiveRootControllerSpec extends CommonControllerSpec {
   )
 
   override val expectedJson: JsValue = Json.parse(s"""{
-   |  "_links" : {
-   |    "addresses" : {
-   |      "href" : "/individuals/details/addresses?matchId=$matchId",
-   |      "title" : "Get addresses"
-   |    },
-   |    "contact-details" : {
-   |      "href" : "/individuals/details/contact-details?matchId=$matchId",
-   |      "title" : "Get contact details"
-   |    },
-   |    "self" : {
-   |      "href" : "/individuals/details/?matchId=$matchId"
-   |    }
-   |  }
-   |}""".stripMargin)
+                                                     |  "_links" : {
+                                                     |    "addresses" : {
+                                                     |      "href" : "/individuals/details/addresses?matchId=$matchId",
+                                                     |      "title" : "Get addresses"
+                                                     |    },
+                                                     |    "contact-details" : {
+                                                     |      "href" : "/individuals/details/contact-details?matchId=$matchId",
+                                                     |      "title" : "Get contact details"
+                                                     |    },
+                                                     |    "self" : {
+                                                     |      "href" : "/individuals/details/?matchId=$matchId"
+                                                     |    }
+                                                     |  }
+                                                     |}""".stripMargin)
 
   Scenario(s"user does not have valid scopes") {
     Given("A valid auth token but invalid scopes")
@@ -65,15 +65,14 @@ class LiveRootControllerSpec extends CommonControllerSpec {
     And("IF will return response")
     IfStub.searchDetails(nino, ifDetailsResponse)
 
-    When(
-      s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
-    val response = invokeEndpoint(s"$serviceUrl/${endpoint}?matchId=$matchId")
+    When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
+    val response = invokeEndpoint(s"$serviceUrl/$endpoint?matchId=$matchId")
 
     Then("The response status should be 401")
     response.code shouldBe UNAUTHORIZED
     Json.parse(response.body) shouldBe Json.obj(
-      "code" -> "UNAUTHORIZED",
-      "message" ->"Insufficient Enrolments"
+      "code"    -> "UNAUTHORIZED",
+      "message" -> "Insufficient Enrolments"
     )
   }
 }

@@ -25,19 +25,16 @@ trait TestHelpers {
   def generateString(length: Int): String = {
     val chars = "abcdefghijklmnopqrstuvwxyz123456789"
 
-    def generate(string: String): String = {
+    def generate(string: String): String =
       if (string.length < length)
-        generate(
-          string.concat(
-            chars.charAt(Random.nextInt(chars.length - 1)).toString))
+        generate(string.concat(chars.charAt(Random.nextInt(chars.length - 1)).toString))
       else
         string
-    }
 
     generate("")
   }
 
-  def generateAddress(number: Int) = {
+  def generateAddress(number: Int) =
     Some(
       IfAddress(
         Some(s"line1-$number"),
@@ -47,19 +44,16 @@ trait TestHelpers {
         Some(s"line5-$number"),
         Some(s"QW12${number}QW"),
       ))
-  }
 
-  def createEmptyDetailsResponse(): IfDetailsResponse = {
+  def createEmptyDetailsResponse(): IfDetailsResponse =
     IfDetailsResponse(None, None)
-  }
 
   def createValidIFDetailsResponse(): IfDetailsResponse = {
     val contactDetail1 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
     val contactDetail2 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987655")
     val residence1 =
       IfResidence(residenceType = Some("BASE"), address = generateAddress(2))
-    val residence2 = IfResidence(residenceType = Some("NOMINATED"),
-                                 address = generateAddress(1))
+    val residence2 = IfResidence(residenceType = Some("NOMINATED"), address = generateAddress(1))
 
     IfDetailsResponse(
       Some(Seq(contactDetail1, contactDetail2)),

@@ -17,9 +17,9 @@
 package it.uk.gov.hmrc.individualsdetailsapi.suite
 
 import org.mongodb.scala.model.Filters
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.BeforeAndAfterEach
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.individualsdetailsapi.cache.CacheRepository
@@ -29,11 +29,7 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.TestSupport
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CacheRepositorySpec
-    extends AnyWordSpec
-    with Matchers
-    with BeforeAndAfterEach
-    with TestSupport {
+class CacheRepositorySpec extends AnyWordSpec with Matchers with BeforeAndAfterEach with TestSupport {
 
   val cacheTtl = 60
   val id = UUID.randomUUID().toString
@@ -41,7 +37,7 @@ class CacheRepositorySpec
   val testValue = TestClass("one", "two")
 
   protected def databaseName: String = "test-" + this.getClass.getSimpleName
-  protected def mongoUri: String     = s"mongodb://localhost:27017/$databaseName"
+  protected def mongoUri: String = s"mongodb://localhost:27017/$databaseName"
 
   lazy val fakeApplication = new GuiceApplicationBuilder()
     .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
@@ -52,12 +48,12 @@ class CacheRepositorySpec
 
   def externalServices: Seq[String] = Seq.empty
 
-  override def beforeEach() : Unit = {
+  override def beforeEach(): Unit = {
     super.beforeEach()
     await(cacheRepository.collection.drop().toFuture())
   }
 
-  override def afterEach() : Unit = {
+  override def afterEach(): Unit = {
     super.afterEach()
     await(cacheRepository.collection.drop().toFuture())
   }
@@ -65,46 +61,40 @@ class CacheRepositorySpec
   "cache" should {
     "store the encrypted version of a value" in {
       await(cacheRepository.cache(id, testValue)(TestClass.format))
-      retrieveRawCachedValue(id) shouldBe JsString(
-        "I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
+      retrieveRawCachedValue(id) shouldBe JsString("I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
     }
 
     "update a cached value for a given id and key" in {
       val newValue = TestClass("three", "four")
 
       await(cacheRepository.cache(id, testValue)(TestClass.format))
-      retrieveRawCachedValue(id) shouldBe JsString(
-        "I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
+      retrieveRawCachedValue(id) shouldBe JsString("I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
 
       await(cacheRepository.cache(id, newValue)(TestClass.format))
-      retrieveRawCachedValue(id) shouldBe JsString(
-        "6yAvgtwLMcdiqTvdRvLTVKSkY3JwUZ/TzklThFfSqvA=")
+      retrieveRawCachedValue(id) shouldBe JsString("6yAvgtwLMcdiqTvdRvLTVKSkY3JwUZ/TzklThFfSqvA=")
     }
   }
 
   "fetch" should {
     "retrieve the unencrypted cached value for a given id and key" in {
       await(cacheRepository.cache(id, testValue)(TestClass.format))
-      await(
-        cacheRepository.fetchAndGetEntry[TestClass](id)(
-          TestClass.format)) shouldBe Some(testValue)
+      await(cacheRepository.fetchAndGetEntry[TestClass](id)(TestClass.format)) shouldBe Some(testValue)
     }
 
     "return None if no cached value exists for a given id and key" in {
-      await(
-        cacheRepository.fetchAndGetEntry[TestClass](id)(
-          TestClass.format)) shouldBe None
+      await(cacheRepository.fetchAndGetEntry[TestClass](id)(TestClass.format)) shouldBe None
     }
   }
 
-  private def retrieveRawCachedValue(id: String) = {
-    await(cacheRepository.collection.find(Filters.equal("id", toBson(id)))
-      .headOption()
-      .map {
-        case Some(entry) => entry.data.value
-        case None => None
-      })
-  }
+  private def retrieveRawCachedValue(id: String) =
+    await(
+      cacheRepository.collection
+        .find(Filters.equal("id", toBson(id)))
+        .headOption()
+        .map {
+          case Some(entry) => entry.data.value
+          case None        => None
+        })
 
   case class TestClass(one: String, two: String)
 

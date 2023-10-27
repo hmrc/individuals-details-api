@@ -16,7 +16,6 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.utils
 
-import java.nio.charset.Charset
 import akka.stream.Materializer
 import akka.util.ByteString
 import org.scalatest.matchers.should.Matchers
@@ -25,10 +24,10 @@ import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 
+import java.nio.charset.Charset
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.{Duration, FiniteDuration}
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
 trait TestSupport extends AnyWordSpec with Matchers {
@@ -48,8 +47,7 @@ trait TestSupport extends AnyWordSpec with Matchers {
   def jsonBodyOf(result: Result)(implicit mat: Materializer): JsValue =
     Json.parse(bodyOf(result))
 
-  def jsonBodyOf(resultF: Future[Result])(
-      implicit mat: Materializer): Future[JsValue] =
+  def jsonBodyOf(resultF: Future[Result])(implicit mat: Materializer): Future[JsValue] =
     resultF.map(jsonBodyOf)
 
   def bodyOf(result: Result)(implicit mat: Materializer): String = {
@@ -62,13 +60,13 @@ trait TestSupport extends AnyWordSpec with Matchers {
     bodyBytes.decodeString(Charset.defaultCharset().name)
   }
 
-  def bodyOf(resultF: Future[Result])(
-      implicit mat: Materializer): Future[String] =
+  def bodyOf(resultF: Future[Result])(implicit mat: Materializer): Future[String] =
     resultF.map(bodyOf)
 
-  case class ExternalService(serviceName: String,
-                             runFrom: String = "SNAPSHOT_JAR",
-                             classifier: Option[String] = None,
-                             version: Option[String] = None)
+  case class ExternalService(
+    serviceName: String,
+    runFrom: String = "SNAPSHOT_JAR",
+    classifier: Option[String] = None,
+    version: Option[String] = None)
 
 }

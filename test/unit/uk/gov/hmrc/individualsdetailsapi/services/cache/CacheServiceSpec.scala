@@ -31,11 +31,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CacheServiceSpec
-    extends SpecBase
-    with MockitoSugar
-    with Matchers
-    with BeforeAndAfterEach {
+class CacheServiceSpec extends SpecBase with MockitoSugar with Matchers with BeforeAndAfterEach {
 
   val cacheId = TestCacheId("someid")
   val cachedValue = TestClass("cached value")
@@ -64,7 +60,8 @@ class CacheServiceSpec
     }
 
     "execute the fallback function and cache the result if the cached value is a None" in new Setup {
-      given(mockClient.fetchAndGetEntry[TestClass](cacheId.id)).willReturn(Future.successful(None))
+      given(mockClient.fetchAndGetEntry[TestClass](cacheId.id))
+        .willReturn(Future.successful(None))
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
       verify(mockClient, times(1)).fetchAndGetEntry[TestClass](cacheId.id)
       verify(mockClient, times(1)).cache(cacheId.id, newValue)

@@ -32,9 +32,9 @@ class IfDetailsSpec extends UnitSpec {
     "Write to JSON when only nino provided" in {
       val result = Json.toJson(ninoDetails)
       val expectedJson = Json.parse("""
-          |{
-          |   "nino" : "XH123456A"
-          |}
+                                      |{
+                                      |   "nino" : "XH123456A"
+                                      |}
         """.stripMargin)
       result shouldBe expectedJson
     }
@@ -42,9 +42,9 @@ class IfDetailsSpec extends UnitSpec {
     "Write to JSON when only trn provided" in {
       val result = Json.toJson(trnDetails)
       val expectedJson = Json.parse("""
-          |{
-          |  "trn" : "12345678"
-          |}
+                                      |{
+                                      |  "trn" : "12345678"
+                                      |}
         """.stripMargin)
 
       result shouldBe expectedJson

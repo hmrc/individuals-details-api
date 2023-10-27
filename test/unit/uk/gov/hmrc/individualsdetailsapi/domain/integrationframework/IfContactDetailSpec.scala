@@ -30,11 +30,11 @@ class IfContactDetailSpec extends UnitSpec {
     "Write to JSON" in {
       val result = Json.toJson(contactDetail)
       val expectedJson = Json.parse("""
-          |{
-          |  "code" : 9,
-          |  "type" : "MOBILE TELEPHONE",
-          |  "detail" : "07123 987654"
-          |}"""".stripMargin)
+                                      |{
+                                      |  "code" : 9,
+                                      |  "type" : "MOBILE TELEPHONE",
+                                      |  "detail" : "07123 987654"
+                                      |}"""".stripMargin)
 
       result shouldBe expectedJson
     }

@@ -19,8 +19,7 @@ package uk.gov.hmrc.individualsdetailsapi.domain.integrationframework
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Format, JsPath}
 
-case class IfDetailsResponse(contactDetails: Option[Seq[IfContactDetail]],
-                             residences: Option[Seq[IfResidence]])
+case class IfDetailsResponse(contactDetails: Option[Seq[IfContactDetail]], residences: Option[Seq[IfResidence]])
 
 object IfDetailsResponse {
   implicit val detailsResponseFormat: Format[IfDetailsResponse] = Format(

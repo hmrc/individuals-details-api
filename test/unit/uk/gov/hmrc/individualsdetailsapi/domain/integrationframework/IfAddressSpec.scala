@@ -40,7 +40,9 @@ class IfAddressSpec extends UnitSpec with TestHelpers {
     }
 
     "convert to Address successfully when address is empty" in {
-      val result: JsResult[IfAddress] = Json.toJson(IfAddress(None, None, None, None, None, None)).validate[IfAddress]
+      val result: JsResult[IfAddress] = Json
+        .toJson(IfAddress(None, None, None, None, None, None))
+        .validate[IfAddress]
       result.isSuccess shouldBe true
       val convertedAddress: Option[Address] = Address.convert(Some(result.get))
       convertedAddress.isEmpty shouldBe true

@@ -16,12 +16,12 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.utils
 
-
-import org.scalatest.matchers.should.Matchers
-import uk.gov.hmrc.individualsdetailsapi.utils.UuidValidator
-import java.util.UUID
 import org.scalacheck.Arbitrary.arbUuid
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import uk.gov.hmrc.individualsdetailsapi.utils.UuidValidator
+
+import java.util.UUID
 
 class UuidValidatorSpec extends SpecBase with Matchers with ScalaCheckPropertyChecks {
 

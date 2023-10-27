@@ -52,10 +52,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
     val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
-    when(
-      mockAuthConnector.authorise(
-        eqTo(Enrolment("test-scope")),
-        refEq(Retrievals.allEnrolments))(any(), any()))
+    when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
       .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
     val scopes: Iterable[String] =
@@ -85,12 +82,15 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
             .withHeaders(validCorrelationHeader)
 
           when(
-            mockDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"),
-              eqTo(Set("test-scope")))(any(), any(), any()))
-            .thenReturn(Future.successful(Some(ContactDetails(
-              daytimeTelephones = List("0123 456789"),
-              eveningTelephones = List("0123 456789"),
-              mobileTelephones = List("0123 456789")))))
+            mockDetailsService
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(any(), any(), any()))
+            .thenReturn(
+              Future.successful(
+                Some(
+                  ContactDetails(
+                    daytimeTelephones = List("0123 456789"),
+                    eveningTelephones = List("0123 456789"),
+                    mobileTelephones = List("0123 456789")))))
 
           val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
 
@@ -105,8 +105,8 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
             .withHeaders(validCorrelationHeader)
 
           when(
-            mockDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"),
-              eqTo(Set("test-scope")))(any(), any(), any()))
+            mockDetailsService
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(any(), any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
@@ -114,7 +114,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           status(result) shouldBe NOT_FOUND
 
           contentAsJson(result) shouldBe Json.obj(
-            "code" -> "NOT_FOUND",
+            "code"    -> "NOT_FOUND",
             "message" -> "The resource can not be found"
           )
           verify(contactDetailsController.auditHelper, times(1))
@@ -145,9 +145,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           val result =
             intercept[Exception] {
-              await(
-                contactDetailsController.contactDetails(matchId)(
-                  fakeRequest))
+              await(contactDetailsController.contactDetails(matchId)(fakeRequest))
             }
           assert(result.getMessage == "No scopes defined")
         }
@@ -157,12 +155,15 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
 
           when(
-            mockDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"),
-              eqTo(List("test-scope")))(any(), any(), any()))
-            .thenReturn(Future.successful(Some(ContactDetails(
-              daytimeTelephones = List("0123 456789"),
-              eveningTelephones = List("0123 456789"),
-              mobileTelephones = List("0123 456789")))))
+            mockDetailsService
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any(), any()))
+            .thenReturn(
+              Future.successful(
+                Some(
+                  ContactDetails(
+                    daytimeTelephones = List("0123 456789"),
+                    eveningTelephones = List("0123 456789"),
+                    mobileTelephones = List("0123 456789")))))
 
           val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
 
@@ -183,12 +184,15 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
             .withHeaders("CorrelationId" -> "invalidId")
 
           when(
-            mockDetailsService.getContactDetails(eqTo(matchId), eqTo("contact-details"),
-              eqTo(List("test-scope")))(any(), any(), any()))
-            .thenReturn(Future.successful(Some(ContactDetails(
-              daytimeTelephones = List("0123 456789"),
-              eveningTelephones = List("0123 456789"),
-              mobileTelephones = List("0123 456789")))))
+            mockDetailsService
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any(), any()))
+            .thenReturn(
+              Future.successful(
+                Some(
+                  ContactDetails(
+                    daytimeTelephones = List("0123 456789"),
+                    eveningTelephones = List("0123 456789"),
+                    mobileTelephones = List("0123 456789")))))
 
           val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
 

@@ -32,37 +32,37 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class ContactDetailsController @Inject()(
-                                          val authConnector: AuthConnector,
-                                          cc: ControllerComponents,
-                                          scopeService: ScopesService,
-                                          detailsService: DetailsService,
-                                          implicit val auditHelper: AuditHelper)
-                                        (implicit val ec: ExecutionContext)
-    extends CommonController(cc)
-    with PrivilegedAuthentication {
+  val authConnector: AuthConnector,
+  cc: ControllerComponents,
+  scopeService: ScopesService,
+  detailsService: DetailsService,
+  implicit val auditHelper: AuditHelper)(implicit val ec: ExecutionContext)
+    extends CommonController(cc) with PrivilegedAuthentication {
 
-  def contactDetails(matchId: UUID): Action[AnyContent] = Action.async {
-    implicit request =>
-      val scopes = scopeService.getEndPointScopes("contact-details")
-      authenticate(scopes, matchId.toString) { authScopes =>
+  def contactDetails(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
+    val scopes = scopeService.getEndPointScopes("contact-details")
+    authenticate(scopes, matchId.toString) { authScopes =>
+      val correlationId = validateCorrelationId(request)
 
-        val correlationId = validateCorrelationId(request)
+      detailsService
+        .getContactDetails(matchId, "contact-details", authScopes)
+        .map { contactDetails =>
+          {
+            val selfLink = HalLink("self", s"/individuals/details/contact-details?matchId=$matchId")
+            val obj = contactDetails.fold(Json.obj().as[JsValue])(cd => Json.toJson(cd))
+            val response = state(Json.obj("contactDetails" -> obj)) ++ selfLink
 
-        detailsService
-          .getContactDetails(matchId, "contact-details", authScopes)
-          .map { contactDetails =>
-            {
-              val selfLink = HalLink("self", s"/individuals/details/contact-details?matchId=$matchId")
-              val obj = contactDetails.fold(Json.obj().as[JsValue])(cd => Json.toJson(cd))
-              val response = state(Json.obj("contactDetails" -> obj)) ++ selfLink
+            auditHelper.auditContactDetailsApiResponse(
+              correlationId.toString,
+              matchId.toString,
+              authScopes.mkString(","),
+              request,
+              selfLink.toString,
+              contactDetails)
 
-              auditHelper.auditContactDetailsApiResponse(
-                correlationId.toString, matchId.toString, authScopes.mkString(","),
-                request, selfLink.toString, contactDetails)
-
-              Ok(response)
-            }
+            Ok(response)
           }
-      } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/details/contact-details")
+        }
+    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/details/contact-details")
   }
 }

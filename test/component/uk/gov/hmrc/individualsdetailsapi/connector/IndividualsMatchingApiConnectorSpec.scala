@@ -16,12 +16,11 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.connector
 
-import java.util.UUID
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
-import org.scalatest.matchers.should.Matchers
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.should.Matchers
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
@@ -29,10 +28,9 @@ import uk.gov.hmrc.individualsdetailsapi.connectors.IndividualsMatchingApiConnec
 import uk.gov.hmrc.individualsdetailsapi.domain.{MatchNotFoundException, MatchedCitizen}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
-class IndividualsMatchingApiConnectorSpec
-    extends SpecBase
-    with Matchers
-    with BeforeAndAfterEach {
+import java.util.UUID
+
+class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with BeforeAndAfterEach {
 
   val stubPort = sys.env.getOrElse("WIREMOCK", "11121").toInt
   val stubHost = "localhost"
@@ -42,16 +40,14 @@ class IndividualsMatchingApiConnectorSpec
     implicit val hc = HeaderCarrier()
 
     val individualsMatchingApiConnector =
-      new IndividualsMatchingApiConnector(
-        servicesConfig,
-        fakeApplication.injector.instanceOf[HttpClient]) {
+      new IndividualsMatchingApiConnector(servicesConfig, fakeApplication.injector.instanceOf[HttpClient]) {
         override val serviceUrl = "http://127.0.0.1:11121"
       }
   }
 
   def externalServices: Seq[String] = Seq("Stub")
 
-  override def beforeEach() : Unit = {
+  override def beforeEach(): Unit = {
     wireMockServer.start()
     configureFor(stubHost, stubPort)
   }
@@ -80,22 +76,20 @@ class IndividualsMatchingApiConnectorSpec
     }
 
     "return a nino match when upstream service call succeeds" in new Fixture {
-      stubWithResponseStatus(OK,
-                             s"""
+      stubWithResponseStatus(
+        OK,
+        s"""
           {
             "matchId":"${matchId.toString}",
             "nino":"AB123456C"
           }
         """)
-      await(individualsMatchingApiConnector.resolve(matchId)) shouldBe MatchedCitizen(
-        matchId,
-        Nino("AB123456C"))
+      await(individualsMatchingApiConnector.resolve(matchId)) shouldBe MatchedCitizen(matchId, Nino("AB123456C"))
     }
 
   }
 
-  override def afterEach() : Unit = {
+  override def afterEach(): Unit =
     wireMockServer.stop()
-  }
 
 }
