@@ -13,7 +13,7 @@ object AppDependencies {
     hmrc                %% "bootstrap-backend-play-28"  % hmrcBootstrapVersion,
     hmrc                %% "domain"                     % "8.3.0-play-28",
     hmrc                %% "play-hal"                   % "3.4.0-play-28",
-    hmrc                %% "json-encryption"            % "5.2.0-play-28",
+    hmrc                %% "crypto-json-play-28"        % "7.3.0",
     hmrcMongo           %% "hmrc-mongo-play-28"         % hmrcMongoVersion,
   )
 

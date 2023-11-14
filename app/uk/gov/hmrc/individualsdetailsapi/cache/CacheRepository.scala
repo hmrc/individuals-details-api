@@ -19,9 +19,9 @@ package uk.gov.hmrc.individualsdetailsapi.cache
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOptions}
 import play.api.Configuration
-import play.api.libs.json.{Format, JsValue}
+import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.crypto._
-import uk.gov.hmrc.crypto.json.{JsonDecryptor, JsonEncryptor}
+import uk.gov.hmrc.crypto.json.JsonEncryption
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -30,6 +30,8 @@ import java.time.{LocalDateTime, ZoneOffset}
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+
+private case class SensitiveA[A](override val decryptedValue: A) extends Sensitive[A]
 
 @Singleton
 class CacheRepository @Inject()(
@@ -58,12 +60,12 @@ class CacheRepository @Inject()(
       )
     ) {
 
-  implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(configuration.underlying).JsonCrypto
+  implicit lazy val crypto: Encrypter with Decrypter = new ApplicationCrypto(configuration.underlying).JsonCrypto
 
   def cache[T](id: String, value: T)(implicit formats: Format[T]) = {
 
-    val jsonEncryptor = new JsonEncryptor[T]()
-    val encryptedValue: JsValue = jsonEncryptor.writes(Protected[T](value))
+    val encryptionformat = JsonEncryption.sensitiveEncrypter[T, SensitiveA[T]]
+    val encryptedValue = Json.toJson(SensitiveA(value))(encryptionformat)
 
     val entry = new Entry(
       id,
@@ -83,18 +85,14 @@ class CacheRepository @Inject()(
       .toFuture()
   }
 
-  def fetchAndGetEntry[T](id: String)(implicit formats: Format[T]): Future[Option[T]] = {
-    val decryptor = new JsonDecryptor[T]()
-
+  def fetchAndGetEntry[T](id: String)(implicit formats: Format[T]): Future[Option[T]] =
     collection
       .find(Filters.equal("id", toBson(id)))
       .headOption()
-      .map {
-        case Some(entry) =>
-          decryptor.reads(entry.data.value).asOpt map (_.decryptedValue)
-        case None => None
-      }
-  }
+      .map(_.flatMap { entry =>
+        val decryptionFormat = JsonEncryption.sensitiveDecrypter[T, SensitiveA[T]](SensitiveA.apply)
+        Json.fromJson[SensitiveA[T]](entry.data.value)(decryptionFormat).asOpt.map(_.decryptedValue)
+      })
 }
 
 @Singleton
