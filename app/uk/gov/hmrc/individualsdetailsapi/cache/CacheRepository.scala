@@ -58,7 +58,7 @@ class CacheRepository @Inject()(
       )
     ) {
 
-  implicit lazy val crypto: CompositeSymmetricCrypto = new ApplicationCrypto(configuration.underlying).JsonCrypto
+  implicit lazy val crypto: Encrypter with Decrypter = new ApplicationCrypto(configuration.underlying).JsonCrypto
 
   def cache[T](id: String, value: T)(implicit formats: Format[T]) = {
 
