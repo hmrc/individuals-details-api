@@ -5,8 +5,8 @@ object AppDependencies {
 
   val hmrc = "uk.gov.hmrc"
   val hmrcMongo = s"$hmrc.mongo"
-  val hmrcMongoVersion = "1.3.0"
-  val hmrcBootstrapVersion = "5.25.0"
+  val hmrcMongoVersion = "1.4.0"
+  val hmrcBootstrapVersion = "7.23.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
