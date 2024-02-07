@@ -27,9 +27,9 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsdetailsapi.connectors.IndividualsMatchingApiConnector
 import uk.gov.hmrc.individualsdetailsapi.domain.{MatchNotFoundException, MatchedCitizen}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
-import scala.concurrent.ExecutionContext.Implicits.global
 
 import java.util.UUID
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with BeforeAndAfterEach {
 
