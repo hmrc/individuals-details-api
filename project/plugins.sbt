@@ -10,4 +10,4 @@ addSbtPlugin("com.typesafe.play" %% "sbt-plugin" % "2.8.20")
 
 addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "1.9.3")
 
-addSbtPlugin("com.lucidchart" %% "sbt-scalafmt" % "1.16")
+addSbtPlugin("org.scalameta" %% "sbt-scalafmt" % "2.5.2")

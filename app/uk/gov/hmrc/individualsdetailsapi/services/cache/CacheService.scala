@@ -23,8 +23,9 @@ import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CacheService @Inject()(cachingClient: CacheRepository, conf: CacheRepositoryConfiguration)(
-  implicit ec: ExecutionContext) {
+class CacheService @Inject() (cachingClient: CacheRepository, conf: CacheRepositoryConfiguration)(implicit
+  ec: ExecutionContext
+) {
 
   lazy val cacheEnabled: Boolean = conf.cacheEnabled
 
@@ -38,7 +39,8 @@ class CacheService @Inject()(cachingClient: CacheRepository, conf: CacheReposito
             cachingClient.cache(cacheId.id, result)
             result
           }
-      } else {
+      }
+    else {
       fallbackFunction
     }
 

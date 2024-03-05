@@ -65,7 +65,7 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
   trait Setup {
     val matchId = "80a6bb14-d888-436e-a541-4000674c60aa"
     val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-    val sampleCorrelationIdHeader = ("CorrelationId" -> sampleCorrelationId)
+    val sampleCorrelationIdHeader = "CorrelationId" -> sampleCorrelationId
 
     implicit val hc = HeaderCarrier()
 
@@ -95,7 +95,8 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
 
       stubFor(
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
-          .willReturn(aResponse().withStatus(500)))
+          .willReturn(aResponse().withStatus(500))
+      )
 
       intercept[InternalServerException] {
         await(
@@ -117,7 +118,8 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
 
       stubFor(
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
-          .willReturn(aResponse().withStatus(400).withBody("BAD_REQUEST")))
+          .willReturn(aResponse().withStatus(400).withBody("BAD_REQUEST"))
+      )
 
       intercept[InternalServerException] {
         await(
@@ -138,7 +140,8 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
 
       stubFor(
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
-          .willReturn(aResponse().withStatus(404).withBody("PERSON_NOT_FOUND")))
+          .willReturn(aResponse().withStatus(404).withBody("PERSON_NOT_FOUND"))
+      )
 
       val result = await(
         underTest.fetchDetails(nino, None, matchId)(
@@ -160,7 +163,8 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
 
       stubFor(
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
-          .willReturn(aResponse().withStatus(404).withBody("NOT_FOUND")))
+          .willReturn(aResponse().withStatus(404).withBody("NOT_FOUND"))
+      )
 
       intercept[NotFoundException] {
         await(
@@ -185,14 +189,19 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
               code = 7,
               detailType = "DAYTIME TELEPHONE",
               detail = ""
-            ))))
+            )
+          )
+        )
+      )
 
       stubFor(
         get(urlPathMatching(s"/individuals/details/contact/nino/$nino"))
           .willReturn(
             aResponse()
               .withStatus(200)
-              .withBody(Json.toJson(invalidData).toString())))
+              .withBody(Json.toJson(invalidData).toString())
+          )
+      )
 
       intercept[InternalServerException] {
         await(
@@ -217,9 +226,12 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
           .withHeader(HeaderNames.authorisation, equalTo(s"Bearer $integrationFrameworkAuthorizationToken"))
           .withHeader("Environment", equalTo(integrationFrameworkEnvironment))
           .withHeader("CorrelationId", equalTo(sampleCorrelationId))
-          .willReturn(aResponse()
-            .withStatus(200)
-            .withBody(Json.toJson(detailsData).toString())))
+          .willReturn(
+            aResponse()
+              .withStatus(200)
+              .withBody(Json.toJson(detailsData).toString())
+          )
+      )
 
       val result = await(
         underTest.fetchDetails(nino, None, matchId)(

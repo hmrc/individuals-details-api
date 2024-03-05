@@ -67,6 +67,7 @@ trait UnitSpec extends AnyWordSpec with Matchers {
     serviceName: String,
     runFrom: String = "SNAPSHOT_JAR",
     classifier: Option[String] = None,
-    version: Option[String] = None)
+    version: Option[String] = None
+  )
 
 }

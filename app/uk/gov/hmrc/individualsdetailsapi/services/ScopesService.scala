@@ -21,7 +21,7 @@ import uk.gov.hmrc.individualsdetailsapi.config.{ApiConfig, InternalEndpointConf
 
 import javax.inject.Inject
 
-class ScopesService @Inject()(configuration: Configuration) {
+class ScopesService @Inject() (configuration: Configuration) {
 
   private lazy val apiConfig =
     configuration.get[ApiConfig]("api-config")
@@ -56,11 +56,11 @@ class ScopesService @Inject()(configuration: Configuration) {
     val filterKeys = scopes.flatMap(getScopeFilterKeys).toList
     endpoints
       .flatMap(apiConfig.getInternalEndpoint)
-      .flatMap(
-        endpoint =>
-          endpoint.filters
-            .filter(filterMap => filterKeys.contains(filterMap._1))
-            .values)
+      .flatMap(endpoint =>
+        endpoint.filters
+          .filter(filterMap => filterKeys.contains(filterMap._1))
+          .values
+      )
   }
 
   def getIfDataPaths(scopes: Iterable[String], endpoints: List[String]): Set[String] = {

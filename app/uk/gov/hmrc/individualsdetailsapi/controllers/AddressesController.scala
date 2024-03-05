@@ -31,7 +31,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class AddressesController @Inject()(
+class AddressesController @Inject() (
   val authConnector: AuthConnector,
   cc: ControllerComponents,
   scopeService: ScopesService,
@@ -60,7 +60,8 @@ class AddressesController @Inject()(
             authScopes.mkString(","),
             request,
             selfLink.toString,
-            addresses)
+            addresses
+          )
 
           Ok(response)
         }

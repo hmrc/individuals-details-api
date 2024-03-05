@@ -33,10 +33,11 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CacheRepository @Inject()(
+class CacheRepository @Inject() (
   val cacheConfig: CacheRepositoryConfiguration,
   configuration: Configuration,
-  mongo: MongoComponent)(implicit ec: ExecutionContext)
+  mongo: MongoComponent
+)(implicit ec: ExecutionContext)
     extends PlayMongoRepository[Entry](
       mongoComponent = mongo,
       collectionName = cacheConfig.collName,
@@ -49,13 +50,15 @@ class CacheRepository @Inject()(
             .name("_id")
             .unique(true)
             .background(false)
-            .sparse(true)),
+            .sparse(true)
+        ),
         IndexModel(
           ascending("modifiedDetails.lastUpdated"),
           IndexOptions()
             .name("lastUpdatedIndex")
             .background(false)
-            .expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS))
+            .expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)
+        )
       )
     ) {
 
@@ -103,7 +106,7 @@ class CacheRepository @Inject()(
 }
 
 @Singleton
-class CacheRepositoryConfiguration @Inject()(configuration: Configuration) {
+class CacheRepositoryConfiguration @Inject() (configuration: Configuration) {
 
   lazy val cacheEnabled = configuration
     .getOptional[Boolean](

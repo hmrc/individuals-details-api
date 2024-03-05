@@ -28,10 +28,10 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class APIDocumentationController @Inject()(cc: ControllerComponents, assets: Assets, config: Configuration)(
-  implicit materializer: Materializer,
-  executionContext: ExecutionContext)
-    extends BackendController(cc) {
+class APIDocumentationController @Inject() (cc: ControllerComponents, assets: Assets, config: Configuration)(implicit
+  materializer: Materializer,
+  executionContext: ExecutionContext
+) extends BackendController(cc) {
 
   private lazy val privilegedWhitelistedApplicationIds =
     config

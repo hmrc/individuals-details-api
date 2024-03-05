@@ -33,11 +33,10 @@ trait CommonControllerSpec extends BaseSpec {
   val expectedJson: JsValue
   val ifDetailsResponse: IfDetailsResponse = SandboxDetailsData
     .findByMatchId(SandboxDetailsData.sandboxMatchId)
-    .map(
-      sandboxData =>
-        IfDetailsResponse(
-          sandboxData.contactDetails,
-          sandboxData.residences
+    .map(sandboxData =>
+      IfDetailsResponse(
+        sandboxData.contactDetails,
+        sandboxData.residences
       )
     )
     .get

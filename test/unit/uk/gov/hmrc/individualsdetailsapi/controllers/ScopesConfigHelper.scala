@@ -26,6 +26,6 @@ trait ScopesConfigHelper {
     (s"api-config.endpoints.paye.title", "Get an individual's PAYE employment data"),
     (s"api-config.endpoints.paye.fields.A", "employments/employer/name"),
     (s"api-config.endpoints.paye.fields.B", "employments/employer/districtNumber"),
-    (s"api-config.endpoints.paye.fields.C", "employments/employer/schemeRef"),
+    (s"api-config.endpoints.paye.fields.C", "employments/employer/schemeRef")
   )
 }

@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
+class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
     extends Logging {
 
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
@@ -46,10 +46,11 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
 
   private val emptyResponse = IfDetailsResponse(None, None)
 
-  def fetchDetails(nino: Nino, filter: Option[String], matchId: String)(
-    implicit hc: HeaderCarrier,
+  def fetchDetails(nino: Nino, filter: Option[String], matchId: String)(implicit
+    hc: HeaderCarrier,
     request: RequestHeader,
-    ec: ExecutionContext): Future[IfDetailsResponse] = {
+    ec: ExecutionContext
+  ): Future[IfDetailsResponse] = {
 
     val detailsUrl =
       s"$baseUrl/individuals/details/contact/nino/$nino${filter.map(f => s"?fields=$f").getOrElse("")}"
@@ -66,9 +67,11 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
     "CorrelationId"           -> extractCorrelationId(requestHeader)
   )
 
-  private def call(
-    url: String,
-    matchId: String)(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext) =
+  private def call(url: String, matchId: String)(implicit
+    hc: HeaderCarrier,
+    request: RequestHeader,
+    ec: ExecutionContext
+  ) =
     recover(
       http.GET[IfDetailsResponse](url, headers = setHeaders(request)) map { response =>
         auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response)
@@ -85,7 +88,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
     correlationId: String,
     matchId: String,
     request: RequestHeader,
-    requestUrl: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IfDetailsResponse] = x.recoverWith {
+    requestUrl: String
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[IfDetailsResponse] = x.recoverWith {
 
     case validationError: JsValidationException =>
       logger.warn("Integration Framework JsValidationException encountered")
@@ -94,7 +98,8 @@ class IfConnector @Inject()(servicesConfig: ServicesConfig, http: HttpClient, va
         matchId,
         request,
         requestUrl,
-        s"Error parsing IF response: ${validationError.errors}")
+        s"Error parsing IF response: ${validationError.errors}"
+      )
       Future.failed(new InternalServerException("Something went wrong."))
     case UpstreamErrorResponse(msg, 404, _, _) =>
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)

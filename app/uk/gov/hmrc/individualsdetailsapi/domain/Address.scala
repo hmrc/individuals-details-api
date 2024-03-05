@@ -25,7 +25,8 @@ case class Address(
   line3: Option[String],
   line4: Option[String],
   line5: Option[String],
-  postcode: Option[String])
+  postcode: Option[String]
+)
 
 object Address {
 
@@ -37,20 +38,22 @@ object Address {
     line3: Option[String],
     line4: Option[String],
     line5: Option[String],
-    postcode: Option[String]): Option[Address] =
+    postcode: Option[String]
+  ): Option[Address] =
     (line1, line2, line3, line4, line5, postcode) match {
       case (None, None, None, None, None, None) => None
       case _                                    => Some(new Address(line1, line2, line3, line4, line5, postcode))
     }
 
   def convert(ifAddress: Option[IfAddress]): Option[Address] =
-    ifAddress.flatMap(
-      address =>
-        create(
-          line1 = address.line1,
-          line2 = address.line2,
-          line3 = address.line3,
-          line4 = address.line4,
-          line5 = address.line5,
-          postcode = address.postcode))
+    ifAddress.flatMap(address =>
+      create(
+        line1 = address.line1,
+        line2 = address.line2,
+        line3 = address.line3,
+        line4 = address.line4,
+        line5 = address.line5,
+        postcode = address.postcode
+      )
+    )
 }

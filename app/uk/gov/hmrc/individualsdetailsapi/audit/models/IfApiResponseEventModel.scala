@@ -29,7 +29,8 @@ case class IfApiResponseEventModel(
   correlationId: String,
   applicationId: String,
   requestUrl: String,
-  integrationFrameworkDetails: IfDetailsResponse)
+  integrationFrameworkDetails: IfDetailsResponse
+)
 
 object IfApiResponseEventModel {
   implicit val formatIfApiResponseEventModel =

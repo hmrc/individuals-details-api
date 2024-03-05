@@ -27,7 +27,8 @@ case class Individual(
   matchId: UUID,
   nino: String,
   contactDetails: Option[Seq[IfContactDetail]],
-  residences: Option[Seq[IfResidence]])
+  residences: Option[Seq[IfResidence]]
+)
 
 object SandboxDetailsData {
 
@@ -70,7 +71,8 @@ object SandboxDetailsData {
           detailType = "MOBILE TELEPHONE",
           detail = "01234 567890"
         )
-      )),
+      )
+    ),
     residences = Some(
       Seq(
         IfResidence(
@@ -82,14 +84,16 @@ object SandboxDetailsData {
           retLetterServ = None,
           addressCode = Option("1"),
           addressType = Option("UK"),
-          address = Option(IfAddress(
-            line1 = Option("24 Trinity Street"),
-            line2 = Option("Dawley Bank"),
-            line3 = Option("Telford"),
-            line4 = Option("Shropshire"),
-            line5 = Option("UK"),
-            postcode = Option("TF3 4ER")
-          )),
+          address = Option(
+            IfAddress(
+              line1 = Option("24 Trinity Street"),
+              line2 = Option("Dawley Bank"),
+              line3 = Option("Telford"),
+              line4 = Option("Shropshire"),
+              line5 = Option("UK"),
+              postcode = Option("TF3 4ER")
+            )
+          ),
           houseId = None,
           homeCountry = None,
           otherCountry = None,
@@ -123,6 +127,7 @@ object SandboxDetailsData {
           startDateTime = None,
           noLongerUsed = Option("Y")
         )
-      ))
+      )
+    )
   )
 }
