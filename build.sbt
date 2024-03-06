@@ -8,9 +8,9 @@ lazy val ComponentTest = config("component") extend Test
 lazy val microservice =
   Project(appName, file("."))
     .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
-    .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
+    .disablePlugins(JUnitXmlReportPlugin) // Required to prevent https://github.com/scalatest/scalatest/issues/1427
     .settings(CodeCoverageSettings.settings *)
-    .settings(scalaVersion := "2.13.8")
+    .settings(scalaVersion := "2.13.12")
     .settings(scalafmtOnCompile := true)
     .settings(onLoadMessage := "")
     .settings(
@@ -23,7 +23,9 @@ lazy val microservice =
     .settings(inConfig(IntegrationTest)(Defaults.itSettings) *)
     .settings(
       IntegrationTest / Keys.fork := false,
-      IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "test")).value,
+      IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base =>
+        Seq(base / "test")
+      ).value,
       IntegrationTest / testOptions := Seq(Tests.Filter((name: String) => name startsWith "it")),
       addTestReportOption(IntegrationTest, "int-test-reports"),
       IntegrationTest / testGrouping := oneForkedJvmPerTest((IntegrationTest / definedTests).value),
@@ -37,7 +39,8 @@ lazy val microservice =
         "-u",
         "target/int-test-reports",
         "-h",
-        "target/int-test-reports/html-report")
+        "target/int-test-reports/html-report"
+      )
     )
     .configs(ComponentTest)
     .settings(inConfig(ComponentTest)(Defaults.testSettings) *)
@@ -57,22 +60,28 @@ lazy val microservice =
         "-u",
         "target/component-test-reports",
         "-h",
-        "target/component-test-reports/html-report")
+        "target/component-test-reports/html-report"
+      )
     )
     .settings(PlayKeys.playDefaultPort := 9655)
     .settings(majorVersion := 0)
     // Disable default sbt Test options (might change with new versions of bootstrap)
-    .settings(Test / testOptions -= Tests
-      .Argument("-o", "-u", "target/test-reports", "-h", "target/test-reports/html-report"))
+    .settings(
+      Test / testOptions -= Tests
+        .Argument("-o", "-u", "target/test-reports", "-h", "target/test-reports/html-report")
+    )
     // Suppress successful events in Scalatest in standard output (-o)
     // Options described here: https://www.scalatest.org/user_guide/using_scalatest_with_sbt
-    .settings(Test / testOptions += Tests.Argument(
-      TestFrameworks.ScalaTest,
-      "-oNCHPQR",
-      "-u",
-      "target/test-reports",
-      "-h",
-      "target/test-reports/html-report"))
+    .settings(
+      Test / testOptions += Tests.Argument(
+        TestFrameworks.ScalaTest,
+        "-oNCHPQR",
+        "-u",
+        "target/test-reports",
+        "-h",
+        "target/test-reports/html-report"
+      )
+    )
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]) =
   tests.map { test =>

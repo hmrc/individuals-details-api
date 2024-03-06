@@ -45,7 +45,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
   trait Fixture extends ScopesConfigHelper {
 
-    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
+    implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
 
     lazy val scopeService: ScopesService = mock[ScopesService]
     val mockDetailsService = mock[DetailsService]

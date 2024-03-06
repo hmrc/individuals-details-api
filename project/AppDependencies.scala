@@ -26,6 +26,7 @@ object AppDependencies {
     "org.scalatestplus.play" %% "scalatestplus-play"              % "5.1.0"              % scope,
     "com.vladsch.flexmark"    % "flexmark-all"                    % "0.64.6"             % scope,
     "org.scalaj"             %% "scalaj-http"                     % "2.4.2"              % scope,
-    hmrc                     %% s"bootstrap-backend-$playVersion" % hmrcBootstrapVersion % scope
+    hmrc                     %% s"bootstrap-backend-$playVersion" % hmrcBootstrapVersion % scope,
+    hmrc                     %% s"bootstrap-test-$playVersion"    % hmrcBootstrapVersion % scope
   )
 }

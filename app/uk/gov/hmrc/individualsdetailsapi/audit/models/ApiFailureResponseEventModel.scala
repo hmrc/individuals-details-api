@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.individualsdetailsapi.audit.models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class ApiFailureResponseEventModel(
   deviceId: String,
@@ -32,6 +32,6 @@ case class ApiFailureResponseEventModel(
 )
 
 object ApiFailureResponseEventModel {
-  implicit val formatApiFailureResponseEventModel =
+  implicit val formatApiFailureResponseEventModel: OFormat[ApiFailureResponseEventModel] =
     Json.format[ApiFailureResponseEventModel]
 }
