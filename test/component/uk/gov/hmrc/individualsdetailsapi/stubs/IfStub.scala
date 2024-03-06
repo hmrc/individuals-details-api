@@ -29,7 +29,9 @@ object IfStub extends MockHost(22004) {
         .willReturn(
           aResponse()
             .withStatus(OK)
-            .withBody(Json.toJson(ifDetailsResponse).toString())))
+            .withBody(Json.toJson(ifDetailsResponse).toString())
+        )
+    )
 
   def customResponse(nino: String, status: Int, response: JsValue) =
     mock.register(
@@ -37,7 +39,9 @@ object IfStub extends MockHost(22004) {
         .willReturn(
           aResponse()
             .withStatus(status)
-            .withBody(response.toString())))
+            .withBody(response.toString())
+        )
+    )
 
   def enforceRateLimit(nino: String, fromDate: String, toDate: String): Unit =
     mock.register(
@@ -45,8 +49,10 @@ object IfStub extends MockHost(22004) {
         .withQueryParam(
           "fields",
           equalTo(
-            "employments(employer(address(line1,line2,line3,line4,line5,postcode),districtNumber,name,schemeRef),employment(endDate,startDate))")
+            "employments(employer(address(line1,line2,line3,line4,line5,postcode),districtNumber,name,schemeRef),employment(endDate,startDate))"
+          )
         )
-        .willReturn(aResponse().withStatus(TOO_MANY_REQUESTS)))
+        .willReturn(aResponse().withStatus(TOO_MANY_REQUESTS))
+    )
 
 }

@@ -94,7 +94,8 @@ class CacheRepositorySpec extends AnyWordSpec with Matchers with BeforeAndAfterE
         .map {
           case Some(entry) => entry.data.value
           case None        => None
-        })
+        }
+    )
 
   case class TestClass(one: String, two: String)
 

@@ -16,8 +16,8 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import akka.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
+import org.apache.pekko.stream.Materializer
+import org.mockito.ArgumentMatchers.{any, eq => eqTo, refEq}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -50,7 +50,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
   trait Fixture extends ScopesConfigHelper {
 
-    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
+    implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
 
     lazy val scopeService: ScopesService = mock[ScopesService]
     lazy val scopeHelper: ScopesHelper = new ScopesHelper(scopeService)

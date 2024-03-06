@@ -28,26 +28,29 @@ import javax.inject.{Inject, Named, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DetailsService @Inject()(
+class DetailsService @Inject() (
   individualsMatchingApiConnector: IndividualsMatchingApiConnector,
   ifConnector: IfConnector,
   scopesService: ScopesService,
   scopesHelper: ScopesHelper,
   @Named("retryDelay") retryDelay: Int,
-  cacheService: CacheService)(implicit val ec: ExecutionContext) {
+  cacheService: CacheService
+)(implicit val ec: ExecutionContext) {
 
-  def getContactDetails(matchId: UUID, endpoint: String, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
+  def getContactDetails(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
     request: RequestHeader,
-    ec: ExecutionContext): Future[Option[ContactDetails]] =
+    ec: ExecutionContext
+  ): Future[Option[ContactDetails]] =
     retrieveAndMap[Option[ContactDetails]](matchId, endpoint, scopes) { response =>
       response.contactDetails.flatMap(ContactDetails.convert)
     }
 
-  def getResidences(matchId: UUID, endpoint: String, scopes: Iterable[String])(
-    implicit hc: HeaderCarrier,
+  def getResidences(matchId: UUID, endpoint: String, scopes: Iterable[String])(implicit
+    hc: HeaderCarrier,
     request: RequestHeader,
-    ec: ExecutionContext): Future[Seq[Residence]] =
+    ec: ExecutionContext
+  ): Future[Seq[Residence]] =
     retrieveAndMap[Seq[Residence]](matchId, endpoint, scopes) { response =>
       response.residences
         .getOrElse(Seq())
@@ -60,20 +63,17 @@ class DetailsService @Inject()(
     individualsMatchingApiConnector.resolve(matchId)
 
   def retrieveAndMap[T](matchId: UUID, endpoint: String, scopes: Iterable[String])(
-    responseMapper: IfDetailsResponse => T)(
-    implicit hc: HeaderCarrier,
-    request: RequestHeader,
-    ec: ExecutionContext): Future[T] = {
+    responseMapper: IfDetailsResponse => T
+  )(implicit hc: HeaderCarrier, request: RequestHeader, ec: ExecutionContext): Future[T] = {
 
     val cacheId = CacheId(matchId, scopesService.getValidFieldsForCacheKey(scopes.toList, List(endpoint)))
 
     cacheService.get(
-      cacheId, {
-        resolve(matchId).flatMap(ninoMatch => {
-          val fieldsQuery =
-            scopesHelper.getQueryStringFor(scopes.toList, List(endpoint))
-          ifConnector.fetchDetails(ninoMatch.nino, Option(fieldsQuery).filter(_.nonEmpty), matchId.toString)
-        })
+      cacheId,
+      resolve(matchId).flatMap { ninoMatch =>
+        val fieldsQuery =
+          scopesHelper.getQueryStringFor(scopes.toList, List(endpoint))
+        ifConnector.fetchDetails(ninoMatch.nino, Option(fieldsQuery).filter(_.nonEmpty), matchId.toString)
       }
     ) map responseMapper
   }

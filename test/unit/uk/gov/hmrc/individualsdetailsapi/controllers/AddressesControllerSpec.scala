@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo, refEq}
 import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
@@ -41,7 +41,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
   trait Fixture extends ScopesConfigHelper {
 
-    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
+    implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
 
     lazy val scopeService: ScopesService = mock[ScopesService]
     val mockDetailsService = mock[DetailsService]
@@ -76,7 +76,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
             line4 = Option("Shropshire"),
             line5 = Option("UK"),
             postcode = Option("TF3 4ER")
-          )),
+          )
+        ),
         inUse = Option(true)
       ),
       Residence(
@@ -109,7 +110,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(Set("test-scope")))(any(), any(), any()))
+              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(Set("test-scope")))(any(), any(), any())
+          )
             .thenReturn(Future.successful(residences))
 
           val result = addressesController.addresses(matchId)(fakeRequest)
@@ -126,7 +128,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(Set("test-scope")))(any(), any(), any()))
+              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(Set("test-scope")))(any(), any(), any())
+          )
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result = addressesController.addresses(matchId)(fakeRequest)
@@ -174,7 +177,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(List("test-scope")))(any(), any(), any()))
+              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(List("test-scope")))(any(), any(), any())
+          )
             .thenReturn(Future.successful(residences))
 
           val result = addressesController.addresses(matchId)(fakeRequest)
@@ -196,7 +200,8 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(List("test-scope")))(any(), any(), any()))
+              .getResidences(eqTo(matchId), eqTo("addresses"), eqTo(List("test-scope")))(any(), any(), any())
+          )
             .thenReturn(Future.successful(residences))
 
           val result = addressesController.addresses(matchId)(fakeRequest)

@@ -16,8 +16,8 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.utils
 
-import akka.stream.Materializer
-import akka.util.ByteString
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.util.ByteString
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.inject.guice.GuiceableModule
@@ -67,6 +67,7 @@ trait UnitSpec extends AnyWordSpec with Matchers {
     serviceName: String,
     runFrom: String = "SNAPSHOT_JAR",
     classifier: Option[String] = None,
-    version: Option[String] = None)
+    version: Option[String] = None
+  )
 
 }

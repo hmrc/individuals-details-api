@@ -20,6 +20,6 @@ import uk.gov.hmrc.individualsdetailsapi.utils.MatchUuidQueryStringBinder
 
 package object Binders {
 
-  implicit val matchUuidQueryStringBinder = new MatchUuidQueryStringBinder
+  implicit val matchUuidQueryStringBinder: MatchUuidQueryStringBinder = new MatchUuidQueryStringBinder
 
 }

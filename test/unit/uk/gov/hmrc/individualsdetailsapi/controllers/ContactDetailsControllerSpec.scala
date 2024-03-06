@@ -16,8 +16,8 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
-import akka.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, refEq, eq => eqTo}
+import org.apache.pekko.stream.Materializer
+import org.mockito.ArgumentMatchers.{any, eq => eqTo, refEq}
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
@@ -45,7 +45,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
   trait Fixture extends ScopesConfigHelper {
 
-    implicit lazy val ec = fakeApplication.injector.instanceOf[ExecutionContext]
+    implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
 
     lazy val scopeService: ScopesService = mock[ScopesService]
     val mockDetailsService = mock[DetailsService]
@@ -83,14 +83,19 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(any(), any(), any()))
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(any(), any(), any())
+          )
             .thenReturn(
               Future.successful(
                 Some(
                   ContactDetails(
                     daytimeTelephones = List("0123 456789"),
                     eveningTelephones = List("0123 456789"),
-                    mobileTelephones = List("0123 456789")))))
+                    mobileTelephones = List("0123 456789")
+                  )
+                )
+              )
+            )
 
           val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
 
@@ -106,7 +111,8 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(any(), any(), any()))
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(any(), any(), any())
+          )
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
@@ -156,14 +162,19 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any(), any()))
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any(), any())
+          )
             .thenReturn(
               Future.successful(
                 Some(
                   ContactDetails(
                     daytimeTelephones = List("0123 456789"),
                     eveningTelephones = List("0123 456789"),
-                    mobileTelephones = List("0123 456789")))))
+                    mobileTelephones = List("0123 456789")
+                  )
+                )
+              )
+            )
 
           val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
 
@@ -185,14 +196,19 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any(), any()))
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any(), any())
+          )
             .thenReturn(
               Future.successful(
                 Some(
                   ContactDetails(
                     daytimeTelephones = List("0123 456789"),
                     eveningTelephones = List("0123 456789"),
-                    mobileTelephones = List("0123 456789")))))
+                    mobileTelephones = List("0123 456789")
+                  )
+                )
+              )
+            )
 
           val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
 

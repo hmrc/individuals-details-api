@@ -39,21 +39,22 @@ class LiveRootControllerSpec extends CommonControllerSpec {
     "read:individuals-details-nictsejo-c4"
   )
 
-  override val expectedJson: JsValue = Json.parse(s"""{
-                                                     |  "_links" : {
-                                                     |    "addresses" : {
-                                                     |      "href" : "/individuals/details/addresses?matchId=$matchId",
-                                                     |      "title" : "Get addresses"
-                                                     |    },
-                                                     |    "contact-details" : {
-                                                     |      "href" : "/individuals/details/contact-details?matchId=$matchId",
-                                                     |      "title" : "Get contact details"
-                                                     |    },
-                                                     |    "self" : {
-                                                     |      "href" : "/individuals/details/?matchId=$matchId"
-                                                     |    }
-                                                     |  }
-                                                     |}""".stripMargin)
+  override val expectedJson: JsValue =
+    Json.parse(s"""{
+                  |  "_links" : {
+                  |    "addresses" : {
+                  |      "href" : "/individuals/details/addresses?matchId=$matchId",
+                  |      "title" : "Get addresses"
+                  |    },
+                  |    "contact-details" : {
+                  |      "href" : "/individuals/details/contact-details?matchId=$matchId",
+                  |      "title" : "Get contact details"
+                  |    },
+                  |    "self" : {
+                  |      "href" : "/individuals/details/?matchId=$matchId"
+                  |    }
+                  |  }
+                  |}""".stripMargin)
 
   Scenario(s"user does not have valid scopes") {
     Given("A valid auth token but invalid scopes")

@@ -32,7 +32,7 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 class AuditHelperSpec extends AsyncWordSpec with Matchers with MockitoSugar {
 
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val nino = "CS700100A"
   val correlationId = "test"

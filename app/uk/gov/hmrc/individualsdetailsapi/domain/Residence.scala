@@ -47,7 +47,8 @@ object Residence {
   def create(
     residenceType: Option[String],
     address: Option[Address],
-    noLongerUsed: Option[Boolean]): Option[Residence] =
+    noLongerUsed: Option[Boolean]
+  ): Option[Residence] =
     (residenceType, address, noLongerUsed) match {
       case (None, None, None) => None
       case _                  => Some(new Residence(residenceType, address, noLongerUsed))

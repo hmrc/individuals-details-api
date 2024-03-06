@@ -4,24 +4,27 @@ import sbt.*
 object AppDependencies {
 
   val hmrc = "uk.gov.hmrc"
+  val playVersion = "play-30"
   val hmrcMongo = s"$hmrc.mongo"
-  val hmrcMongoVersion = "1.4.0"
-  val hmrcBootstrapVersion = "7.23.0"
+  val hmrcMongoVersion = "1.7.0"
+  val hmrcBootstrapVersion = "8.4.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    hmrc                %% "bootstrap-backend-play-28"  % hmrcBootstrapVersion,
-    hmrc                %% "domain"                     % "8.3.0-play-28",
-    hmrc                %% "play-hal"                   % "3.4.0-play-28",
-    hmrc                %% "json-encryption"            % "5.2.0-play-28",
-    hmrcMongo           %% "hmrc-mongo-play-28"         % hmrcMongoVersion,
+    hmrc      %% s"bootstrap-backend-$playVersion" % hmrcBootstrapVersion,
+    hmrc      %% s"domain-$playVersion"            % "9.0.0",
+    hmrc      %% s"play-hal-$playVersion"          % "4.0.0",
+    hmrc      %% s"crypto-json-$playVersion"       % "7.6.0",
+    hmrcMongo %% s"hmrc-mongo-$playVersion"        % hmrcMongoVersion
   )
 
   def test(scope: String = "test, it"): Seq[ModuleID] = Seq(
-    "org.scalatestplus"      %% "mockito-3-4"              % "3.2.1.0"            % scope,
-    "org.scalatestplus"      %% "scalacheck-1-17"          % "3.2.16.0"           % scope,
-    "com.vladsch.flexmark"   % "flexmark-all"              % "0.64.6"            % scope,
-    "org.scalaj"             %% "scalaj-http"              % "2.4.2"              % scope,
-    hmrc                     %% "bootstrap-test-play-28"   % hmrcBootstrapVersion % scope,
+    "org.scalatest"     %% "scalatest"                       % "3.2.15"             % scope,
+    "org.wiremock"       % "wiremock-standalone"             % "3.0.4"              % scope,
+    "org.scalatestplus" %% "mockito-3-4"                     % "3.2.1.0"            % scope,
+    "org.scalatestplus" %% "scalacheck-1-17"                 % "3.2.16.0"           % scope,
+    "org.scalaj"        %% "scalaj-http"                     % "2.4.2"              % scope,
+    hmrc                %% s"bootstrap-backend-$playVersion" % hmrcBootstrapVersion % scope,
+    hmrc                %% s"bootstrap-test-$playVersion"    % hmrcBootstrapVersion % scope
   )
 }

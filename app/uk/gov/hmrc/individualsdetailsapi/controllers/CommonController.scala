@@ -28,15 +28,16 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class CommonController @Inject()(
+abstract class CommonController @Inject() (
   cc: ControllerComponents
 ) extends BackendController(cc) {
 
   val logger: Logger = Logger(getClass)
 
-  private[controllers] def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)(
-    implicit request: RequestHeader,
-    auditHelper: AuditHelper): PartialFunction[Throwable, Result] = {
+  private[controllers] def recoveryWithAudit(correlationId: Option[String], matchId: String, url: String)(implicit
+    request: RequestHeader,
+    auditHelper: AuditHelper
+  ): PartialFunction[Throwable, Result] = {
     case _: MatchNotFoundException =>
       logger.warn("Controllers MatchNotFoundException encountered")
       auditHelper.auditApiFailure(correlationId, matchId, request, url, "Not Found")
@@ -76,22 +77,20 @@ trait PrivilegedAuthentication extends AuthorisedFunctions {
   def authPredicate(scopes: Iterable[String]): Predicate =
     scopes.map(Enrolment(_): Predicate).reduce(_ or _)
 
-  def authenticate(endpointScopes: Iterable[String], matchId: String)(f: Iterable[String] => Future[Result])(
-    implicit hc: HeaderCarrier,
+  def authenticate(endpointScopes: Iterable[String], matchId: String)(f: Iterable[String] => Future[Result])(implicit
+    hc: HeaderCarrier,
     request: RequestHeader,
     auditHelper: AuditHelper,
-    ec: ExecutionContext): Future[Result] = {
+    ec: ExecutionContext
+  ): Future[Result] = {
 
     if (endpointScopes.isEmpty) throw new Exception("No scopes defined")
 
     authorised(authPredicate(endpointScopes))
-      .retrieve(Retrievals.allEnrolments) {
-        case scopes => {
+      .retrieve(Retrievals.allEnrolments) { case scopes =>
+        auditHelper.auditAuthScopes(matchId, scopes.enrolments.map(e => e.key).mkString(","), request)
 
-          auditHelper.auditAuthScopes(matchId, scopes.enrolments.map(e => e.key).mkString(","), request)
-
-          f(scopes.enrolments.map(e => e.key))
-        }
+        f(scopes.enrolments.map(e => e.key))
       }
   }
 }

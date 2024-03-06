@@ -51,32 +51,42 @@ object AuthStub extends MockHost(22000) {
       post(urlEqualTo("/auth/authorise"))
         .withRequestBody(equalToJson(privilegedAuthority(scopes).toString()))
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
-        .willReturn(aResponse()
-          .withStatus(Status.OK)
-          .withBody(s"""{"internalId": "some-id", "allEnrolments": [ ${scopes
-            .map(scope => s"""{ "key": "$scope", "value": ""}""")
-            .reduce((a, b) => s"$a, $b")} ]}""")))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withBody(s"""{"internalId": "some-id", "allEnrolments": [ ${scopes
+                .map(scope => s"""{ "key": "$scope", "value": ""}""")
+                .reduce((a, b) => s"$a, $b")} ]}""")
+        )
+    )
 
   def willNotAuthorizePrivilegedAuthToken(authBearerToken: String, scope: String): StubMapping =
     mock.register(
       post(urlEqualTo("/auth/authorise"))
         .withRequestBody(equalToJson(privilegedAuthority(List(scope)).toString()))
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
-        .willReturn(aResponse()
-          .withStatus(Status.UNAUTHORIZED)
-          .withHeader(HeaderNames.WWW_AUTHENTICATE, """MDTP detail="Bearer token is missing or not authorized"""")))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.UNAUTHORIZED)
+            .withHeader(HeaderNames.WWW_AUTHENTICATE, """MDTP detail="Bearer token is missing or not authorized"""")
+        )
+    )
 
   def willNotAuthorizePrivilegedAuthTokenNoScopes(authBearerToken: String): StubMapping =
     mock.register(
       post(urlEqualTo("/auth/authorise"))
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
-        .willReturn(aResponse()
-          .withStatus(Status.UNAUTHORIZED)
-          .withHeader(HeaderNames.WWW_AUTHENTICATE, """MDTP detail="InsufficientEnrolments"""")))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.UNAUTHORIZED)
+            .withHeader(HeaderNames.WWW_AUTHENTICATE, """MDTP detail="InsufficientEnrolments"""")
+        )
+    )
 
   def willAuthorizeNinoWithAuthToken(nino: String, authBearerToken: String) =
     mock.register(
       get(urlEqualTo(s"/authorise/read/paye/$nino?confidenceLevel=50"))
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))
-        .willReturn(aResponse().withStatus(Status.OK)))
+        .willReturn(aResponse().withStatus(Status.OK))
+    )
 }

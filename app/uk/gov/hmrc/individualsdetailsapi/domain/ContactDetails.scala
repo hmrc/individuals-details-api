@@ -22,7 +22,8 @@ import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfContactDe
 case class ContactDetails(
   daytimeTelephones: List[String],
   eveningTelephones: List[String],
-  mobileTelephones: List[String])
+  mobileTelephones: List[String]
+)
 
 object ContactDetails {
 
@@ -35,7 +36,8 @@ object ContactDetails {
   def create(
     daytimeTelephones: List[String],
     eveningTelephones: List[String],
-    mobileTelephones: List[String]): Option[ContactDetails] =
+    mobileTelephones: List[String]
+  ): Option[ContactDetails] =
     (daytimeTelephones, eveningTelephones, mobileTelephones) match {
       case (a, b, c) if a.isEmpty && b.isEmpty && c.isEmpty => None
       case _ =>
@@ -50,5 +52,6 @@ object ContactDetails {
           case EveningTelephone => tuple.copy(_2 = tuple._2.+:(detail.detail))
           case MobileTelephone  => tuple.copy(_3 = tuple._3.+:(detail.detail))
           case _                => tuple
-      })
+        }
+    )
 }

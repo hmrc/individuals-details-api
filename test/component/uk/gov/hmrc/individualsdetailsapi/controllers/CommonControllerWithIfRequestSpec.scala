@@ -26,34 +26,41 @@ trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
 
   val invalidIfDetailsResponse: IfDetailsResponse = SandboxDetailsData
     .findByMatchId(SandboxDetailsData.sandboxMatchId)
-    .map(_.copy(
-      contactDetails = Option(
-        Seq(
-          IfContactDetail(
-            code = 7,
-            detailType = "DAYTIME TELEPHONE",
-            detail = ""
-          ))),
-      residences = Option(Seq(
-        IfResidence(
-          address = Option(
-            IfAddress(
-              line1 = Option(""),
-              line2 = Option("Dawley Bank"),
-              line3 = Option("Telford"),
-              line4 = Option("Shropshire"),
-              postcode = Option("TF3 4ER")
-            )),
-          noLongerUsed = Option("N")
-        )
-      ))
-    ))
     .map(
-      data =>
-        IfDetailsResponse(
-          data.contactDetails,
-          data.residences
-      ))
+      _.copy(
+        contactDetails = Option(
+          Seq(
+            IfContactDetail(
+              code = 7,
+              detailType = "DAYTIME TELEPHONE",
+              detail = ""
+            )
+          )
+        ),
+        residences = Option(
+          Seq(
+            IfResidence(
+              address = Option(
+                IfAddress(
+                  line1 = Option(""),
+                  line2 = Option("Dawley Bank"),
+                  line3 = Option("Telford"),
+                  line4 = Option("Shropshire"),
+                  postcode = Option("TF3 4ER")
+                )
+              ),
+              noLongerUsed = Option("N")
+            )
+          )
+        )
+      )
+    )
+    .map(data =>
+      IfDetailsResponse(
+        data.contactDetails,
+        data.residences
+      )
+    )
     .get
 
   Scenario(s"user does not have valid scopes") {
@@ -129,7 +136,9 @@ trait CommonControllerWithIfRequestSpec extends CommonControllerSpec {
       UNPROCESSABLE_ENTITY,
       Json.obj(
         "reason" ->
-          "There are 1 or more unknown data items in the 'fields' query string"))
+          "There are 1 or more unknown data items in the 'fields' query string"
+      )
+    )
 
     When(s"I make a call to ${if (endpoint.isEmpty) "root" else endpoint} endpoint")
     val response = invokeEndpoint(s"$serviceUrl/$endpoint?matchId=$matchId")

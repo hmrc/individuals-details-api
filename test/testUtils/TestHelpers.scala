@@ -42,8 +42,9 @@ trait TestHelpers {
         Some(s"line3-$number"),
         Some(s"line4-$number"),
         Some(s"line5-$number"),
-        Some(s"QW12${number}QW"),
-      ))
+        Some(s"QW12${number}QW")
+      )
+    )
 
   def createEmptyDetailsResponse(): IfDetailsResponse =
     IfDetailsResponse(None, None)
