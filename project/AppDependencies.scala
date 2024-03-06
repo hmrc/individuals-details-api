@@ -19,14 +19,12 @@ object AppDependencies {
   )
 
   def test(scope: String = "test, it"): Seq[ModuleID] = Seq(
-    "org.scalatest"          %% "scalatest"                       % "3.2.15"             % scope,
-    "org.wiremock"            % "wiremock-standalone"             % "3.0.4"              % scope,
-    "org.scalatestplus"      %% "mockito-3-4"                     % "3.2.1.0"            % scope,
-    "org.scalatestplus"      %% "scalacheck-1-17"                 % "3.2.16.0"           % scope,
-    "org.scalatestplus.play" %% "scalatestplus-play"              % "5.1.0"              % scope,
-    "com.vladsch.flexmark"    % "flexmark-all"                    % "0.64.6"             % scope,
-    "org.scalaj"             %% "scalaj-http"                     % "2.4.2"              % scope,
-    hmrc                     %% s"bootstrap-backend-$playVersion" % hmrcBootstrapVersion % scope,
-    hmrc                     %% s"bootstrap-test-$playVersion"    % hmrcBootstrapVersion % scope
+    "org.scalatest"     %% "scalatest"                       % "3.2.15"             % scope,
+    "org.wiremock"       % "wiremock-standalone"             % "3.0.4"              % scope,
+    "org.scalatestplus" %% "mockito-3-4"                     % "3.2.1.0"            % scope,
+    "org.scalatestplus" %% "scalacheck-1-17"                 % "3.2.16.0"           % scope,
+    "org.scalaj"        %% "scalaj-http"                     % "2.4.2"              % scope,
+    hmrc                %% s"bootstrap-backend-$playVersion" % hmrcBootstrapVersion % scope,
+    hmrc                %% s"bootstrap-test-$playVersion"    % hmrcBootstrapVersion % scope
   )
 }
