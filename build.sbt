@@ -19,6 +19,7 @@ lazy val microservice =
       routesImport := Seq("uk.gov.hmrc.individualsdetailsapi.Binders._"),
       scalacOptions += "-Wconf:src=routes/.*:s",
       scalacOptions += "-Wconf:cat=unused-imports&src=txt/.*:s",
+      Compile / unmanagedResourceDirectories += baseDirectory.value / "resources"
     )
     .settings(PlayKeys.playDefaultPort := 9655)
     .settings(majorVersion := 0)
