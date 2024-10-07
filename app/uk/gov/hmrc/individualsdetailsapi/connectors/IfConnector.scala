@@ -21,7 +21,8 @@ import play.api.mvc.RequestHeader
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.UpstreamErrorResponse.Upstream5xxResponse
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, HttpClient, InternalServerException, JsValidationException, NotFoundException, TooManyRequestException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, InternalServerException, JsValidationException, NotFoundException, StringContextOps, TooManyRequestException, UpstreamErrorResponse}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils
@@ -30,7 +31,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient, val auditHelper: AuditHelper)
+class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2, val auditHelper: AuditHelper)
     extends Logging {
 
   private val baseUrl = servicesConfig.baseUrl("integration-framework")
@@ -73,9 +74,10 @@ class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClient, v
     ec: ExecutionContext
   ) =
     recover(
-      http.GET[IfDetailsResponse](url, headers = setHeaders(request)) map { response =>
-        auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response)
-        response
+      http.get(url"$url").transform(_.addHttpHeaders(setHeaders(request): _*)).execute[IfDetailsResponse] map {
+        response =>
+          auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response)
+          response
       },
       extractCorrelationId(request),
       matchId,
