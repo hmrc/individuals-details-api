@@ -16,8 +16,7 @@
         "status":@Json.toJson(status),
         "endpointsEnabled":@Json.toJson(endpointsEnabled),
         "access":{
-          "type":"PRIVATE",
-          "whitelistedApplicationIds": @Json.toJson(privilegedWhitelistedApplicationIds)
+          "type":"PRIVATE"
         }
       }
     ]
