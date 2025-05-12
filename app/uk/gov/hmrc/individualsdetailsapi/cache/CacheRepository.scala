@@ -26,6 +26,7 @@ import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs.toBson
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
 import uk.gov.hmrc.play.http.logging.Mdc.preservingMdc
+import org.mongodb.scala.SingleObservableFuture
 
 import java.time.{LocalDateTime, ZoneOffset}
 import java.util.concurrent.TimeUnit
@@ -58,7 +59,7 @@ class CacheRepository @Inject() (
           IndexOptions()
             .name("lastUpdatedIndex")
             .background(false)
-            .expireAfter(cacheConfig.cacheTtl, TimeUnit.SECONDS)
+            .expireAfter(cacheConfig.cacheTtl.toLong, TimeUnit.SECONDS)
         )
       )
     ) {

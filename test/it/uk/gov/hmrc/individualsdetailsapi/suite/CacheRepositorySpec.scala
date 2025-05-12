@@ -20,6 +20,8 @@ import org.mongodb.scala.model.Filters
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.mongodb.scala.SingleObservableFuture
+import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json, OFormat}
 import uk.gov.hmrc.individualsdetailsapi.cache.CacheRepository
@@ -32,19 +34,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class CacheRepositorySpec extends AnyWordSpec with Matchers with BeforeAndAfterEach with TestSupport {
 
   val cacheTtl = 60
-  val id = UUID.randomUUID().toString
-  val cachekey = "test-class-key"
-  val testValue = TestClass("one", "two")
+  val id: String = UUID.randomUUID().toString
+  val cachekey: String = "test-class-key"
+  val testValue: TestClass = TestClass("one", "two")
 
   protected def databaseName: String = "test-" + this.getClass.getSimpleName
   protected def mongoUri: String = s"mongodb://localhost:27017/$databaseName"
 
-  lazy val fakeApplication = new GuiceApplicationBuilder()
+  def fakeApplication(): Application = new GuiceApplicationBuilder()
     .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
     .bindings(bindModules: _*)
     .build()
 
-  val cacheRepository = fakeApplication.injector.instanceOf[CacheRepository]
+  val cacheRepository = fakeApplication().injector.instanceOf[CacheRepository]
 
   def externalServices: Seq[String] = Seq.empty
 

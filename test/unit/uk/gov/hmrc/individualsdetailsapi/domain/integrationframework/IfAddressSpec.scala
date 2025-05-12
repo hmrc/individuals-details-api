@@ -24,7 +24,7 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
 class IfAddressSpec extends UnitSpec with TestHelpers {
 
-  val address = IfAddress(
+  val address: IfAddress = IfAddress(
     Some("line1"),
     Some("line2"),
     Some("line3"),

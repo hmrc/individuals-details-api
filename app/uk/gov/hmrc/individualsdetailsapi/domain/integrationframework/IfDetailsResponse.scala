@@ -30,6 +30,6 @@ object IfDetailsResponse {
     (
       (JsPath \ "contactDetails").writeNullable[Seq[IfContactDetail]] and
         (JsPath \ "residences").writeNullable[Seq[IfResidence]]
-    )(unlift(IfDetailsResponse.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }

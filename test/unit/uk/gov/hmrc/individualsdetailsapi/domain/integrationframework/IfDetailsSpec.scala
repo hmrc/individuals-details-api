@@ -22,11 +22,11 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
 class IfDetailsSpec extends UnitSpec {
 
-  val ninoDetails = IfDetails(Some("XH123456A"), None)
-  val trnDetails = IfDetails(None, Some("12345678"))
+  val ninoDetails: IfDetails = IfDetails(Some("XH123456A"), None)
+  val trnDetails: IfDetails = IfDetails(None, Some("12345678"))
 
-  val invalidNinoDetails = IfDetails(Some("QWERTYUIOP"), None)
-  val invalidTrnDetails = IfDetails(None, Some("QWERTYUIOP"))
+  val invalidNinoDetails: IfDetails = IfDetails(Some("QWERTYUIOP"), None)
+  val invalidTrnDetails: IfDetails = IfDetails(None, Some("QWERTYUIOP"))
 
   "Details" should {
     "Write to JSON when only nino provided" in {

@@ -22,8 +22,8 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
 class IfContactDetailSpec extends UnitSpec {
 
-  val contactDetail = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
-  val invalidContactDetail =
+  val contactDetail: IfContactDetail = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
+  val invalidContactDetail: IfContactDetail =
     IfContactDetail(-42, "abcdefghijklmnopqrstuvwxyz0123456789", "a")
 
   "Contact details" should {
