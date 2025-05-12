@@ -41,7 +41,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
 
   trait Fixture extends ScopesConfigHelper {
 
-    implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
+    implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
 
     lazy val scopeService: ScopesService = mock[ScopesService]
     val mockDetailsService = mock[DetailsService]
@@ -160,7 +160,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
         }
 
         "return error when no scopes are supplied" in new Fixture {
-          when(scopeService.getEndPointScopes(any())).thenReturn(None)
+          when(scopeService.getEndPointScopes(any())).thenReturn(List.empty)
 
           val fakeRequest = FakeRequest("GET", s"/addresses/")
             .withHeaders(validCorrelationHeader)

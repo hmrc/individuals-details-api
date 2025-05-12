@@ -40,12 +40,12 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
   val validCorrelationHeader = ("CorrelationId", sampleCorrelationId)
 
-  implicit lazy val materializer: Materializer = fakeApplication.materializer
-  implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
+  implicit lazy val materializer: Materializer = fakeApplication().materializer
+  implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
 
   trait Fixture extends ScopesConfigHelper {
 
-    implicit lazy val ec: ExecutionContext = fakeApplication.injector.instanceOf[ExecutionContext]
+    implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
 
     lazy val scopeService: ScopesService = mock[ScopesService]
     val mockDetailsService = mock[DetailsService]
@@ -144,7 +144,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
         }
 
         "return error when no scopes are supplied" in new Fixture {
-          when(scopeService.getEndPointScopes(any())).thenReturn(None)
+          when(scopeService.getEndPointScopes(any())).thenReturn(List.empty)
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
             .withHeaders(validCorrelationHeader)

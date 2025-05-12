@@ -22,24 +22,24 @@ import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{IfContactD
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
 class IfDetailResponseSpec extends UnitSpec with TestHelpers {
-  val ninoDetails = IfDetails(Some("XH123456A"), None)
-  val contactDetail1 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
-  val contactDetail2 = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987655")
-  val residence1 =
+  val ninoDetails: IfDetails = IfDetails(Some("XH123456A"), None)
+  val contactDetail1: IfContactDetail = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987654")
+  val contactDetail2: IfContactDetail = IfContactDetail(9, "MOBILE TELEPHONE", "07123 987655")
+  val residence1: IfResidence =
     IfResidence(residenceType = Some("BASE"), address = generateAddress(2), noLongerUsed = Option("Y"))
-  val residence2 =
+  val residence2: IfResidence =
     IfResidence(residenceType = Some("NOMINATED"), address = generateAddress(1), noLongerUsed = Option("N"))
-  val response = IfDetailsResponse(
+  val response: IfDetailsResponse = IfDetailsResponse(
     Some(Seq(contactDetail1, contactDetail1)),
     Some(Seq(residence1, residence2))
   )
 
-  val invalidNinoDetails = IfDetails(Some("QWERTYUIOP"), None)
-  val invalidContactDetail =
+  val invalidNinoDetails: IfDetails = IfDetails(Some("QWERTYUIOP"), None)
+  val invalidContactDetail: IfContactDetail =
     IfContactDetail(-42, "abcdefghijklmnopqrstuvwxyz0123456789", "a")
-  val invalidResidence =
+  val invalidResidence: IfResidence =
     IfResidence(residenceType = Some(""), address = generateAddress(2))
-  val invalidDetailsResponse = IfDetailsResponse(
+  val invalidDetailsResponse: IfDetailsResponse = IfDetailsResponse(
     Some(Seq(invalidContactDetail)),
     Some(Seq(invalidResidence))
   )

@@ -52,6 +52,6 @@ object IfContactDetail {
       (JsPath \ "code").write[Int] and
         (JsPath \ "type").write[String] and
         (JsPath \ "detail").write[String]
-    )(unlift(IfContactDetail.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }

@@ -112,15 +112,6 @@ class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2,
         logger.warn("Integration Framework NotFoundException encountered")
         Future.failed(new NotFoundException(msg))
       }
-    case UpstreamErrorResponse(msg, 404, _, _) =>
-      auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, msg)
-
-      if (msg.contains("PERSON_NOT_FOUND")) {
-        Future.successful(emptyResponse)
-      } else {
-        logger.warn("Integration Framework NotFoundException encountered")
-        Future.failed(new NotFoundException(msg))
-      }
     case Upstream5xxResponse(UpstreamErrorResponse(msg, code, _, _)) =>
       logger.warn(s"Integration Framework Upstream5xxResponse encountered: $code")
       auditHelper.auditIfApiFailure(correlationId, matchId, request, requestUrl, s"Internal Server error: $msg")

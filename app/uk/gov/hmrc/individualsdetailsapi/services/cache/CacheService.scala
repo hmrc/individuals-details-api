@@ -63,7 +63,7 @@ trait CacheIdBase {
 
 case class CacheId(matchId: UUID, fields: String) extends CacheIdBase {
 
-  lazy val id: String =
+  val id: String =
     s"$matchId-$fields"
 
 }

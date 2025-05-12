@@ -26,10 +26,10 @@ case class IfDetails(nino: Option[String], trn: Option[String])
 
 object IfDetails {
 
-  val ninoPattern: Regex =
+  private val ninoPattern: Regex =
     "^((?!(BG|GB|KN|NK|NT|TN|ZZ)|(D|F|I|Q|U|V)[A-Z]|[A-Z](D|F|I|O|Q|U|V))[A-Z]{2})[0-9]{6}[A-D\\s]?$".r
 
-  val trnPattern: Regex = "^[0-9]{8}$".r
+  private val trnPattern: Regex = "^[0-9]{8}$".r
 
   implicit val idFormat: Format[IfDetails] = Format(
     (
@@ -40,6 +40,6 @@ object IfDetails {
     (
       (JsPath \ "nino").writeNullable[String] and
         (JsPath \ "trn").writeNullable[String]
-    )(unlift(IfDetails.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }

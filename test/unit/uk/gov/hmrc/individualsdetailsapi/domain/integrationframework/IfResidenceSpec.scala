@@ -23,9 +23,9 @@ import unit.uk.gov.hmrc.individualsdetailsapi.utils.UnitSpec
 
 class IfResidenceSpec extends UnitSpec with TestHelpers {
 
-  val residence =
+  val residence: IfResidence =
     IfResidence(residenceType = Some("BASE"), address = generateAddress(2))
-  val invalidResidence =
+  val invalidResidence: IfResidence =
     IfResidence(residenceType = Some(""), address = generateAddress(2))
 
   "Residence details" should {

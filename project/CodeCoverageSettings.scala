@@ -7,6 +7,7 @@ object CodeCoverageSettings {
     "<empty>",
     "Reverse.*",
     "uk.gov.hmrc.individualsdetailsapi.views.*",
+    "uk.gov.hmrc.individualsdetailsapi.audit.models.*",
     ".*BuildInfo.",
     "uk.gov.hmrc.BuildInfo",
     ".*Routes",

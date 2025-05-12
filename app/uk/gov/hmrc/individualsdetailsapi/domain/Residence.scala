@@ -17,7 +17,7 @@
 package uk.gov.hmrc.individualsdetailsapi.domain
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{Format, JsPath}
+import play.api.libs.json.{Format, JsPath, Json}
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfResidence
 
 case class Residence(residenceType: Option[String], address: Option[Address], inUse: Option[Boolean])
@@ -32,11 +32,7 @@ object Residence {
         (JsPath \ "address").readNullable[Address] and
         (JsPath \ "inUse").readNullable[Boolean]
     )(Residence.apply _),
-    (
-      (JsPath \ "residenceType").writeNullable[String] and
-        (JsPath \ "address").writeNullable[Address] and
-        (JsPath \ "inUse").writeNullable[Boolean]
-    )(unlift(Residence.unapply))
+    Json.writes[Residence]
   )
 
   implicit val residencesFormat: Format[Residences] = Format(

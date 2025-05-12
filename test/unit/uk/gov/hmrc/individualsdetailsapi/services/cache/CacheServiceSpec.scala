@@ -16,7 +16,7 @@
 
 package unit.uk.gov.hmrc.individualsdetailsapi.services.cache
 
-import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.`given`
 import org.mockito.Mockito.{times, verify, verifyNoInteractions, verifyNoMoreInteractions}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.should.Matchers
@@ -45,7 +45,7 @@ class CacheServiceSpec extends SpecBase with MockitoSugar with Matchers with Bef
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    given(mockCacheConfig.cacheEnabled).willReturn(true)
+    `given`(mockCacheConfig.cacheEnabled).willReturn(true)
 
   }
 
@@ -53,14 +53,14 @@ class CacheServiceSpec extends SpecBase with MockitoSugar with Matchers with Bef
 
     "ignore the cache when caching is not enabled" in new Setup {
 
-      given(mockCacheConfig.cacheEnabled).willReturn(false)
+      `given`(mockCacheConfig.cacheEnabled).willReturn(false)
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
       verifyNoInteractions(mockClient)
 
     }
 
     "execute the fallback function and cache the result if the cached value is a None" in new Setup {
-      given(mockClient.fetchAndGetEntry[TestClass](cacheId.id))
+      `given`(mockClient.fetchAndGetEntry[TestClass](cacheId.id))
         .willReturn(Future.successful(None))
       await(cacheService.get[TestClass](cacheId, Future.successful(newValue))) shouldBe newValue
       verify(mockClient, times(1)).fetchAndGetEntry[TestClass](cacheId.id)

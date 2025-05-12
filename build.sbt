@@ -10,7 +10,7 @@ lazy val microservice =
     .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
     .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
     .settings(CodeCoverageSettings.settings *)
-    .settings(scalaVersion := "2.13.12")
+    .settings(scalaVersion := "3.3.5")
     .settings(scalafmtOnCompile := true)
     .settings(onLoadMessage := "")
     .settings(
@@ -18,7 +18,8 @@ lazy val microservice =
       Test / testOptions := Seq(Tests.Filter((name: String) => name startsWith "unit")),
       routesImport := Seq("uk.gov.hmrc.individualsdetailsapi.Binders._"),
       scalacOptions += "-Wconf:src=routes/.*:s",
-      scalacOptions += "-Wconf:cat=unused-imports&src=txt/.*:s",
+      scalacOptions += "-Wconf:msg=unused import&src=html/.*:s",
+      scalacOptions += "-Wconf:msg=Flag.*repeatedly:s",
       Compile / unmanagedResourceDirectories += baseDirectory.value / "resources"
     )
     .settings(PlayKeys.playDefaultPort := 9655)

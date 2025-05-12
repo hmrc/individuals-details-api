@@ -47,6 +47,6 @@ object IfAddress {
         (JsPath \ "line4").writeNullable[String] and
         (JsPath \ "line5").writeNullable[String] and
         (JsPath \ "postcode").writeNullable[String]
-    )(unlift(IfAddress.unapply))
+    )(o => Tuple.fromProductTyped(o))
   )
 }

@@ -19,12 +19,12 @@ package uk.gov.hmrc.individualsdetailsapi.services
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.individualsdetailsapi.connectors.{IfConnector, IndividualsMatchingApiConnector}
-import uk.gov.hmrc.individualsdetailsapi.domain._
+import uk.gov.hmrc.individualsdetailsapi.domain.*
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 import uk.gov.hmrc.individualsdetailsapi.services.cache.{CacheId, CacheService}
 
 import java.util.UUID
-import javax.inject.{Inject, Named, Singleton}
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -33,7 +33,6 @@ class DetailsService @Inject() (
   ifConnector: IfConnector,
   scopesService: ScopesService,
   scopesHelper: ScopesHelper,
-  @Named("retryDelay") retryDelay: Int,
   cacheService: CacheService
 )(implicit val ec: ExecutionContext) {
 
