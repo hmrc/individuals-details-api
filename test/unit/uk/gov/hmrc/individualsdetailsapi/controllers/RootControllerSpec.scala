@@ -17,14 +17,15 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import org.apache.pekko.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, eq => eqTo, refEq}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo, refEq}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
+import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsJson, _}
-import uk.gov.hmrc.auth.core._
+import play.api.test.Helpers.{contentAsJson, *}
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.TooManyRequestException
@@ -40,9 +41,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RootControllerSpec extends SpecBase with MockitoSugar {
 
-  val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b");
+  val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b")
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-  val validCorrelationHeader = ("CorrelationId", sampleCorrelationId)
+  val validCorrelationHeader: (String, String) = ("CorrelationId", sampleCorrelationId)
 
   implicit lazy val materializer: Materializer = fakeApplication().materializer
   implicit lazy val ec: ExecutionContext =
@@ -54,11 +55,13 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
     lazy val scopeService: ScopesService = mock[ScopesService]
     lazy val scopeHelper: ScopesHelper = new ScopesHelper(scopeService)
-    val mockDetailsService = mock[DetailsService]
+    val mockDetailsService: DetailsService = mock[DetailsService]
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
     val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
-    when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+    when(
+      mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(using any(), any())
+    )
       .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
     val scopes: Iterable[String] =
@@ -101,14 +104,14 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/")
             .withHeaders(validCorrelationHeader)
 
-          when(mockDetailsService.resolve(eqTo(matchId))(any()))
+          when(mockDetailsService.resolve(eqTo(matchId))(using any()))
             .thenReturn(Future.successful(MatchedCitizen(matchId, nino = Nino("AB123456C"))))
 
-          val result = rootController.root(matchId)(fakeRequest)
+          val result: Future[Result] = rootController.root(matchId)(fakeRequest)
 
           status(result) shouldBe OK
 
-          verify(rootController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any())(any())
+          verify(rootController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any())(using any())
 
         }
 
@@ -117,10 +120,10 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/")
             .withHeaders(validCorrelationHeader)
 
-          when(mockDetailsService.resolve(eqTo(matchId))(any()))
+          when(mockDetailsService.resolve(eqTo(matchId))(using any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
-          val result = rootController.root(matchId)(fakeRequest)
+          val result: Future[Result] = rootController.root(matchId)(fakeRequest)
 
           status(result) shouldBe NOT_FOUND
 
@@ -129,23 +132,23 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
             "message" -> "The resource can not be found"
           )
           verify(rootController.auditHelper, times(1))
-            .auditApiFailure(any(), any(), any(), any(), any())(any())
+            .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
         "return 401 when the bearer token does not have valid enrolment" in new Fixture {
 
-          when(mockAuthConnector.authorise(any(), any())(any(), any()))
+          when(mockAuthConnector.authorise(any(), any())(using any(), any()))
             .thenReturn(Future.failed(InsufficientEnrolments()))
 
           val fakeRequest = FakeRequest("GET", s"/")
             .withHeaders(validCorrelationHeader)
 
-          val result = rootController.root(matchId)(fakeRequest)
+          val result: Future[Result] = rootController.root(matchId)(fakeRequest)
 
           status(result) shouldBe UNAUTHORIZED
           verifyNoInteractions(mockDetailsService)
           verify(rootController.auditHelper, times(1))
-            .auditApiFailure(any(), any(), any(), any(), any())(any())
+            .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
         "return error when no scopes are supplied" in new Fixture {
@@ -154,7 +157,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/")
             .withHeaders(validCorrelationHeader)
 
-          val result =
+          val result: Exception =
             intercept[Exception] {
               await(rootController.root(matchId)(fakeRequest))
             }
@@ -163,50 +166,50 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
         "return 401 when bearer token is expired" in new Fixture {
 
-          when(mockAuthConnector.authorise(any(), any())(any(), any()))
+          when(mockAuthConnector.authorise(any(), any())(using any(), any()))
             .thenReturn(Future.failed(BearerTokenExpired()))
 
           val fakeRequest =
             FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
 
-          val result = rootController.root(matchId)(fakeRequest)
+          val result: Future[Result] = rootController.root(matchId)(fakeRequest)
 
           status(result) shouldBe UNAUTHORIZED
           verifyNoInteractions(mockDetailsService)
           verify(rootController.auditHelper, times(1))
-            .auditApiFailure(any(), any(), any(), any(), any())(any())
+            .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
         "return 429 when too many requests received" in new Fixture {
 
-          when(mockAuthConnector.authorise(any(), any())(any(), any()))
+          when(mockAuthConnector.authorise(any(), any())(using any(), any()))
             .thenReturn(Future.failed(new TooManyRequestException("Too many")))
 
           val fakeRequest =
             FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
 
-          val result = rootController.root(matchId)(fakeRequest)
+          val result: Future[Result] = rootController.root(matchId)(fakeRequest)
 
           status(result) shouldBe TOO_MANY_REQUESTS
           verifyNoInteractions(mockDetailsService)
           verify(rootController.auditHelper, times(1))
-            .auditApiFailure(any(), any(), any(), any(), any())(any())
+            .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
         "return 500 when an unspecified Exception is thrown" in new Fixture {
 
-          when(mockAuthConnector.authorise(any(), any())(any(), any()))
+          when(mockAuthConnector.authorise(any(), any())(using any(), any()))
             .thenReturn(Future.failed(new Exception()))
 
           val fakeRequest =
             FakeRequest("GET", s"/").withHeaders(validCorrelationHeader)
 
-          val result = rootController.root(matchId)(fakeRequest)
+          val result: Future[Result] = rootController.root(matchId)(fakeRequest)
 
           status(result) shouldBe INTERNAL_SERVER_ERROR
           verifyNoInteractions(mockDetailsService)
           verify(rootController.auditHelper, times(1))
-            .auditApiFailure(any(), any(), any(), any(), any())(any())
+            .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
       }
     }

@@ -74,10 +74,9 @@ class IfConnector @Inject() (servicesConfig: ServicesConfig, http: HttpClientV2,
     ec: ExecutionContext
   ) =
     recover(
-      http.get(url"$url").transform(_.addHttpHeaders(setHeaders(request): _*)).execute[IfDetailsResponse] map {
-        response =>
-          auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response)
-          response
+      http.get(url"$url").transform(_.addHttpHeaders(setHeaders(request)*)).execute[IfDetailsResponse] map { response =>
+        auditHelper.auditIfApiResponse(extractCorrelationId(request), matchId, request, url, response)
+        response
       },
       extractCorrelationId(request),
       matchId,

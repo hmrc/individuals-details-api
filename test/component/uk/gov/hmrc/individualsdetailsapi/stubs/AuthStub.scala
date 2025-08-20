@@ -83,7 +83,7 @@ object AuthStub extends MockHost(22000) {
         )
     )
 
-  def willAuthorizeNinoWithAuthToken(nino: String, authBearerToken: String) =
+  def willAuthorizeNinoWithAuthToken(nino: String, authBearerToken: String): StubMapping =
     mock.register(
       get(urlEqualTo(s"/authorise/read/paye/$nino?confidenceLevel=50"))
         .withHeader(AUTHORIZATION, equalTo(authBearerToken))

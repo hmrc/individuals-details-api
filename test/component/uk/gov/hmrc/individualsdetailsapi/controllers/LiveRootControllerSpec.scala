@@ -29,7 +29,7 @@ class LiveRootControllerSpec extends CommonControllerSpec {
   override val endpoint: String = ""
   override val nino = "AB123456C"
 
-  override val rootScope = List(
+  override val rootScope: List[String] = List(
     "read:individuals-details-hmcts-c3",
     "read:individuals-details-hmcts-c4",
     "read:individuals-details-laa-c3",

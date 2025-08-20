@@ -17,12 +17,13 @@
 package unit.uk.gov.hmrc.individualsdetailsapi.controllers
 
 import org.apache.pekko.stream.Materializer
-import org.mockito.ArgumentMatchers.{any, eq => eqTo, refEq}
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.{any, eq as eqTo, refEq}
+import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
+import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
@@ -36,9 +37,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
-  val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b");
+  val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b")
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
-  val validCorrelationHeader = ("CorrelationId", sampleCorrelationId)
+  val validCorrelationHeader: (String, String) = ("CorrelationId", sampleCorrelationId)
 
   implicit lazy val materializer: Materializer = fakeApplication().materializer
   implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
@@ -48,11 +49,13 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
     implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
 
     lazy val scopeService: ScopesService = mock[ScopesService]
-    val mockDetailsService = mock[DetailsService]
+    val mockDetailsService: DetailsService = mock[DetailsService]
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
     val mockAuditHelper: AuditHelper = mock[AuditHelper]
 
-    when(mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(any(), any()))
+    when(
+      mockAuthConnector.authorise(eqTo(Enrolment("test-scope")), refEq(Retrievals.allEnrolments))(using any(), any())
+    )
       .thenReturn(Future.successful(Enrolments(Set(Enrolment("test-scope")))))
 
     val scopes: Iterable[String] =
@@ -83,7 +86,11 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(any(), any(), any())
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(using
+                any(),
+                any(),
+                any()
+              )
           )
             .thenReturn(
               Future.successful(
@@ -97,11 +104,11 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
               )
             )
 
-          val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
+          val result: Future[Result] = contactDetailsController.contactDetails(matchId)(fakeRequest)
 
           status(result) shouldBe OK
           verify(contactDetailsController.auditHelper, times(1))
-            .auditContactDetailsApiResponse(any(), any(), any(), any(), any(), any())(any())
+            .auditContactDetailsApiResponse(any(), any(), any(), any(), any(), any())(using any())
         }
 
         "return 404 (not found) for an invalid matchId" in new Fixture {
@@ -111,11 +118,15 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(any(), any(), any())
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(using
+                any(),
+                any(),
+                any()
+              )
           )
             .thenReturn(Future.failed(new MatchNotFoundException))
 
-          val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
+          val result: Future[Result] = contactDetailsController.contactDetails(matchId)(fakeRequest)
 
           status(result) shouldBe NOT_FOUND
 
@@ -124,23 +135,23 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
             "message" -> "The resource can not be found"
           )
           verify(contactDetailsController.auditHelper, times(1))
-            .auditApiFailure(any(), any(), any(), any(), any())(any())
+            .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
         "return 401 when the bearer token does not have valid enrolment" in new Fixture {
 
-          when(mockAuthConnector.authorise(any(), any())(any(), any()))
+          when(mockAuthConnector.authorise(any(), any())(using any(), any()))
             .thenReturn(Future.failed(InsufficientEnrolments()))
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
             .withHeaders(validCorrelationHeader)
 
-          val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
+          val result: Future[Result] = contactDetailsController.contactDetails(matchId)(fakeRequest)
 
           status(result) shouldBe UNAUTHORIZED
           verifyNoInteractions(mockDetailsService)
           verify(contactDetailsController.auditHelper, times(1))
-            .auditApiFailure(any(), any(), any(), any(), any())(any())
+            .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
         "return error when no scopes are supplied" in new Fixture {
@@ -149,7 +160,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
             .withHeaders(validCorrelationHeader)
 
-          val result =
+          val result: Exception =
             intercept[Exception] {
               await(contactDetailsController.contactDetails(matchId)(fakeRequest))
             }
@@ -162,7 +173,11 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any(), any())
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(using
+                any(),
+                any(),
+                any()
+              )
           )
             .thenReturn(
               Future.successful(
@@ -176,7 +191,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
               )
             )
 
-          val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
+          val result: Future[Result] = contactDetailsController.contactDetails(matchId)(fakeRequest)
 
           status(result) shouldBe BAD_REQUEST
           contentAsJson(result) shouldBe Json.parse(
@@ -186,7 +201,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
               |}""".stripMargin
           )
           verify(contactDetailsController.auditHelper, times(1))
-            .auditApiFailure(any(), any(), any(), any(), any())(any())
+            .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
         "throws an Exception when CorrelationId header s missing" in new Fixture {
@@ -196,7 +211,11 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
           when(
             mockDetailsService
-              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(any(), any(), any())
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(List("test-scope")))(using
+                any(),
+                any(),
+                any()
+              )
           )
             .thenReturn(
               Future.successful(
@@ -210,7 +229,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
               )
             )
 
-          val result = contactDetailsController.contactDetails(matchId)(fakeRequest)
+          val result: Future[Result] = contactDetailsController.contactDetails(matchId)(fakeRequest)
 
           status(result) shouldBe BAD_REQUEST
           contentAsJson(result) shouldBe Json.parse(
@@ -220,7 +239,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
               |}""".stripMargin
           )
           verify(contactDetailsController.auditHelper, times(1))
-            .auditApiFailure(any(), any(), any(), any(), any())(any())
+            .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
       }
     }

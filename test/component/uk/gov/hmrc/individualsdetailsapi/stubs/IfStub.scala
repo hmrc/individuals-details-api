@@ -16,14 +16,15 @@
 
 package component.uk.gov.hmrc.individualsdetailsapi.stubs
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsValue, Json}
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfDetailsResponse
 
 object IfStub extends MockHost(22004) {
 
-  def searchDetails(nino: String, ifDetailsResponse: IfDetailsResponse) =
+  def searchDetails(nino: String, ifDetailsResponse: IfDetailsResponse): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/details/contact/nino/$nino"))
         .willReturn(
@@ -33,7 +34,7 @@ object IfStub extends MockHost(22004) {
         )
     )
 
-  def customResponse(nino: String, status: Int, response: JsValue) =
+  def customResponse(nino: String, status: Int, response: JsValue): StubMapping =
     mock.register(
       get(urlPathEqualTo(s"/individuals/details/contact/nino/$nino"))
         .willReturn(
@@ -43,7 +44,7 @@ object IfStub extends MockHost(22004) {
         )
     )
 
-  def enforceRateLimit(nino: String, fromDate: String, toDate: String): Unit =
+  def enforceRateLimit(): Unit =
     mock.register(
       get(urlPathEqualTo(s"/individuals/details/contact"))
         .withQueryParam(

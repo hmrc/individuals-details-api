@@ -50,22 +50,22 @@ object IfResidence {
 
   implicit val residencesFormat: Format[IfResidence] = Format(
     (
-      (JsPath \ "statusCode").readNullable[String](pattern(statusCodePattern, "Status code is invalid")) and
-        (JsPath \ "status").readNullable[String](minLength[String](1) andKeep maxLength[String](8)) and
-        (JsPath \ "typeCode").readNullable[Int](min[Int](1) andKeep max[Int](9999)) and
-        (JsPath \ "type").readNullable[String](minLength[String](1) andKeep maxLength[String](35)) and
-        (JsPath \ "deliveryInfo").readNullable[String](minLength[String](1) andKeep maxLength[String](35)) and
-        (JsPath \ "retLetterServ").readNullable[String](minLength[String](1) andKeep maxLength[String](1)) and
-        (JsPath \ "addressCode").readNullable[String](pattern(statusCodePattern, "Address code is invalid")) and
-        (JsPath \ "addressType").readNullable[String](minLength[String](1) andKeep maxLength[String](6)) and
+      (JsPath \ "statusCode").readNullable[String](using pattern(statusCodePattern, "Status code is invalid")) and
+        (JsPath \ "status").readNullable[String](using minLength[String](1) andKeep maxLength[String](8)) and
+        (JsPath \ "typeCode").readNullable[Int](using min[Int](1) andKeep max[Int](9999)) and
+        (JsPath \ "type").readNullable[String](using minLength[String](1) andKeep maxLength[String](35)) and
+        (JsPath \ "deliveryInfo").readNullable[String](using minLength[String](1) andKeep maxLength[String](35)) and
+        (JsPath \ "retLetterServ").readNullable[String](using minLength[String](1) andKeep maxLength[String](1)) and
+        (JsPath \ "addressCode").readNullable[String](using pattern(statusCodePattern, "Address code is invalid")) and
+        (JsPath \ "addressType").readNullable[String](using minLength[String](1) andKeep maxLength[String](6)) and
         (JsPath \ "address").readNullable[IfAddress] and
-        (JsPath \ "houseId").readNullable[String](maxLength[String](35)) and
-        (JsPath \ "homeCountry").readNullable[String](maxLength[String](16)) and
-        (JsPath \ "otherCountry").readNullable[String](maxLength[String](35)) and
-        (JsPath \ "deadLetterOfficeDate").readNullable[String](pattern(datePattern, "Date is invalid")) and
+        (JsPath \ "houseId").readNullable[String](using maxLength[String](35)) and
+        (JsPath \ "homeCountry").readNullable[String](using maxLength[String](16)) and
+        (JsPath \ "otherCountry").readNullable[String](using maxLength[String](35)) and
+        (JsPath \ "deadLetterOfficeDate").readNullable[String](using pattern(datePattern, "Date is invalid")) and
         (JsPath \ "startDateTime").readNullable[String] and
-        (JsPath \ "noLongerUsed").readNullable[String](minLength[String](1) andKeep maxLength[String](1))
-    )(IfResidence.apply _),
+        (JsPath \ "noLongerUsed").readNullable[String](using minLength[String](1) andKeep maxLength[String](1))
+    )(IfResidence.apply),
     (
       (JsPath \ "statusCode").writeNullable[String] and
         (JsPath \ "status").writeNullable[String] and

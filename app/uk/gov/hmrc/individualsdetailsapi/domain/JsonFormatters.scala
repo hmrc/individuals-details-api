@@ -20,10 +20,8 @@ import play.api.libs.json._
 
 object JsonFormatters {
 
-  implicit val errorResponseWrites: Writes[ErrorResponse] = new Writes[ErrorResponse] {
-    def writes(e: ErrorResponse): JsValue =
-      Json.obj("code" -> e.errorCode, "message" -> e.message)
-  }
+  implicit val errorResponseWrites: Writes[ErrorResponse] = (e: ErrorResponse) =>
+    Json.obj("code" -> e.errorCode, "message" -> e.message)
 
   implicit val matchedCitizenJsonFormat: OFormat[MatchedCitizen] = Json.format[MatchedCitizen]
 

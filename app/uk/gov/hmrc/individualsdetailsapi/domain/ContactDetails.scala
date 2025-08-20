@@ -45,7 +45,7 @@ object ContactDetails {
     }
 
   def convert(contactDetails: Seq[IfContactDetail]): Option[ContactDetails] =
-    (create _).tupled apply contactDetails.foldRight((List.empty[String], List.empty[String], List.empty[String]))(
+    create.tupled apply contactDetails.foldRight((List.empty[String], List.empty[String], List.empty[String]))(
       (detail, tuple) =>
         detail.code match {
           case DaytimeTelephone => tuple.copy(_1 = tuple._1.+:(detail.detail))

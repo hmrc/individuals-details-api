@@ -43,10 +43,10 @@ class CacheRepositorySpec extends AnyWordSpec with Matchers with BeforeAndAfterE
 
   def fakeApplication(): Application = new GuiceApplicationBuilder()
     .configure("mongodb.uri" -> mongoUri, "cache.ttlInSeconds" -> cacheTtl)
-    .bindings(bindModules: _*)
+    .bindings(bindModules*)
     .build()
 
-  val cacheRepository = fakeApplication().injector.instanceOf[CacheRepository]
+  val cacheRepository: CacheRepository = fakeApplication().injector.instanceOf[CacheRepository]
 
   def externalServices: Seq[String] = Seq.empty
 
@@ -62,29 +62,29 @@ class CacheRepositorySpec extends AnyWordSpec with Matchers with BeforeAndAfterE
 
   "cache" should {
     "store the encrypted version of a value" in {
-      await(cacheRepository.cache(id, testValue)(TestClass.format))
+      await(cacheRepository.cache(id, testValue)(using TestClass.format))
       retrieveRawCachedValue(id) shouldBe JsString("I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
     }
 
     "update a cached value for a given id and key" in {
       val newValue = TestClass("three", "four")
 
-      await(cacheRepository.cache(id, testValue)(TestClass.format))
+      await(cacheRepository.cache(id, testValue)(using TestClass.format))
       retrieveRawCachedValue(id) shouldBe JsString("I9gl6p5GRucOfXOFmhtiYfePGl5Nnksdk/aJFXf0iVQ=")
 
-      await(cacheRepository.cache(id, newValue)(TestClass.format))
+      await(cacheRepository.cache(id, newValue)(using TestClass.format))
       retrieveRawCachedValue(id) shouldBe JsString("6yAvgtwLMcdiqTvdRvLTVKSkY3JwUZ/TzklThFfSqvA=")
     }
   }
 
   "fetch" should {
     "retrieve the unencrypted cached value for a given id and key" in {
-      await(cacheRepository.cache(id, testValue)(TestClass.format))
-      await(cacheRepository.fetchAndGetEntry[TestClass](id)(TestClass.format)) shouldBe Some(testValue)
+      await(cacheRepository.cache(id, testValue)(using TestClass.format))
+      await(cacheRepository.fetchAndGetEntry[TestClass](id)(using TestClass.format)) shouldBe Some(testValue)
     }
 
     "return None if no cached value exists for a given id and key" in {
-      await(cacheRepository.fetchAndGetEntry[TestClass](id)(TestClass.format)) shouldBe None
+      await(cacheRepository.fetchAndGetEntry[TestClass](id)(using TestClass.format)) shouldBe None
     }
   }
 

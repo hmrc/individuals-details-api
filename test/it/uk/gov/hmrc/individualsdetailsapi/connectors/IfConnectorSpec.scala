@@ -17,7 +17,7 @@
 package it.uk.gov.hmrc.individualsdetailsapi.connectors
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito
@@ -34,7 +34,7 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames, InternalServerException, NotFoundException}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
 import uk.gov.hmrc.individualsdetailsapi.connectors.IfConnector
-import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.IfContactDetail
+import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{IfContactDetail, IfDetailsResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
 
@@ -51,7 +51,7 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
   def externalServices: Seq[String] = Seq.empty
 
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
-    .bindings(bindModules: _*)
+    .bindings(bindModules*)
     .configure(
       "cache.enabled"                                                   -> false,
       "microservice.services.integration-framework.host"                -> "127.0.0.1",
@@ -85,8 +85,8 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
   override def afterEach(): Unit =
     wireMockServer.stop()
 
-  val detailsData = createValidIFDetailsResponse()
-  val emptyData = createEmptyDetailsResponse()
+  val detailsData: IfDetailsResponse = createValidIFDetailsResponse()
+  val emptyData: IfDetailsResponse = createEmptyDetailsResponse()
 
   "fetch details" should {
     val nino = Nino("NA000799C")
@@ -102,7 +102,7 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
 
       intercept[InternalServerException] {
         await(
-          underTest.fetchDetails(nino, None, matchId)(
+          underTest.fetchDetails(nino, None, matchId)(using
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -110,7 +110,7 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
         )
       }
 
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(using any())
 
     }
 
@@ -125,7 +125,7 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
 
       intercept[InternalServerException] {
         await(
-          underTest.fetchDetails(nino, None, matchId)(
+          underTest.fetchDetails(nino, None, matchId)(using
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -133,7 +133,7 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
         )
       }
 
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
     "Return an empty dataset for PERSON_NOT_FOUND" in new Setup {
@@ -145,8 +145,8 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
           .willReturn(aResponse().withStatus(404).withBody("PERSON_NOT_FOUND"))
       )
 
-      val result = await(
-        underTest.fetchDetails(nino, None, matchId)(
+      val result: IfDetailsResponse = await(
+        underTest.fetchDetails(nino, None, matchId)(using
           hc,
           FakeRequest().withHeaders(sampleCorrelationIdHeader),
           ec
@@ -155,7 +155,7 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
 
       result shouldBe emptyData
 
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(using any())
 
     }
 
@@ -170,21 +170,21 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
 
       intercept[NotFoundException] {
         await(
-          underTest.fetchDetails(nino, None, matchId)(
+          underTest.fetchDetails(nino, None, matchId)(using
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
           )
         )
       }
-      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1)).auditIfApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
     "Audit error when IF returns invalid data" in new Setup {
 
       Mockito.reset(underTest.auditHelper)
 
-      val invalidData = detailsData.copy(
+      val invalidData: IfDetailsResponse = detailsData.copy(
         contactDetails = Option(
           Seq(
             IfContactDetail(
@@ -207,7 +207,7 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
 
       intercept[InternalServerException] {
         await(
-          underTest.fetchDetails(nino, None, matchId)(
+          underTest.fetchDetails(nino, None, matchId)(using
             hc,
             FakeRequest().withHeaders(sampleCorrelationIdHeader),
             ec
@@ -216,7 +216,7 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
       }
 
       verify(underTest.auditHelper, times(1))
-        .auditIfApiFailure(any(), any(), any(), any(), any())(any())
+        .auditIfApiFailure(any(), any(), any(), any(), any())(using any())
     }
 
     "for standard response" in new Setup {
@@ -235,8 +235,8 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
           )
       )
 
-      val result = await(
-        underTest.fetchDetails(nino, None, matchId)(
+      val result: IfDetailsResponse = await(
+        underTest.fetchDetails(nino, None, matchId)(using
           hc,
           FakeRequest().withHeaders(sampleCorrelationIdHeader),
           ec
@@ -245,7 +245,7 @@ class IfConnectorSpec extends SpecBase with BeforeAndAfterEach with TestHelpers 
 
       result shouldBe detailsData
 
-      verify(underTest.auditHelper, times(1)).auditIfApiResponse(any(), any(), any(), any(), any())(any())
+      verify(underTest.auditHelper, times(1)).auditIfApiResponse(any(), any(), any(), any(), any())(using any())
 
     }
   }
