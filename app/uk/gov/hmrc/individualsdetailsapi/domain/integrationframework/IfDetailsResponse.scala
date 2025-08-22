@@ -26,7 +26,7 @@ object IfDetailsResponse {
     (
       (JsPath \ "contactDetails").readNullable[Seq[IfContactDetail]] and
         (JsPath \ "residences").readNullable[Seq[IfResidence]]
-    )(IfDetailsResponse.apply _),
+    )(IfDetailsResponse.apply),
     (
       (JsPath \ "contactDetails").writeNullable[Seq[IfContactDetail]] and
         (JsPath \ "residences").writeNullable[Seq[IfResidence]]

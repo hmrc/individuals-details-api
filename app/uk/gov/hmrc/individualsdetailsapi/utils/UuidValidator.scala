@@ -18,7 +18,7 @@ package uk.gov.hmrc.individualsdetailsapi.utils
 
 object UuidValidator {
 
-  val uuidPattern =
+  private val uuidPattern =
     "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-5][0-9a-fA-F]{3}-[089abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
 
   def validate(uuid: String): Boolean = uuid.matches(uuidPattern)

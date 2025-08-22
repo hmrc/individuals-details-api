@@ -34,14 +34,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class IndividualsMatchingApiConnectorSpec extends SpecBase with Matchers with BeforeAndAfterEach {
 
-  val stubPort = sys.env.getOrElse("WIREMOCK", "11121").toInt
+  val stubPort: Int = sys.env.getOrElse("WIREMOCK", "11121").toInt
   val stubHost = "localhost"
   val wireMockServer = new WireMockServer(wireMockConfig().port(stubPort))
 
   trait Fixture {
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val individualsMatchingApiConnector =
+    val individualsMatchingApiConnector: IndividualsMatchingApiConnector =
       new IndividualsMatchingApiConnector(servicesConfig, fakeApplication().injector.instanceOf[HttpClientV2]) {
         override val serviceUrl = "http://127.0.0.1:11121"
       }

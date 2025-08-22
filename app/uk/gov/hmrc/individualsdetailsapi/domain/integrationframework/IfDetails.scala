@@ -34,9 +34,9 @@ object IfDetails {
   implicit val idFormat: Format[IfDetails] = Format(
     (
       (JsPath \ "nino")
-        .readNullable[String](pattern(ninoPattern, "InvalidNino")) and
-        (JsPath \ "trn").readNullable[String](pattern(trnPattern, "InvalidTrn"))
-    )(IfDetails.apply _),
+        .readNullable[String](using pattern(ninoPattern, "InvalidNino")) and
+        (JsPath \ "trn").readNullable[String](using pattern(trnPattern, "InvalidTrn"))
+    )(IfDetails.apply),
     (
       (JsPath \ "nino").writeNullable[String] and
         (JsPath \ "trn").writeNullable[String]

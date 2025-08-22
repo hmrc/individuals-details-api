@@ -33,14 +33,14 @@ import scala.concurrent.Future
 
 class CacheServiceSpec extends SpecBase with MockitoSugar with Matchers with BeforeAndAfterEach {
 
-  val cacheId = TestCacheId("someid")
-  val cachedValue = TestClass("cached value")
-  val newValue = TestClass("new value")
+  val cacheId: TestCacheId = TestCacheId("someid")
+  val cachedValue: TestClass = TestClass("cached value")
+  val newValue: TestClass = TestClass("new value")
 
   trait Setup {
 
-    val mockClient = mock[CacheRepository]
-    val mockCacheConfig = mock[CacheRepositoryConfiguration]
+    val mockClient: CacheRepository = mock[CacheRepository]
+    val mockCacheConfig: CacheRepositoryConfiguration = mock[CacheRepositoryConfiguration]
     val cacheService = new CacheService(mockClient, mockCacheConfig)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()

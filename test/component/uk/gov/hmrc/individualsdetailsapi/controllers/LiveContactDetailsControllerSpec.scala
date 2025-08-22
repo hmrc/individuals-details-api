@@ -26,7 +26,7 @@ class LiveContactDetailsControllerSpec extends CommonControllerWithIfRequestSpec
     UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b")
   override val endpoint: String = "contact-details"
   override val nino = "AB123456C"
-  override val rootScope =
+  override val rootScope: List[String] =
     List("read:individuals-details-hmcts-c4", "read:individuals-details-laa-c4")
 
   override val expectedJson: JsValue =

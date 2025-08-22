@@ -31,7 +31,7 @@ object Residence {
       (JsPath \ "residenceType").readNullable[String] and
         (JsPath \ "address").readNullable[Address] and
         (JsPath \ "inUse").readNullable[Boolean]
-    )(Residence.apply _),
+    )(Residence.apply),
     Json.writes[Residence]
   )
 

@@ -42,12 +42,12 @@ object IfContactDetail {
 
   implicit val contactDetailsFormat: Format[IfContactDetail] = Format(
     (
-      (JsPath \ "code").read[Int](min[Int](1).keepAnd(max[Int](9999))) and
+      (JsPath \ "code").read[Int](using min[Int](1).keepAnd(max[Int](9999))) and
         (JsPath \ "type")
-          .read[String](minLength[String](1).keepAnd(maxLength[String](35))) and
+          .read[String](using minLength[String](1).keepAnd(maxLength[String](35))) and
         (JsPath \ "detail")
-          .read[String](minLength[String](3).keepAnd(maxLength[String](72)))
-    )(IfContactDetail.apply _),
+          .read[String](using minLength[String](3).keepAnd(maxLength[String](72)))
+    )(IfContactDetail.apply),
     (
       (JsPath \ "code").write[Int] and
         (JsPath \ "type").write[String] and

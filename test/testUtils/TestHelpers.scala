@@ -18,6 +18,7 @@ package testUtils
 
 import uk.gov.hmrc.individualsdetailsapi.domain.integrationframework.{IfAddress, IfContactDetail, IfDetailsResponse, IfResidence}
 
+import scala.annotation.tailrec
 import scala.util.Random
 
 trait TestHelpers {
@@ -25,6 +26,7 @@ trait TestHelpers {
   def generateString(length: Int): String = {
     val chars = "abcdefghijklmnopqrstuvwxyz123456789"
 
+    @tailrec
     def generate(string: String): String =
       if (string.length < length)
         generate(string.concat(chars.charAt(Random.nextInt(chars.length - 1)).toString))
@@ -34,7 +36,7 @@ trait TestHelpers {
     generate("")
   }
 
-  def generateAddress(number: Int) =
+  def generateAddress(number: Int): Option[IfAddress] =
     Some(
       IfAddress(
         Some(s"line1-$number"),
