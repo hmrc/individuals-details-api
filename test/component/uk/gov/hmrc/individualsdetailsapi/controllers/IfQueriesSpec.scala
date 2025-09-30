@@ -85,6 +85,12 @@ class IfQueriesSpec extends BaseSpec {
         helper.getQueryStringFor(Seq("read:individuals-details-nictsejo-c4"), List(endpoint))
       queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)&filter=contains(residences%5B%5D/noLongerUsed,'N')"
     }
+    Scenario("For read:individuals-details-scts") {
+      val queryString =
+        helper.getQueryStringFor(Seq("read:individuals-details-scts"), List(endpoint))
+      queryString shouldBe "residences(address(line1,line2,line3,line4,line5,postcode),noLongerUsed,type)"
+
+    }
   }
 
   Feature("Query strings for contact-details endpoint") {
@@ -150,6 +156,12 @@ class IfQueriesSpec extends BaseSpec {
       val queryString =
         helper.getQueryStringFor(Seq("read:individuals-details-nicts-c4"), List(endpoint))
       queryString shouldBe ""
+    }
+
+    Scenario("For read:individuals-details-scts") {
+      val queryString =
+        helper.getQueryStringFor(Seq("read:individuals-details-scts"), List(endpoint))
+      queryString shouldBe "contactDetails(code,detail,type)"
     }
 
   }

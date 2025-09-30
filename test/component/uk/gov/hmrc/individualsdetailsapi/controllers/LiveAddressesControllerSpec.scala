@@ -33,7 +33,8 @@ class LiveAddressesControllerSpec extends CommonControllerWithIfRequestSpec {
     "read:individuals-details-laa-c4",
     "read:individuals-details-lsani-c1",
     "read:individuals-details-lsani-c3",
-    "read:individuals-details-nictsejo-c4"
+    "read:individuals-details-nictsejo-c4",
+    "read:individuals-details-scts"
   )
 
   override val expectedJson: JsValue = Json.parse(s"""{
