@@ -58,7 +58,7 @@ class DetailsService @Inject() (
         .map(_.get)
     }
 
-  def resolve(matchId: UUID)(implicit hc: HeaderCarrier): Future[MatchedCitizen] =
+  def resolve(matchId: UUID)(implicit hc: HeaderCarrier, request: RequestHeader): Future[MatchedCitizen] =
     individualsMatchingApiConnector.resolve(matchId)
 
   private def retrieveAndMap[T](matchId: UUID, endpoint: String, scopes: Iterable[String])(

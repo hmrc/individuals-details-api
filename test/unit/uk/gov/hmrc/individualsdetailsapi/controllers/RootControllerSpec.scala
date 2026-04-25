@@ -22,7 +22,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
-import play.api.mvc.Result
+import play.api.mvc.{RequestHeader, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsJson, *}
 import uk.gov.hmrc.auth.core.*
@@ -44,7 +44,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
   val matchId: UUID = UUID.fromString("2b2e7e84-102f-4338-93f9-1950b35d822b")
   val sampleCorrelationId = "188e9400-b636-4a3b-80ba-230a8c72b92a"
   val validCorrelationHeader: (String, String) = ("CorrelationId", sampleCorrelationId)
-
+  implicit val rh: RequestHeader = FakeRequest()
   implicit lazy val materializer: Materializer = fakeApplication().materializer
   implicit lazy val ec: ExecutionContext =
     fakeApplication().injector.instanceOf[ExecutionContext]
@@ -104,7 +104,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/")
             .withHeaders(validCorrelationHeader)
 
-          when(mockDetailsService.resolve(eqTo(matchId))(using any()))
+          when(mockDetailsService.resolve(eqTo(matchId))(using any(), any()))
             .thenReturn(Future.successful(MatchedCitizen(matchId, nino = Nino("AB123456C"))))
 
           val result: Future[Result] = rootController.root(matchId)(fakeRequest)
@@ -120,7 +120,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           val fakeRequest = FakeRequest("GET", s"/")
             .withHeaders(validCorrelationHeader)
 
-          when(mockDetailsService.resolve(eqTo(matchId))(using any()))
+          when(mockDetailsService.resolve(eqTo(matchId))(using any(), any()))
             .thenReturn(Future.failed(new MatchNotFoundException))
 
           val result: Future[Result] = rootController.root(matchId)(fakeRequest)
