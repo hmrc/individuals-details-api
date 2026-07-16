@@ -24,14 +24,14 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsJson, *}
+import play.api.test.Helpers.*
 import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.TooManyRequestException
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.individualsdetailsapi.config.InternalEndpointConfig
-import uk.gov.hmrc.individualsdetailsapi.controllers.RootController
+import uk.gov.hmrc.individualsdetailsapi.config.{AppConfig, InternalEndpointConfig}
+import uk.gov.hmrc.individualsdetailsapi.controllers.v1.RootController
 import uk.gov.hmrc.individualsdetailsapi.domain.{MatchNotFoundException, MatchedCitizen}
 import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, ScopesHelper, ScopesService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
@@ -48,7 +48,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
   implicit lazy val materializer: Materializer = fakeApplication().materializer
   implicit lazy val ec: ExecutionContext =
     fakeApplication().injector.instanceOf[ExecutionContext]
-
+  lazy val appConfig: AppConfig = fakeApplication().injector.instanceOf[AppConfig]
   trait Fixture extends ScopesConfigHelper {
 
     implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
@@ -75,7 +75,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
         scopeHelper,
         mockDetailsService,
         mockAuditHelper
-      )
+      )(using ec, appConfig)
 
     when(scopeService.getAllScopes).thenReturn(scopes.toList)
     when(scopeService.getInternalEndpoints(any())).thenReturn(

@@ -27,7 +27,8 @@ import play.api.test.Helpers.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.individualsdetailsapi.controllers.ContactDetailsController
+import uk.gov.hmrc.individualsdetailsapi.config.AppConfig
+import uk.gov.hmrc.individualsdetailsapi.controllers.v1.ContactDetailsController
 import uk.gov.hmrc.individualsdetailsapi.domain.{ContactDetails, MatchNotFoundException}
 import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, ScopesService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
@@ -43,7 +44,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
   implicit lazy val materializer: Materializer = fakeApplication().materializer
   implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
-
+  lazy val appConfig: AppConfig = fakeApplication().injector.instanceOf[AppConfig]
   trait Fixture extends ScopesConfigHelper {
 
     implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
@@ -68,7 +69,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
         scopeService,
         mockDetailsService,
         mockAuditHelper
-      )
+      )(using ec, appConfig)
 
     when(scopeService.getEndPointScopes(any())).thenReturn(scopes)
   }

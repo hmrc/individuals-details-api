@@ -22,11 +22,12 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsJson, *}
+import play.api.test.Helpers.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, Enrolments, InsufficientEnrolments}
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
-import uk.gov.hmrc.individualsdetailsapi.controllers.AddressesController
+import uk.gov.hmrc.individualsdetailsapi.config.AppConfig
+import uk.gov.hmrc.individualsdetailsapi.controllers.v1.AddressesController
 import uk.gov.hmrc.individualsdetailsapi.domain.{Address, MatchNotFoundException, Residence}
 import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, ScopesService}
 import unit.uk.gov.hmrc.individualsdetailsapi.utils.SpecBase
@@ -43,7 +44,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
   trait Fixture extends ScopesConfigHelper {
 
     implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
-
+    lazy val appConfig: AppConfig = fakeApplication().injector.instanceOf[AppConfig]
     lazy val scopeService: ScopesService = mock[ScopesService]
     val mockDetailsService: DetailsService = mock[DetailsService]
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
@@ -64,7 +65,7 @@ class AddressesControllerSpec extends SpecBase with MockitoSugar {
         scopeService,
         mockDetailsService,
         mockAuditHelper
-      )
+      )(using ec, appConfig)
 
     when(scopeService.getEndPointScopes(any())).thenReturn(scopes)
 

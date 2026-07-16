@@ -14,55 +14,53 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.controllers
+package uk.gov.hmrc.individualsdetailsapi.controllers.v1
 
-import play.api.hal.Hal.state
 import play.api.hal.HalLink
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.hal._
+import play.api.mvc.hal.*
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.individualsdetailsapi.config.AppConfig
+import uk.gov.hmrc.individualsdetailsapi.controllers.{CommonController, PrivilegedAuthentication}
 import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
-import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, ScopesService}
+import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, ScopesHelper, ScopesService}
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ContactDetailsController @Inject() (
+class RootController @Inject() (
   val authConnector: AuthConnector,
   cc: ControllerComponents,
   scopeService: ScopesService,
+  scopesHelper: ScopesHelper,
   detailsService: DetailsService,
   implicit val auditHelper: AuditHelper
-)(implicit val ec: ExecutionContext)
+)(implicit val ec: ExecutionContext, appConfig: AppConfig)
     extends CommonController(cc) with PrivilegedAuthentication {
 
-  def contactDetails(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
-    val scopes = scopeService.getEndPointScopes("contact-details")
-    authenticate(scopes, matchId.toString) { authScopes =>
+  def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>
+    authenticate(scopeService.getAllScopes, matchId.toString) { authScopes =>
       val correlationId = validateCorrelationId(request)
 
-      detailsService
-        .getContactDetails(matchId, "contact-details", authScopes)
-        .map { contactDetails =>
-          val selfLink = HalLink("self", s"/individuals/details/contact-details?matchId=$matchId")
-          val obj = contactDetails.fold(Json.obj().as[JsValue])(cd => Json.toJson(cd))
-          val response = state(Json.obj("contactDetails" -> obj)) ++ selfLink
+      detailsService.resolve(matchId) map { _ =>
+        val selfLink =
+          HalLink("self", s"/individuals/details/?matchId=$matchId")
 
-          auditHelper.auditContactDetailsApiResponse(
-            correlationId.toString,
-            matchId.toString,
-            authScopes.mkString(","),
-            request,
-            selfLink.toString,
-            contactDetails
-          )
+        val response = scopesHelper.getHalLinks(matchId, None, authScopes, None) ++ selfLink
 
-          Ok(response)
-        }
-    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/details/contact-details")
+        auditHelper.auditApiResponse(
+          correlationId.toString,
+          matchId.toString,
+          authScopes.mkString(","),
+          request,
+          response.toString
+        )
+
+        Ok(response)
+      }
+    } recover recoveryWithAudit(maybeCorrelationId(request), matchId.toString, "/individuals/details/")
   }
 }
