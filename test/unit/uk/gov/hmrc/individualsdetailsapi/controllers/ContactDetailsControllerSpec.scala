@@ -20,6 +20,7 @@ import org.apache.pekko.stream.Materializer
 import org.mockito.ArgumentMatchers.{any, eq as eqTo, refEq}
 import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.{Environment, Mode}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -46,9 +47,6 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
   implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
   lazy val appConfig: AppConfig = fakeApplication().injector.instanceOf[AppConfig]
   trait Fixture extends ScopesConfigHelper {
-
-    implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
-
     lazy val scopeService: ScopesService = mock[ScopesService]
     val mockDetailsService: DetailsService = mock[DetailsService]
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
@@ -62,6 +60,11 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
     val scopes: Iterable[String] =
       Iterable("test-scope")
 
+    when(scopeService.getEndPointScopes(any())).thenReturn(scopes)
+  }
+
+  trait NonLocalFixture extends Fixture {
+    implicit val env: Environment = Environment.simple(mode = Mode.Prod)
     val contactDetailsController =
       new ContactDetailsController(
         mockAuthConnector,
@@ -69,9 +72,19 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
         scopeService,
         mockDetailsService,
         mockAuditHelper
-      )(using ec, appConfig)
+      )(using ec, appConfig, env)
+  }
 
-    when(scopeService.getEndPointScopes(any())).thenReturn(scopes)
+  trait LocalFixture extends Fixture {
+    implicit val env: Environment = Environment.simple(mode = Mode.Dev)
+    val contactDetailsController =
+      new ContactDetailsController(
+        mockAuthConnector,
+        cc,
+        scopeService,
+        mockDetailsService,
+        mockAuditHelper
+      )(using ec, appConfig, env)
   }
 
   "ContactDetailsController" when {
@@ -80,7 +93,38 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
 
       "using the live controller" should {
 
-        "return contact-details when successful" in new Fixture {
+        "return contact-details when successful" in new NonLocalFixture {
+
+          val fakeRequest = FakeRequest("GET", s"/contact-details/")
+            .withHeaders(validCorrelationHeader)
+
+          when(
+            mockDetailsService
+              .getContactDetails(eqTo(matchId), eqTo("contact-details"), eqTo(Set("test-scope")))(using
+                any(),
+                any(),
+                any()
+              )
+          )
+            .thenReturn(
+              Future.successful(
+                Some(
+                  ContactDetails(
+                    daytimeTelephones = List("0123 456789"),
+                    eveningTelephones = List("0123 456789"),
+                    mobileTelephones = List("0123 456789")
+                  )
+                )
+              )
+            )
+
+          val result: Future[Result] = contactDetailsController.contactDetails(matchId)(fakeRequest)
+
+          status(result) shouldBe OK
+          verify(contactDetailsController.auditHelper, times(1))
+            .auditContactDetailsApiResponse(any(), any(), any(), any(), any(), any())(using any())
+        }
+        "Local set up return contact-details when successful" in new LocalFixture {
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
             .withHeaders(validCorrelationHeader)
@@ -112,7 +156,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
             .auditContactDetailsApiResponse(any(), any(), any(), any(), any(), any())(using any())
         }
 
-        "return 404 (not found) for an invalid matchId" in new Fixture {
+        "return 404 (not found) for an invalid matchId" in new NonLocalFixture {
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
             .withHeaders(validCorrelationHeader)
@@ -139,7 +183,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
             .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
-        "return 401 when the bearer token does not have valid enrolment" in new Fixture {
+        "return 401 when the bearer token does not have valid enrolment" in new NonLocalFixture {
 
           when(mockAuthConnector.authorise(any(), any())(using any(), any()))
             .thenReturn(Future.failed(InsufficientEnrolments()))
@@ -155,7 +199,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
             .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
-        "return error when no scopes are supplied" in new Fixture {
+        "return error when no scopes are supplied" in new NonLocalFixture {
           when(scopeService.getEndPointScopes(any())).thenReturn(List.empty)
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
@@ -168,7 +212,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
           assert(result.getMessage == "No scopes defined")
         }
 
-        "return Bad Request with correct error message when CorrelationId header is missing" in new Fixture {
+        "return Bad Request with correct error message when CorrelationId header is missing" in new NonLocalFixture {
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
 
@@ -205,7 +249,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar {
             .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
-        "throws an Exception when CorrelationId header s missing" in new Fixture {
+        "throws an Exception when CorrelationId header s missing" in new NonLocalFixture {
 
           val fakeRequest = FakeRequest("GET", s"/contact-details/")
             .withHeaders("CorrelationId" -> "invalidId")

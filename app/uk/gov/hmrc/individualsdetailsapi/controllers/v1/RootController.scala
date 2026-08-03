@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.individualsdetailsapi.controllers.v1
 
+import play.api.Environment
 import play.api.hal.HalLink
 import play.api.mvc.hal.*
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -38,7 +39,7 @@ class RootController @Inject() (
   scopesHelper: ScopesHelper,
   detailsService: DetailsService,
   implicit val auditHelper: AuditHelper
-)(implicit val ec: ExecutionContext, appConfig: AppConfig)
+)(implicit val ec: ExecutionContext, appConfig: AppConfig, environment: Environment)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def root(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>

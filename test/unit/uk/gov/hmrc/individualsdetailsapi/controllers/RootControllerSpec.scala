@@ -21,6 +21,7 @@ import org.mockito.ArgumentMatchers.{any, eq as eqTo, refEq}
 import org.mockito.Mockito
 import org.mockito.Mockito.{times, verify, verifyNoInteractions, when}
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.{Environment, Mode}
 import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
@@ -50,9 +51,6 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
     fakeApplication().injector.instanceOf[ExecutionContext]
   lazy val appConfig: AppConfig = fakeApplication().injector.instanceOf[AppConfig]
   trait Fixture extends ScopesConfigHelper {
-
-    implicit lazy val ec: ExecutionContext = fakeApplication().injector.instanceOf[ExecutionContext]
-
     lazy val scopeService: ScopesService = mock[ScopesService]
     lazy val scopeHelper: ScopesHelper = new ScopesHelper(scopeService)
     val mockDetailsService: DetailsService = mock[DetailsService]
@@ -66,16 +64,6 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
     val scopes: Iterable[String] =
       Iterable("test-scope")
-
-    val rootController =
-      new RootController(
-        mockAuthConnector,
-        cc,
-        scopeService,
-        scopeHelper,
-        mockDetailsService,
-        mockAuditHelper
-      )(using ec, appConfig)
 
     when(scopeService.getAllScopes).thenReturn(scopes.toList)
     when(scopeService.getInternalEndpoints(any())).thenReturn(
@@ -91,13 +79,39 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
     )
   }
 
+  trait NonLocalFixture extends Fixture {
+    implicit val env: Environment = Environment.simple(mode = Mode.Prod)
+
+    val rootController =
+      new RootController(
+        mockAuthConnector,
+        cc,
+        scopeService,
+        scopeHelper,
+        mockDetailsService,
+        mockAuditHelper
+      )(using ec, appConfig, env)
+  }
+  trait LocalFixture extends Fixture {
+    implicit val envLocal: Environment = Environment.simple(mode = Mode.Dev)
+    val rootController =
+      new RootController(
+        mockAuthConnector,
+        cc,
+        scopeService,
+        scopeHelper,
+        mockDetailsService,
+        mockAuditHelper
+      )(using ec, appConfig, envLocal)
+  }
+
   "RootController" when {
 
     "calling root" when {
 
       "using the live controller" should {
 
-        "return response when successful" in new Fixture {
+        "return response when successful" in new NonLocalFixture {
 
           Mockito.reset(rootController.auditHelper)
 
@@ -115,7 +129,25 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
 
         }
 
-        "return 404 (not found) for an invalid matchId" in new Fixture {
+        "Local set up return response when successful" in new LocalFixture {
+
+          Mockito.reset(rootController.auditHelper)
+
+          val fakeRequest = FakeRequest("GET", s"/")
+            .withHeaders(validCorrelationHeader)
+
+          when(mockDetailsService.resolve(eqTo(matchId))(using any()))
+            .thenReturn(Future.successful(MatchedCitizen(matchId, nino = Nino("AB123456C"))))
+
+          val result: Future[Result] = rootController.root(matchId)(fakeRequest)
+
+          status(result) shouldBe OK
+
+          verify(rootController.auditHelper, times(1)).auditApiResponse(any(), any(), any(), any(), any())(using any())
+
+        }
+
+        "return 404 (not found) for an invalid matchId" in new NonLocalFixture {
 
           val fakeRequest = FakeRequest("GET", s"/")
             .withHeaders(validCorrelationHeader)
@@ -135,7 +167,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
             .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
-        "return 401 when the bearer token does not have valid enrolment" in new Fixture {
+        "return 401 when the bearer token does not have valid enrolment" in new NonLocalFixture {
 
           when(mockAuthConnector.authorise(any(), any())(using any(), any()))
             .thenReturn(Future.failed(InsufficientEnrolments()))
@@ -151,7 +183,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
             .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
-        "return error when no scopes are supplied" in new Fixture {
+        "return error when no scopes are supplied" in new NonLocalFixture {
           when(scopeService.getAllScopes).thenReturn(List())
 
           val fakeRequest = FakeRequest("GET", s"/")
@@ -164,7 +196,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
           assert(result.getMessage == "No scopes defined")
         }
 
-        "return 401 when bearer token is expired" in new Fixture {
+        "return 401 when bearer token is expired" in new NonLocalFixture {
 
           when(mockAuthConnector.authorise(any(), any())(using any(), any()))
             .thenReturn(Future.failed(BearerTokenExpired()))
@@ -180,7 +212,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
             .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
-        "return 429 when too many requests received" in new Fixture {
+        "return 429 when too many requests received" in new NonLocalFixture {
 
           when(mockAuthConnector.authorise(any(), any())(using any(), any()))
             .thenReturn(Future.failed(new TooManyRequestException("Too many")))
@@ -196,7 +228,7 @@ class RootControllerSpec extends SpecBase with MockitoSugar {
             .auditApiFailure(any(), any(), any(), any(), any())(using any())
         }
 
-        "return 500 when an unspecified Exception is thrown" in new Fixture {
+        "return 500 when an unspecified Exception is thrown" in new NonLocalFixture {
 
           when(mockAuthConnector.authorise(any(), any())(using any(), any()))
             .thenReturn(Future.failed(new Exception()))
