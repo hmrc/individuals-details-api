@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.individualsdetailsapi.controllers
+package uk.gov.hmrc.individualsdetailsapi.controllers.v1
 
+import play.api.Environment
 import play.api.hal.Hal.state
 import play.api.hal.HalLink
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.hal._
+import play.api.mvc.hal.*
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.individualsdetailsapi.audit.AuditHelper
+import uk.gov.hmrc.individualsdetailsapi.config.AppConfig
+import uk.gov.hmrc.individualsdetailsapi.controllers.{CommonController, PrivilegedAuthentication}
 import uk.gov.hmrc.individualsdetailsapi.play.RequestHeaderUtils.{maybeCorrelationId, validateCorrelationId}
 import uk.gov.hmrc.individualsdetailsapi.services.{DetailsService, ScopesService}
 
@@ -37,7 +40,7 @@ class ContactDetailsController @Inject() (
   scopeService: ScopesService,
   detailsService: DetailsService,
   implicit val auditHelper: AuditHelper
-)(implicit val ec: ExecutionContext)
+)(implicit val ec: ExecutionContext, appConfig: AppConfig, environment: Environment)
     extends CommonController(cc) with PrivilegedAuthentication {
 
   def contactDetails(matchId: UUID): Action[AnyContent] = Action.async { implicit request =>

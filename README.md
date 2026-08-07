@@ -18,6 +18,10 @@ Run all the tests with coverage report:
 
     sbt clean compile coverage test it:test component:test coverageReport
 
+### Running locally for performance tests
+
+     sbt run -Dconfig.resource=application.local.conf
+
 ### License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
